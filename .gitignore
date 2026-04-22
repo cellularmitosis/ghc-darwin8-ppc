@@ -1,0 +1,35 @@
+# Downloaded source archives, prebuilt binaries, the GHC source tree itself.
+# Anything we can re-fetch should not be committed.
+external/
+*.tar.bz2
+*.tar.gz
+*.tar.xz
+*.tbz
+*.tgz
+*.txz
+*.pkg
+*.dmg
+*.zip
+*.bz2
+*.gz
+*.xz
+
+# Build artefacts and DESTDIRs.
+build/
+build-*/
+dist/
+dist-*/
+destroot/
+destroot-*/
+_build/
+
+# Editor / OS detritus.
+.DS_Store
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Logs from background builds we didn't mean to commit.
+*.log

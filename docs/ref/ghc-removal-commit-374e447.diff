@@ -1,0 +1,1384 @@
+diff --git a/compiler/cmm/CmmPipeline.hs b/compiler/cmm/CmmPipeline.hs
+index 8c4f21452a3384bacd54a1e9141eca3835857e72..7f7c1118482e6fa325a53a53f3a6893f6a7bacfe 100644
+--- a/compiler/cmm/CmmPipeline.hs
++++ b/compiler/cmm/CmmPipeline.hs
+@@ -167,7 +167,6 @@ cpsTop hsc_env proc =
+         usingInconsistentPicReg
+            = case (platformArch platform, platformOS platform, positionIndependent dflags)
+              of   (ArchX86, OSDarwin, pic) -> pic
+-                  (ArchPPC, OSDarwin, pic) -> pic
+                   _                        -> False
+ 
+ -- Note [Sinking after stack layout]
+@@ -314,12 +313,6 @@ points, then at the join point we don't have a consistent value for
+ Hence, on x86/Darwin, we have to split proc points, and then each proc
+ point will get its own PIC initialisation sequence.
+ 
+-The situation is the same for ppc/Darwin. We use essentially the same
+-sequence to load the program counter onto reg:
+-
+-    bcl  20,31,1f
+- 1: mflr reg
+-
+ This isn't an issue on x86/ELF, where the sequence is
+ 
+     call 1f
+diff --git a/compiler/codeGen/CodeGen/Platform.hs b/compiler/codeGen/CodeGen/Platform.hs
+index 3014a0596ffdd90d2cbea52698acd4d5a2a07b0b..9d9a0cf2d115a54aab17e7249bbf25a292f7b3ec 100644
+--- a/compiler/codeGen/CodeGen/Platform.hs
++++ b/compiler/codeGen/CodeGen/Platform.hs
+@@ -12,7 +12,6 @@ import Reg
+ import qualified CodeGen.Platform.ARM        as ARM
+ import qualified CodeGen.Platform.ARM64      as ARM64
+ import qualified CodeGen.Platform.PPC        as PPC
+-import qualified CodeGen.Platform.PPC_Darwin as PPC_Darwin
+ import qualified CodeGen.Platform.SPARC      as SPARC
+ import qualified CodeGen.Platform.X86        as X86
+ import qualified CodeGen.Platform.X86_64     as X86_64
+@@ -33,9 +32,7 @@ callerSaves platform
+    ArchARM64  -> ARM64.callerSaves
+    arch
+     | arch `elem` [ArchPPC, ArchPPC_64 ELF_V1, ArchPPC_64 ELF_V2] ->
+-       case platformOS platform of
+-       OSDarwin -> PPC_Darwin.callerSaves
+-       _        -> PPC.callerSaves
++        PPC.callerSaves
+ 
+     | otherwise -> NoRegs.callerSaves
+ 
+@@ -56,9 +53,7 @@ activeStgRegs platform
+    ArchARM64  -> ARM64.activeStgRegs
+    arch
+     | arch `elem` [ArchPPC, ArchPPC_64 ELF_V1, ArchPPC_64 ELF_V2] ->
+-       case platformOS platform of
+-       OSDarwin -> PPC_Darwin.activeStgRegs
+-       _        -> PPC.activeStgRegs
++        PPC.activeStgRegs
+ 
+     | otherwise -> NoRegs.activeStgRegs
+ 
+@@ -74,9 +69,7 @@ haveRegBase platform
+    ArchARM64  -> ARM64.haveRegBase
+    arch
+     | arch `elem` [ArchPPC, ArchPPC_64 ELF_V1, ArchPPC_64 ELF_V2] ->
+-       case platformOS platform of
+-       OSDarwin -> PPC_Darwin.haveRegBase
+-       _        -> PPC.haveRegBase
++        PPC.haveRegBase
+ 
+     | otherwise -> NoRegs.haveRegBase
+ 
+@@ -92,9 +85,7 @@ globalRegMaybe platform
+    ArchARM64  -> ARM64.globalRegMaybe
+    arch
+     | arch `elem` [ArchPPC, ArchPPC_64 ELF_V1, ArchPPC_64 ELF_V2] ->
+-       case platformOS platform of
+-       OSDarwin -> PPC_Darwin.globalRegMaybe
+-       _        -> PPC.globalRegMaybe
++        PPC.globalRegMaybe
+ 
+     | otherwise -> NoRegs.globalRegMaybe
+ 
+@@ -110,9 +101,7 @@ freeReg platform
+    ArchARM64  -> ARM64.freeReg
+    arch
+     | arch `elem` [ArchPPC, ArchPPC_64 ELF_V1, ArchPPC_64 ELF_V2] ->
+-       case platformOS platform of
+-       OSDarwin -> PPC_Darwin.freeReg
+-       _        -> PPC.freeReg
++        PPC.freeReg
+ 
+     | otherwise -> NoRegs.freeReg
+ 
+diff --git a/compiler/codeGen/CodeGen/Platform/PPC_Darwin.hs b/compiler/codeGen/CodeGen/Platform/PPC_Darwin.hs
+deleted file mode 100644
+index 91923fd453a6376fc7c7745770f1db0ef0c5f394..0000000000000000000000000000000000000000
+--- a/compiler/codeGen/CodeGen/Platform/PPC_Darwin.hs
++++ /dev/null
+@@ -1,11 +0,0 @@
+-{-# LANGUAGE CPP #-}
+-
+-module CodeGen.Platform.PPC_Darwin where
+-
+-import GhcPrelude
+-
+-#define MACHREGS_NO_REGS 0
+-#define MACHREGS_powerpc 1
+-#define MACHREGS_darwin 1
+-#include "../../../../includes/CodeGen.Platform.hs"
+-
+diff --git a/compiler/ghc.cabal.in b/compiler/ghc.cabal.in
+index 7f84cac19275c58d3d77ec026e8503cfef2f3a77..5b93d3ceb20bcb8195ad3369221722f47436bc36 100644
+--- a/compiler/ghc.cabal.in
++++ b/compiler/ghc.cabal.in
+@@ -272,7 +272,6 @@ Library
+         CodeGen.Platform.ARM64
+         CodeGen.Platform.NoRegs
+         CodeGen.Platform.PPC
+-        CodeGen.Platform.PPC_Darwin
+         CodeGen.Platform.SPARC
+         CodeGen.Platform.X86
+         CodeGen.Platform.X86_64
+diff --git a/compiler/nativeGen/PIC.hs b/compiler/nativeGen/PIC.hs
+index 2f300c46145bff51eba458c87a6791e1becb22ac..777872936814023e206341aede47d4eebea0e08f 100644
+--- a/compiler/nativeGen/PIC.hs
++++ b/compiler/nativeGen/PIC.hs
+@@ -569,60 +569,6 @@ pprGotDeclaration _ _ _
+ -- the splitter in driver/split/ghc-split.pl recognizes the new output
+ 
+ pprImportedSymbol :: DynFlags -> Platform -> CLabel -> SDoc
+-pprImportedSymbol dflags platform@(Platform { platformArch = ArchPPC, platformOS = OSDarwin }) importedLbl
+-        | Just (CodeStub, lbl) <- dynamicLinkerLabelInfo importedLbl
+-        = case positionIndependent dflags of
+-           False ->
+-            vcat [
+-                text ".symbol_stub",
+-                text "L" <> pprCLabel platform lbl <> ptext (sLit "$stub:"),
+-                    text "\t.indirect_symbol" <+> pprCLabel platform lbl,
+-                    text "\tlis r11,ha16(L" <> pprCLabel platform lbl
+-                        <> text "$lazy_ptr)",
+-                    text "\tlwz r12,lo16(L" <> pprCLabel platform lbl
+-                        <> text "$lazy_ptr)(r11)",
+-                    text "\tmtctr r12",
+-                    text "\taddi r11,r11,lo16(L" <> pprCLabel platform lbl
+-                        <> text "$lazy_ptr)",
+-                    text "\tbctr"
+-            ]
+-           True ->
+-            vcat [
+-                text ".section __TEXT,__picsymbolstub1,"
+-                  <> text "symbol_stubs,pure_instructions,32",
+-                text "\t.align 2",
+-                text "L" <> pprCLabel platform lbl <> ptext (sLit "$stub:"),
+-                    text "\t.indirect_symbol" <+> pprCLabel platform lbl,
+-                    text "\tmflr r0",
+-                    text "\tbcl 20,31,L0$" <> pprCLabel platform lbl,
+-                text "L0$" <> pprCLabel platform lbl <> char ':',
+-                    text "\tmflr r11",
+-                    text "\taddis r11,r11,ha16(L" <> pprCLabel platform lbl
+-                        <> text "$lazy_ptr-L0$" <> pprCLabel platform lbl <> char ')',
+-                    text "\tmtlr r0",
+-                    text "\tlwzu r12,lo16(L" <> pprCLabel platform lbl
+-                        <> text "$lazy_ptr-L0$" <> pprCLabel platform lbl
+-                        <> text ")(r11)",
+-                    text "\tmtctr r12",
+-                    text "\tbctr"
+-            ]
+-          $+$ vcat [
+-                text ".lazy_symbol_pointer",
+-                text "L" <> pprCLabel platform lbl <> ptext (sLit "$lazy_ptr:"),
+-                text "\t.indirect_symbol" <+> pprCLabel platform lbl,
+-                text "\t.long dyld_stub_binding_helper"]
+-
+-        | Just (SymbolPtr, lbl) <- dynamicLinkerLabelInfo importedLbl
+-        = vcat [
+-                text ".non_lazy_symbol_pointer",
+-                char 'L' <> pprCLabel platform lbl <> text "$non_lazy_ptr:",
+-                text "\t.indirect_symbol" <+> pprCLabel platform lbl,
+-                text "\t.long\t0"]
+-
+-        | otherwise
+-        = empty
+-
+-
+ pprImportedSymbol dflags platform@(Platform { platformArch = ArchX86, platformOS = OSDarwin }) importedLbl
+         | Just (CodeStub, lbl) <- dynamicLinkerLabelInfo importedLbl
+         = case positionIndependent dflags of
+@@ -827,14 +773,6 @@ initializePicBase_ppc ArchPPC os picReg
+ 
+         return (CmmProc info lab live (ListGraph blocks') : statics)
+ 
+-
+-initializePicBase_ppc ArchPPC OSDarwin picReg
+-        (CmmProc info lab live (ListGraph (entry:blocks)) : statics) -- just one entry because of splitting
+-        = return (CmmProc info lab live (ListGraph (b':blocks)) : statics)
+-
+-        where   BasicBlock bID insns = entry
+-                b' = BasicBlock bID (PPC.FETCHPC picReg : insns)
+-
+ -------------------------------------------------------------------------
+ -- Load TOC into register 2
+ -- PowerPC 64-bit ELF ABI 2.0 requires the address of the callee
+diff --git a/compiler/nativeGen/PPC/CodeGen.hs b/compiler/nativeGen/PPC/CodeGen.hs
+index d46bef7ba52c0c471b768ac445b2b7c85f5c230c..bbc34117bb80dd8a8dbcb7b7c7e85b3fb1302b92 100644
+--- a/compiler/nativeGen/PPC/CodeGen.hs
++++ b/compiler/nativeGen/PPC/CodeGen.hs
+@@ -1566,7 +1566,7 @@ genCCall target dest_regs argsAndHints
+                 = panic "genCall: Wrong number of arguments/results for fabs"
+ 
+ -- TODO: replace 'Int' by an enum such as 'PPC_64ABI'
+-data GenCCallPlatform = GCPLinux | GCPDarwin | GCPLinux64ELF !Int | GCPAIX
++data GenCCallPlatform = GCPLinux | GCPLinux64ELF !Int | GCPAIX
+ 
+ platformToGCP :: Platform -> GenCCallPlatform
+ platformToGCP platform = case platformOS platform of
+@@ -1576,7 +1576,6 @@ platformToGCP platform = case platformOS platform of
+         ArchPPC_64 ELF_V2 -> GCPLinux64ELF 2
+         _ -> panic "PPC.CodeGen.platformToGCP: Unknown Linux"
+     OSAIX    -> GCPAIX
+-    OSDarwin -> GCPDarwin
+     _ -> panic "PPC.CodeGen.platformToGCP: not defined for this OS"
+ 
+ 
+@@ -1588,51 +1587,49 @@ genCCall'
+     -> [CmmActual]        -- arguments (of mixed type)
+     -> NatM InstrBlock
+ 
+-{-
+-    The PowerPC calling convention for Darwin/Mac OS X
+-    is described in Apple's document
+-    "Inside Mac OS X - Mach-O Runtime Architecture".
+-
++{- 
+     PowerPC Linux uses the System V Release 4 Calling Convention
+     for PowerPC. It is described in the
+     "System V Application Binary Interface PowerPC Processor Supplement".
+ 
+-    Both conventions are similar:
++    PowerPC 64 Linux uses the System V Release 4 Calling Convention for
++    64-bit PowerPC. It is specified in
++    "64-bit PowerPC ELF Application Binary Interface Supplement 1.9"
++    (PPC64 ELF v1.9).
++
++    PowerPC 64 Linux in little endian mode uses the "Power Architecture 64-Bit
++    ELF V2 ABI Specification -- OpenPOWER ABI for Linux Supplement"
++    (PPC64 ELF v2).
++
++    AIX follows the "PowerOpen ABI: Application Binary Interface Big-Endian
++    32-Bit Hardware Implementation"
++
++    All four conventions are similar:
+     Parameters may be passed in general-purpose registers starting at r3, in
+     floating point registers starting at f1, or on the stack.
+ 
+     But there are substantial differences:
+     * The number of registers used for parameter passing and the exact set of
+       nonvolatile registers differs (see MachRegs.hs).
+-    * On Darwin, stack space is always reserved for parameters, even if they are
+-      passed in registers. The called routine may choose to save parameters from
+-      registers to the corresponding space on the stack.
+-    * On Darwin, a corresponding amount of GPRs is skipped when a floating point
+-      parameter is passed in an FPR.
++    * On AIX and 64-bit ELF, stack space is always reserved for parameters,
++      even if they are passed in registers. The called routine may choose to
++      save parameters from registers to the corresponding space on the stack.
++    * On AIX and 64-bit ELF, a corresponding amount of GPRs is skipped when
++      a floating point parameter is passed in an FPR.
+     * SysV insists on either passing I64 arguments on the stack, or in two GPRs,
+       starting with an odd-numbered GPR. It may skip a GPR to achieve this.
+-      Darwin just treats an I64 like two separate II32s (high word first).
++      AIX just treats an I64 likt two separate I32s (high word first).
+     * I64 and FF64 arguments are 8-byte aligned on the stack for SysV, but only
+-      4-byte aligned like everything else on Darwin.
++      4-byte aligned like everything else on AIX.
+     * The SysV spec claims that FF32 is represented as FF64 on the stack. GCC on
+       PowerPC Linux does not agree, so neither do we.
+ 
+-    PowerPC 64 Linux uses the System V Release 4 Calling Convention for
+-    64-bit PowerPC. It is specified in
+-    "64-bit PowerPC ELF Application Binary Interface Supplement 1.9"
+-    (PPC64 ELF v1.9).
+-    PowerPC 64 Linux in little endian mode uses the "Power Architecture 64-Bit
+-    ELF V2 ABI Specification -- OpenPOWER ABI for Linux Supplement"
+-    (PPC64 ELF v2).
+-    AIX follows the "PowerOpen ABI: Application Binary Interface Big-Endian
+-    32-Bit Hardware Implementation"
+-
+     According to all conventions, the parameter area should be part of the
+     caller's stack frame, allocated in the caller's prologue code (large enough
+     to hold the parameter lists for all called routines). The NCG already
+     uses the stack for register spilling, leaving 64 bytes free at the top.
+-    If we need a larger parameter area than that, we just allocate a new stack
+-    frame just before ccalling.
++    If we need a larger parameter area than that, we increase the size
++    of the stack frame just before ccalling.
+ -}
+ 
+ 
+@@ -1715,7 +1712,6 @@ genCCall' dflags gcp target dest_regs args
+ 
+         initialStackOffset = case gcp of
+                              GCPAIX          -> 24
+-                             GCPDarwin       -> 24
+                              GCPLinux        -> 8
+                              GCPLinux64ELF 1 -> 48
+                              GCPLinux64ELF 2 -> 32
+@@ -1725,9 +1721,6 @@ genCCall' dflags gcp target dest_regs args
+                                 GCPAIX ->
+                                     roundTo 16 $ (24 +) $ max 32 $ sum $
+                                     map (widthInBytes . typeWidth) argReps
+-                                GCPDarwin ->
+-                                    roundTo 16 $ (24 +) $ max 32 $ sum $
+-                                    map (widthInBytes . typeWidth) argReps
+                                 GCPLinux -> roundTo 16 finalStack
+                                 GCPLinux64ELF 1 ->
+                                     roundTo 16 $ (48 +) $ max 64 $ sum $
+@@ -1783,19 +1776,7 @@ genCCall' dflags gcp target dest_regs args
+                 let vr_hi = getHiVRegFromLo vr_lo
+ 
+                 case gcp of
+-                    GCPAIX -> -- same as for Darwin
+-                        do let storeWord vr (gpr:_) _ = MR gpr vr
+-                               storeWord vr [] offset
+-                                   = ST II32 vr (AddrRegImm sp (ImmInt offset))
+-                           passArguments args
+-                                         (drop 2 gprs)
+-                                         fprs
+-                                         (stackOffset+8)
+-                                         (accumCode `appOL` code
+-                                               `snocOL` storeWord vr_hi gprs stackOffset
+-                                               `snocOL` storeWord vr_lo (drop 1 gprs) (stackOffset+4))
+-                                         ((take 2 gprs) ++ accumUsed)
+-                    GCPDarwin ->
++                    GCPAIX ->
+                         do let storeWord vr (gpr:_) _ = MR gpr vr
+                                storeWord vr [] offset
+                                    = ST II32 vr (AddrRegImm sp (ImmInt offset))
+@@ -1836,10 +1817,9 @@ genCCall' dflags gcp target dest_regs args
+                             Fixed _ freg fcode -> fcode `snocOL` MR reg freg
+                             Any _ acode -> acode reg
+                     stackOffsetRes = case gcp of
+-                                     -- The Darwin ABI requires that we reserve
+-                                     -- stack slots for register parameters
+-                                     GCPDarwin -> stackOffset + stackBytes
+-                                     -- ... so does the PowerOpen ABI.
++                                     -- The PowerOpen ABI requires that we
++                                     -- reserve stack slots for register
++                                     -- parameters
+                                      GCPAIX    -> stackOffset + stackBytes
+                                      -- ... the SysV ABI 32-bit doesn't.
+                                      GCPLinux -> stackOffset
+@@ -1861,13 +1841,9 @@ genCCall' dflags gcp target dest_regs args
+                               accumUsed
+             where
+                 stackOffset' = case gcp of
+-                               GCPDarwin ->
+-                                   -- stackOffset is at least 4-byte aligned
+-                                   -- The Darwin ABI is happy with that.
+-                                   stackOffset
+                                GCPAIX ->
+                                    -- The 32bit PowerOPEN ABI is happy with
+-                                   -- 32bit-alignment as well...
++                                   -- 32bit-alignment ...
+                                    stackOffset
+                                GCPLinux
+                                    -- ... the SysV ABI requires 8-byte
+@@ -1914,18 +1890,6 @@ genCCall' dflags gcp target dest_regs args
+                           FF64 -> (2, 1, 8, fprs)
+                           II64 -> panic "genCCall' passArguments II64"
+                           FF80 -> panic "genCCall' passArguments FF80"
+-                      GCPDarwin ->
+-                          case cmmTypeFormat rep of
+-                          II8  -> (1, 0, 4, gprs)
+-                          II16 -> (1, 0, 4, gprs)
+-                          II32 -> (1, 0, 4, gprs)
+-                          -- The Darwin ABI requires that we skip a
+-                          -- corresponding number of GPRs when we use
+-                          -- the FPRs.
+-                          FF32 -> (1, 1, 4, fprs)
+-                          FF64 -> (2, 1, 8, fprs)
+-                          II64 -> panic "genCCall' passArguments II64"
+-                          FF80 -> panic "genCCall' passArguments FF80"
+                       GCPLinux ->
+                           case cmmTypeFormat rep of
+                           II8  -> (1, 0, 4, gprs)
+diff --git a/compiler/nativeGen/PPC/Instr.hs b/compiler/nativeGen/PPC/Instr.hs
+index ade39430c028ca011ca20e6e569165e6ec513a14..8f3153ca167030dd82b678fd55cd9ec1f5a707cc 100644
+--- a/compiler/nativeGen/PPC/Instr.hs
++++ b/compiler/nativeGen/PPC/Instr.hs
+@@ -582,7 +582,6 @@ stackFrameHeaderSize dflags
+         ArchPPC_64 ELF_V2 -> 32 + 8 * 8
+         _ -> panic "PPC.stackFrameHeaderSize: Unknown Linux"
+       OSAIX    -> 24 + 8 * 4
+-      OSDarwin -> 64 -- TODO: check ABI spec
+       _ -> panic "PPC.stackFrameHeaderSize: not defined for this OS"
+      where platform = targetPlatform dflags
+ 
+@@ -602,8 +601,8 @@ maxSpillSlots dflags
+ --     = 0 -- useful for testing allocMoreStack
+ 
+ -- | The number of bytes that the stack pointer should be aligned
+--- to. This is 16 both on PPC32 and PPC64 at least for Darwin, and
+--- Linux (see ELF processor specific supplements).
++-- to. This is 16 both on PPC32 and PPC64 ELF (see ELF processor
++-- specific supplements).
+ stackAlign :: Int
+ stackAlign = 16
+ 
+diff --git a/compiler/nativeGen/PPC/Ppr.hs b/compiler/nativeGen/PPC/Ppr.hs
+index 3d9077df1973850a7bf9d1170f30e68f4139222e..d7175b86894d88105a18515c7b17665feb65c0c2 100644
+--- a/compiler/nativeGen/PPC/Ppr.hs
++++ b/compiler/nativeGen/PPC/Ppr.hs
+@@ -129,7 +129,6 @@ pprData (CmmString str)          = pprASCII str
+ pprData (CmmUninitialised bytes) = keyword <> int bytes
+     where keyword = sdocWithPlatform $ \platform ->
+                     case platformOS platform of
+-                    OSDarwin -> text ".space "
+                     OSAIX    -> text ".space "
+                     _        -> text ".skip "
+ pprData (CmmStaticLit lit)       = pprDataItem lit
+@@ -181,50 +180,10 @@ pprReg r
+       RegVirtual (VirtualRegSSE u) -> text "%vSSE_" <> pprUniqueAlways u
+   where
+     ppr_reg_no :: Int -> SDoc
+-    ppr_reg_no i =
+-        sdocWithPlatform $ \platform ->
+-        case platformOS platform of
+-        OSDarwin ->
+-            ptext
+-                (case i of {
+-                 0 -> sLit "r0";   1 -> sLit "r1";
+-                 2 -> sLit "r2";   3 -> sLit "r3";
+-                 4 -> sLit "r4";   5 -> sLit "r5";
+-                 6 -> sLit "r6";   7 -> sLit "r7";
+-                 8 -> sLit "r8";   9 -> sLit "r9";
+-                10 -> sLit "r10";  11 -> sLit "r11";
+-                12 -> sLit "r12";  13 -> sLit "r13";
+-                14 -> sLit "r14";  15 -> sLit "r15";
+-                16 -> sLit "r16";  17 -> sLit "r17";
+-                18 -> sLit "r18";  19 -> sLit "r19";
+-                20 -> sLit "r20";  21 -> sLit "r21";
+-                22 -> sLit "r22";  23 -> sLit "r23";
+-                24 -> sLit "r24";  25 -> sLit "r25";
+-                26 -> sLit "r26";  27 -> sLit "r27";
+-                28 -> sLit "r28";  29 -> sLit "r29";
+-                30 -> sLit "r30";  31 -> sLit "r31";
+-                32 -> sLit "f0";  33 -> sLit "f1";
+-                34 -> sLit "f2";  35 -> sLit "f3";
+-                36 -> sLit "f4";  37 -> sLit "f5";
+-                38 -> sLit "f6";  39 -> sLit "f7";
+-                40 -> sLit "f8";  41 -> sLit "f9";
+-                42 -> sLit "f10"; 43 -> sLit "f11";
+-                44 -> sLit "f12"; 45 -> sLit "f13";
+-                46 -> sLit "f14"; 47 -> sLit "f15";
+-                48 -> sLit "f16"; 49 -> sLit "f17";
+-                50 -> sLit "f18"; 51 -> sLit "f19";
+-                52 -> sLit "f20"; 53 -> sLit "f21";
+-                54 -> sLit "f22"; 55 -> sLit "f23";
+-                56 -> sLit "f24"; 57 -> sLit "f25";
+-                58 -> sLit "f26"; 59 -> sLit "f27";
+-                60 -> sLit "f28"; 61 -> sLit "f29";
+-                62 -> sLit "f30"; 63 -> sLit "f31";
+-                _  -> sLit "very naughty powerpc register"
+-              })
+-        _
+-         | i <= 31   -> int i      -- GPRs
+-         | i <= 63   -> int (i-32) -- FPRs
+-         | otherwise -> text "very naughty powerpc register"
++    ppr_reg_no i
++         | i <= 31   = int i      -- GPRs
++         | i <= 63   = int (i-32) -- FPRs
++         | otherwise = text "very naughty powerpc register"
+ 
+ 
+ 
+@@ -272,16 +231,10 @@ pprImm (LO (ImmInteger i)) = pprImm (ImmInteger (toInteger lo16))
+     lo16 = fromInteger (i .&. 0xffff) :: Int16
+ 
+ pprImm (LO i)
+-  = sdocWithPlatform $ \platform ->
+-    if platformOS platform == OSDarwin
+-    then hcat [ text "lo16(", pprImm i, rparen ]
+-    else pprImm i <> text "@l"
++  = pprImm i <> text "@l"
+ 
+ pprImm (HI i)
+-  = sdocWithPlatform $ \platform ->
+-    if platformOS platform == OSDarwin
+-    then hcat [ text "hi16(", pprImm i, rparen ]
+-    else pprImm i <> text "@h"
++  = pprImm i <> text "@h"
+ 
+ pprImm (HA (ImmInt i))     = pprImm (HA (ImmInteger (toInteger i)))
+ pprImm (HA (ImmInteger i)) = pprImm (ImmInteger ha16)
+@@ -291,22 +244,13 @@ pprImm (HA (ImmInteger i)) = pprImm (ImmInteger ha16)
+     lo16 = i .&. 0xffff
+ 
+ pprImm (HA i)
+-  = sdocWithPlatform $ \platform ->
+-    if platformOS platform == OSDarwin
+-    then hcat [ text "ha16(", pprImm i, rparen ]
+-    else pprImm i <> text "@ha"
++  = pprImm i <> text "@ha"
+ 
+ pprImm (HIGHERA i)
+-  = sdocWithPlatform $ \platform ->
+-    if platformOS platform == OSDarwin
+-    then panic "PPC.pprImm: highera not implemented on Darwin"
+-    else pprImm i <> text "@highera"
++  = pprImm i <> text "@highera"
+ 
+ pprImm (HIGHESTA i)
+-  = sdocWithPlatform $ \platform ->
+-    if platformOS platform == OSDarwin
+-    then panic "PPC.pprImm: highesta not implemented on Darwin"
+-    else pprImm i <> text "@highesta"
++  = pprImm i <> text "@highesta"
+ 
+ 
+ pprAddr :: AddrMode -> SDoc
+@@ -330,32 +274,25 @@ pprSectionAlign sec@(Section seg _) =
+ pprAlignForSection :: SectionType -> SDoc
+ pprAlignForSection seg =
+  sdocWithPlatform $ \platform ->
+- let osDarwin = platformOS platform == OSDarwin
+-     ppc64    = not $ target32Bit platform
++ let ppc64    = not $ target32Bit platform
+  in ptext $ case seg of
+        Text              -> sLit ".align 2"
+        Data
+         | ppc64          -> sLit ".align 3"
+         | otherwise      -> sLit ".align 2"
+        ReadOnlyData
+-        | osDarwin       -> sLit ".align 2"
+         | ppc64          -> sLit ".align 3"
+         | otherwise      -> sLit ".align 2"
+        RelocatableReadOnlyData
+-        | osDarwin       -> sLit ".align 2"
+         | ppc64          -> sLit ".align 3"
+         | otherwise      -> sLit ".align 2"
+        UninitialisedData
+-        | osDarwin       -> sLit ".align 2"
+         | ppc64          -> sLit ".align 3"
+         | otherwise      -> sLit ".align 2"
+-       ReadOnlyData16
+-        | osDarwin       -> sLit ".align 4"
+-        | otherwise      -> sLit ".align 4"
++       ReadOnlyData16    -> sLit ".align 4"
+        -- TODO: This is copied from the ReadOnlyData case, but it can likely be
+        -- made more efficient.
+        CString
+-        | osDarwin       -> sLit ".align 2"
+         | ppc64          -> sLit ".align 3"
+         | otherwise      -> sLit ".align 2"
+        OtherSection _    -> panic "PprMach.pprSectionAlign: unknown section"
+diff --git a/compiler/nativeGen/PPC/Regs.hs b/compiler/nativeGen/PPC/Regs.hs
+index 227517be88d5abad8b37598555a41b65039352af..a2c03b9b3c4ed5aa3f5aa8bc49584755f27c85c2 100644
+--- a/compiler/nativeGen/PPC/Regs.hs
++++ b/compiler/nativeGen/PPC/Regs.hs
+@@ -232,7 +232,6 @@ callClobberedRegs :: Platform -> [Reg]
+ callClobberedRegs platform
+   = case platformOS platform of
+     OSAIX    -> map regSingle (0:[2..12] ++ map fReg [0..13])
+-    OSDarwin -> map regSingle (0:[2..12] ++ map fReg [0..13])
+     OSLinux  -> map regSingle (0:[2..13] ++ map fReg [0..13])
+     _        -> panic "PPC.Regs.callClobberedRegs: not defined for this architecture"
+ 
+@@ -264,7 +263,6 @@ allFPArgRegs :: Platform -> [Reg]
+ allFPArgRegs platform
+     = case platformOS platform of
+       OSAIX    -> map (regSingle . fReg) [1..13]
+-      OSDarwin -> map (regSingle . fReg) [1..13]
+       OSLinux  -> case platformArch platform of
+         ArchPPC      -> map (regSingle . fReg) [1..8]
+         ArchPPC_64 _ -> map (regSingle . fReg) [1..13]
+diff --git a/configure.ac b/configure.ac
+index 021ef94845808e9f6f22700f0d25bc1366669adf..874a128bdfe98d4dfb0b8cb5702a307d914cfb68 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1221,16 +1221,7 @@ case ${TargetOS} in
+         RtsLinkerUseMmap=1
+         ;;
+     darwin|ios|watchos|tvos)
+-        # Don't use mmap on powerpc/darwin as the mmap there doesn't support
+-        # reallocating. Reallocating is needed to allocate jump islands just
+-        # after each object image. Jumps to these jump islands use relative
+-        # branches which are limited to offsets that can be represented in
+-        # 24-bits.
+-        if test "$TargetArch" != "powerpc" ; then
+-            RtsLinkerUseMmap=1
+-        else
+-            RtsLinkerUseMmap=0
+-        fi
++        RtsLinkerUseMmap=1
+         ;;
+     *)
+         # Windows (which doesn't have mmap) and everything else.
+diff --git a/includes/CodeGen.Platform.hs b/includes/CodeGen.Platform.hs
+index 664942d8781acc7d2c3a49777f44d8ac338a61ab..dbd4cc9f905d2b78b50940569ab470edc089cc94 100644
+--- a/includes/CodeGen.Platform.hs
++++ b/includes/CodeGen.Platform.hs
+@@ -885,12 +885,10 @@ freeRegBase _ = True
+ #elif defined(MACHREGS_powerpc)
+ 
+ freeReg 0 = False -- Used by code setting the back chain pointer
+-                  -- in stack reallocations on Linux
+-                  -- r0 is not usable in all insns so also reserved
+-                  -- on Darwin.
++                  -- in stack reallocations on Linux.
++                  -- Moreover r0 is not usable in all insns.
+ freeReg 1 = False -- The Stack Pointer
+-# if !defined(MACHREGS_darwin)
+--- most non-darwin powerpc OSes use r2 as a TOC pointer or something like that
++-- most ELF PowerPC OSes use r2 as a TOC pointer
+ freeReg 2 = False
+ freeReg 13 = False -- reserved for system thread ID on 64 bit
+ -- at least linux in -fPIC relies on r30 in PLT stubs
+@@ -903,7 +901,6 @@ freeReg 30 = False
+    Then use r12 as temporary register, which is also what the C ABI does.
+ -}
+ 
+-# endif
+ # if defined(REG_Base)
+ freeReg REG_Base  = False
+ # endif
+diff --git a/includes/stg/MachRegs.h b/includes/stg/MachRegs.h
+index eab4a306ed9584c90488287260b25eb78efd041c..33005809779242374c0b8e015518dacb969673f7 100644
+--- a/includes/stg/MachRegs.h
++++ b/includes/stg/MachRegs.h
+@@ -279,8 +279,6 @@ the stack. See Note [Overlapping global registers] for implications.
+    1            SP              (callee-save, non-volatile)
+    2            AIX, powerpc64-linux:
+                     RTOC        (a strange special case)
+-                darwin:
+-                                (caller-save, volatile)
+                 powerpc32-linux:
+                                 reserved for use by system
+ 
+@@ -315,18 +313,6 @@ the stack. See Note [Overlapping global registers] for implications.
+ #define REG_R7          r20
+ #define REG_R8          r21
+ 
+-#if defined(MACHREGS_darwin)
+-
+-#define REG_F1          f14
+-#define REG_F2          f15
+-#define REG_F3          f16
+-#define REG_F4          f17
+-
+-#define REG_D1          f18
+-#define REG_D2          f19
+-
+-#else
+-
+ #define REG_F1          fr14
+ #define REG_F2          fr15
+ #define REG_F3          fr16
+@@ -341,8 +327,6 @@ the stack. See Note [Overlapping global registers] for implications.
+ #define REG_D5          fr24
+ #define REG_D6          fr25
+ 
+-#endif
+-
+ #define REG_Sp          r22
+ #define REG_SpLim       r24
+ 
+diff --git a/rts/Adjustor.c b/rts/Adjustor.c
+index 476d63140e0fd959bc65f488d30c868dfd2f9141..d360cfe87b1183dd7f5ff3534f586ede49b1fd2c 100644
+--- a/rts/Adjustor.c
++++ b/rts/Adjustor.c
+@@ -287,32 +287,12 @@ extern void obscure_ccall_ret_code(void);
+  */
+ 
+ typedef struct AdjustorStub {
+-#if defined(powerpc_HOST_ARCH) && defined(darwin_HOST_OS)
+-    unsigned        lis;
+-    unsigned        ori;
+-    unsigned        lwz;
+-    unsigned        mtctr;
+-    unsigned        bctr;
+-    StgFunPtr       code;
+-#elif defined(powerpc64_HOST_ARCH) && defined(darwin_HOST_OS)
+-        /* powerpc64-darwin: just guessing that it won't use fundescs. */
+-    unsigned        lis;
+-    unsigned        ori;
+-    unsigned        rldimi;
+-    unsigned        oris;
+-    unsigned        ori2;
+-    unsigned        lwz;
+-    unsigned        mtctr;
+-    unsigned        bctr;
+-    StgFunPtr       code;
+-#else
+         /* fundesc-based ABIs */
+ #define         FUNDESCS
+     StgFunPtr       code;
+     struct AdjustorStub
+                     *toc;
+     void            *env;
+-#endif
+     StgStablePtr    hptr;
+     StgFunPtr       wptr;
+     StgInt          negative_framesize;
+@@ -1036,20 +1016,16 @@ TODO: Depending on how much allocation overhead stgMallocBytes uses for
+            whose stack layout is based on the AIX ABI.
+ 
+            Besides (obviously) AIX, this includes
+-            Mac OS 9 and BeOS/PPC (may they rest in peace),
++            Mac OS 9 and BeOS/PPC and Mac OS X PPC (may they rest in peace),
+                 which use the 32-bit AIX ABI
+             powerpc64-linux,
+-                which uses the 64-bit AIX ABI
+-            and Darwin (Mac OS X),
+-                which uses the same stack layout as AIX,
+-                but no function descriptors.
++                which uses the 64-bit AIX ABI.
+ 
+            The actual stack-frame shuffling is implemented out-of-line
+            in the function adjustorCode, in AdjustorAsm.S.
+            Here, we set up an AdjustorStub structure, which
+-           is a function descriptor (on platforms that have function
+-           descriptors) or a short piece of stub code (on Darwin) to call
+-           adjustorCode with a pointer to the AdjustorStub struct loaded
++           is a function descriptor with a pointer to the AdjustorStub
++           struct in the position of the TOC that is loaded
+            into register r2.
+ 
+            One nice thing about this is that there is _no_ code generated at
+diff --git a/rts/AdjustorAsm.S b/rts/AdjustorAsm.S
+index ba08548f849d735e6358cd72e436884edbc629d5..2795b83b6347cca9284dda5866b009a8c6c2c08f 100644
+--- a/rts/AdjustorAsm.S
++++ b/rts/AdjustorAsm.S
+@@ -30,39 +30,13 @@
+     /* The following defines mirror struct AdjustorStub
+        from Adjustor.c. Make sure to keep these in sync.
+     */
+-#if defined(powerpc_HOST_ARCH) && defined(darwin_HOST_OS)
+-#define HEADER_WORDS   6
+-#elif defined(powerpc64_HOST_ARCH) && defined(darwin_HOST_OS)
+-#else
+ #define HEADER_WORDS   3
+-#endif
+ 
+ #define HPTR_OFF        ((HEADER_WORDS    )*WS)
+ #define WPTR_OFF        ((HEADER_WORDS + 1)*WS)
+ #define FRAMESIZE_OFF   ((HEADER_WORDS + 2)*WS)
+ #define EXTRA_WORDS_OFF ((HEADER_WORDS + 3)*WS)
+ 
+-    /* Darwin insists on register names, everyone else prefers
+-       to use numbers. */
+-#if !defined(darwin_HOST_OS)
+-#define r0 0
+-#define r1 1
+-#define r2 2
+-#define r3 3
+-#define r4 4
+-#define r5 5
+-#define r6 6
+-#define r7 7
+-#define r8 8
+-#define r9 9
+-#define r10 10
+-#define r11 11
+-#define r12 12
+-
+-#define r30 30
+-#define r31 31
+-#endif
+-
+ #if defined(aix_HOST_OS)
+ /* IBM's assembler needs a different pseudo-op to declare a .text section */
+ .csect .text[PR]
+@@ -83,69 +57,65 @@ adjustorCode:
+     /* On entry, r2 will point to the AdjustorStub data structure. */
+ 
+         /* save the link */
+-    mflr    r0
+-    STORE   r0, LINK_SLOT(r1)
++    mflr    0
++    STORE   0, LINK_SLOT(1)
+     
+         /* set up stack frame */
+-    LOAD    r12, FRAMESIZE_OFF(r2)
++    LOAD    12, FRAMESIZE_OFF(2)
+ #if defined(powerpc64_HOST_ARCH)
+-    stdux   r1, r1, r12
++    stdux   1, 1, 12
+ #else   
+-    stwux   r1, r1, r12
++    stwux   1, 1, 12
+ #endif
+ 
+         /* Save some regs so that we can use them.
+            Note that we use the "Red Zone" below the stack pointer.
+         */
+-    STORE   r31, -WS(r1)
+-    STORE   r30, -2*WS(r1)
++    STORE   31, -WS(1)
++    STORE   30, -2*WS(1)
+ 
+-    mr      r31, r1
+-    subf    r30, r12, r31
++    mr      31, 1
++    subf    30, 12, 31
+ 
+-    LOAD    r12, EXTRA_WORDS_OFF(r2)
+-    mtctr   r12
++    LOAD    12, EXTRA_WORDS_OFF(2)
++    mtctr   12
+     b       L2
+ L1:
+-    LOAD    r0, LINKAGE_AREA_SIZE +  8*WS(r30)
+-    STORE   r0, LINKAGE_AREA_SIZE + 10*WS(r31)
+-    addi    r30, r30, WS
+-    addi    r31, r31, WS
++    LOAD    0, LINKAGE_AREA_SIZE +  8*WS(30)
++    STORE   0, LINKAGE_AREA_SIZE + 10*WS(31)
++    addi    30, 30, WS
++    addi    31, 31, WS
+ L2:
+     bdnz    L1
+ 
+         /* Restore r30 and r31 now.
+         */
+-    LOAD    r31, -WS(r1)
+-    LOAD    r30, -2*WS(r1)
+-
+-    STORE   r10, LINKAGE_AREA_SIZE + 9*WS(r1)
+-    STORE   r9,  LINKAGE_AREA_SIZE + 8*WS(r1)
+-    mr      r10, r8
+-    mr      r9, r7
+-    mr      r8, r6
+-    mr      r7, r5
+-    mr      r6, r4
+-    mr      r5, r3
+-
+-    LOAD    r3, HPTR_OFF(r2)
+-
+-    LOAD    r12, WPTR_OFF(r2)
+-#if defined(darwin_HOST_OS)
+-    mtctr   r12
+-#else
+-    LOAD    r0, 0(r12)
++    LOAD    31, -WS(1)
++    LOAD    30, -2*WS(1)
++
++    STORE   10, LINKAGE_AREA_SIZE + 9*WS(1)
++    STORE   9,  LINKAGE_AREA_SIZE + 8*WS(1)
++    mr      10, 8
++    mr      9, 7
++    mr      8, 6
++    mr      7, 5
++    mr      6, 4
++    mr      5, 3
++
++    LOAD    3, HPTR_OFF(2)
++
++    LOAD    12, WPTR_OFF(2)
++    LOAD    0, 0(12)
+         /* The function we're calling will never be a nested function,
+            so we don't load r11. 
+         */
+-    mtctr   r0
+-    LOAD    r2, WS(r12)
+-#endif
++    mtctr   0
++    LOAD    2, WS(12)
+     bctrl
+ 
+-    LOAD    r1, 0(r1)
+-    LOAD    r0, LINK_SLOT(r1)
+-    mtlr    r0
++    LOAD    1, 0(1)
++    LOAD    0, LINK_SLOT(1)
++    mtlr    0
+     blr
+ #endif
+ 
+diff --git a/rts/RtsSymbols.c b/rts/RtsSymbols.c
+index 123ee76778def48cbdef94e400fe90f25c95c0ea..404756e8cdbc55062d1eb1e8a7557bc477c9b3d1 100644
+--- a/rts/RtsSymbols.c
++++ b/rts/RtsSymbols.c
+@@ -961,15 +961,6 @@
+ #define RTS_LIBGCC_SYMBOLS
+ #endif
+ 
+-#if defined(darwin_HOST_OS) && defined(powerpc_HOST_ARCH)
+-      // Symbols that don't have a leading underscore
+-      // on Mac OS X. They have to receive special treatment,
+-      // see machoInitSymbolsWithoutUnderscore()
+-#define RTS_MACHO_NOUNDERLINE_SYMBOLS                   \
+-      SymI_NeedsProto(saveFP)                           \
+-      SymI_NeedsProto(restFP)
+-#endif
+-
+ /* entirely bogus claims about types of these symbols */
+ #define SymI_NeedsProto(vvv)  extern void vvv(void);
+ #define SymI_NeedsDataProto(vvv)  extern StgWord vvv[];
+diff --git a/rts/StgCRun.c b/rts/StgCRun.c
+index e1b9a0935978298301d5e4854bf30550628a0a08..3ce41a6483976453c79cf482e17df425bface02c 100644
+--- a/rts/StgCRun.c
++++ b/rts/StgCRun.c
+@@ -632,56 +632,16 @@ StgRun(StgFunPtr f, StgRegTable *basereg) {
+ 
+ #define STG_GLOBAL ".globl "
+ 
+-#if defined(darwin_HOST_OS)
+-#define STG_HIDDEN ".private_extern "
+-#else
+ #define STG_HIDDEN ".hidden "
+-#endif
+ 
+ #if defined(aix_HOST_OS)
+ 
+ // implementation is in StgCRunAsm.S
+ 
+-#elif defined(darwin_HOST_OS)
+-void StgRunIsImplementedInAssembler(void)
+-{
+-#if HAVE_SUBSECTIONS_VIA_SYMBOLS
+-            // if the toolchain supports deadstripping, we have to
+-            // prevent it here (it tends to get confused here).
+-        __asm__ volatile (".no_dead_strip _StgRunIsImplementedInAssembler\n");
+-#endif
+-        __asm__ volatile (
+-                STG_GLOBAL STG_RUN "\n"
+-                STG_HIDDEN STG_RUN "\n"
+-                STG_RUN ":\n"
+-                "\tmflr r0\n"
+-                "\tbl saveFP # f14\n"
+-                "\tstmw r13,-220(r1)\n"
+-                "\tstwu r1,-%0(r1)\n"
+-                "\tmr r27,r4\n" // BaseReg == r27
+-                "\tmtctr r3\n"
+-                "\tmr r12,r3\n"
+-                "\tbctr\n"
+-                ".globl _StgReturn\n"
+-                "_StgReturn:\n"
+-                "\tmr r3,r14\n"
+-                "\tla r1,%0(r1)\n"
+-                "\tlmw r13,-220(r1)\n"
+-                "\tb restFP # f14\n"
+-        : : "i"(RESERVED_C_STACK_BYTES+224 /*stack frame size*/));
+-}
+ #else
+ 
+ // This version is for PowerPC Linux.
+ 
+-// Differences from the Darwin/Mac OS X version:
+-// *) Different Assembler Syntax
+-// *) Doesn't use Register Saving Helper Functions (although they exist somewhere)
+-// *) We may not access positive stack offsets
+-//    (no "Red Zone" as in the Darwin ABI)
+-// *) The Link Register is saved to a different offset in the caller's stack frame
+-//    (Linux: 4(r1), Darwin 8(r1))
+-
+ static void GNUC3_ATTRIBUTE(used)
+ StgRunIsImplementedInAssembler(void)
+ {
+diff --git a/rts/linker/LoadArchive.c b/rts/linker/LoadArchive.c
+index 8c32585681687af13b23e3166b70ab6bf55da059..d03b416f1e15411d07762870aebd0cf01f1aa91b 100644
+--- a/rts/linker/LoadArchive.c
++++ b/rts/linker/LoadArchive.c
+@@ -47,15 +47,11 @@ static StgBool loadFatArchive(char tmp[static 20], FILE* f, pathchar* path)
+ #elif defined(x86_64_HOST_ARCH)
+     const uint32_t mycputype = CPU_TYPE_X86_64;
+     const uint32_t mycpusubtype = CPU_SUBTYPE_X86_64_ALL;
+-#elif defined(powerpc_HOST_ARCH)
+-    const uint32_t mycputype = CPU_TYPE_POWERPC;
+-    const uint32_t mycpusubtype = CPU_SUBTYPE_POWERPC_ALL;
+-#elif defined(powerpc64_HOST_ARCH)
+-    const uint32_t mycputype = CPU_TYPE_POWERPC64;
+-    const uint32_t mycpusubtype = CPU_SUBTYPE_POWERPC_ALL;
+ #elif defined(aarch64_HOST_ARCH)
+     const uint32_t mycputype = CPU_TYPE_ARM64;
+     const uint32_t mycpusubtype = CPU_SUBTYPE_ARM64_ALL;
++#elif defined(powerpc_HOST_ARCH) || defined(powerpc64_HOST_ARCH)
++#error No Darwin support on PowerPC
+ #else
+ #error Unknown Darwin architecture
+ #endif
+diff --git a/rts/linker/MachO.c b/rts/linker/MachO.c
+index 10e9629e9d314277f49a9785b2adb106edf25528..c6a6c2844019b183bd0438642c1dd4f6a9d9402b 100644
+--- a/rts/linker/MachO.c
++++ b/rts/linker/MachO.c
+@@ -179,47 +179,7 @@ resolveImports(
+     unsigned long *indirectSyms);
+ 
+ #if NEED_SYMBOL_EXTRAS
+-#if defined(powerpc_HOST_ARCH)
+-int
+-ocAllocateSymbolExtras_MachO(ObjectCode* oc)
+-{
+-
+-    IF_DEBUG(linker, debugBelch("ocAllocateSymbolExtras_MachO: start\n"));
+-
+-    // Find out the first and last undefined external
+-    // symbol, so we don't have to allocate too many
+-    // jump islands/GOT entries.
+-
+-    unsigned min = oc->info->symCmd->nsyms, max = 0;
+-
+-    for (unsigned i = 0; i < oc->info->symCmd->nsyms; i++) {
+-
+-        if (oc->info->nlist[i].n_type & N_STAB) {
+-            ;
+-        } else if (oc->info->nlist[i].n_type & N_EXT) {
+-
+-            if((oc->info->nlist[i].n_type & N_TYPE) == N_UNDF
+-                && (oc->info->nlist[i].n_value == 0)) {
+-
+-                if (i < min) {
+-                    min = i;
+-                }
+-
+-                if (i > max) {
+-                    max = i;
+-            }
+-        }
+-    }
+-    }
+-
+-    if (max >= min) {
+-        return ocAllocateSymbolExtras(oc, max - min + 1, min);
+-    }
+-
+-    return ocAllocateSymbolExtras(oc,0,0);
+-}
+-
+-#elif defined(x86_64_HOST_ARCH) || defined(aarch64_HOST_ARCH)
++#if defined(x86_64_HOST_ARCH) || defined(aarch64_HOST_ARCH)
+ 
+ int
+ ocAllocateSymbolExtras_MachO(ObjectCode* oc)
+@@ -250,8 +210,7 @@ ocVerifyImage_MachO(ObjectCode * oc)
+ 
+     IF_DEBUG(linker, debugBelch("ocVerifyImage_MachO: start\n"));
+ 
+-#if defined(x86_64_HOST_ARCH) || defined(powerpc64_HOST_ARCH) \
+-    || defined(aarch64_HOST_ARCH)
++#if defined(x86_64_HOST_ARCH) || defined(aarch64_HOST_ARCH)
+     if(header->magic != MH_MAGIC_64) {
+         errorBelch("Could not load image %s: bad magic!\n"
+                    "  Expected %08x (64bit), got %08x%s\n",
+@@ -1042,16 +1001,8 @@ relocateSection(
+                                                                 scat->r_value)
+                                         - scat->r_value;
+                     }
+-#if defined(powerpc_HOST_ARCH)
+-                    else if(scat->r_type == PPC_RELOC_SECTDIFF
+-                        || scat->r_type == PPC_RELOC_LO16_SECTDIFF
+-                        || scat->r_type == PPC_RELOC_HI16_SECTDIFF
+-                        || scat->r_type == PPC_RELOC_HA16_SECTDIFF
+-                        || scat->r_type == PPC_RELOC_LOCAL_SECTDIFF)
+-#else /* powerpc_HOST_ARCH */
+                     else if(scat->r_type == GENERIC_RELOC_SECTDIFF
+                         || scat->r_type == GENERIC_RELOC_LOCAL_SECTDIFF)
+-#endif /* powerpc_HOST_ARCH */
+                     {
+                         MachOScatteredRelocationInfo *pair =
+                                 (MachOScatteredRelocationInfo*) &relocs[i+1];
+@@ -1066,48 +1017,6 @@ relocateSection(
+                               - relocateAddress(oc, nSections, sections, pair->r_value));
+                         i++;
+                     }
+-#if defined(powerpc_HOST_ARCH)
+-                    else if(scat->r_type == PPC_RELOC_HI16
+-                         || scat->r_type == PPC_RELOC_LO16
+-                         || scat->r_type == PPC_RELOC_HA16
+-                         || scat->r_type == PPC_RELOC_LO14)
+-                    {   // these are generated by label+offset things
+-                        MachORelocationInfo *pair = &relocs[i+1];
+-
+-                        if ((pair->r_address & R_SCATTERED) || pair->r_type != PPC_RELOC_PAIR) {
+-                            barf("Invalid Mach-O file: "
+-                                 "PPC_RELOC_* not followed by PPC_RELOC_PAIR");
+-                        }
+-
+-                        if(scat->r_type == PPC_RELOC_LO16)
+-                        {
+-                            word = ((unsigned short*) wordPtr)[1];
+-                            word |= ((unsigned long) relocs[i+1].r_address & 0xFFFF) << 16;
+-                        }
+-                        else if(scat->r_type == PPC_RELOC_LO14)
+-                        {
+-                            barf("Unsupported Relocation: PPC_RELOC_LO14");
+-                            word = ((unsigned short*) wordPtr)[1] & 0xFFFC;
+-                            word |= ((unsigned long) relocs[i+1].r_address & 0xFFFF) << 16;
+-                        }
+-                        else if(scat->r_type == PPC_RELOC_HI16)
+-                        {
+-                            word = ((unsigned short*) wordPtr)[1] << 16;
+-                            word |= ((unsigned long) relocs[i+1].r_address & 0xFFFF);
+-                        }
+-                        else if(scat->r_type == PPC_RELOC_HA16)
+-                        {
+-                            word = ((unsigned short*) wordPtr)[1] << 16;
+-                            word += ((short)relocs[i+1].r_address & (short)0xFFFF);
+-                        }
+-
+-
+-                        word += (unsigned long) relocateAddress(oc, nSections, sections, scat->r_value)
+-                                                - scat->r_value;
+-
+-                        i++;
+-                    }
+-#endif /* powerpc_HOST_ARCH */
+                     else {
+                         barf ("Don't know how to handle this Mach-O "
+                               "scattered relocation entry: "
+@@ -1119,35 +1028,12 @@ relocateSection(
+                         return 0;
+                      }
+ 
+-#if defined(powerpc_HOST_ARCH)
+-                    if(scat->r_type == GENERIC_RELOC_VANILLA
+-                        || scat->r_type == PPC_RELOC_SECTDIFF)
+-#else /* powerpc_HOST_ARCH */
+                     if(scat->r_type == GENERIC_RELOC_VANILLA
+                         || scat->r_type == GENERIC_RELOC_SECTDIFF
+                         || scat->r_type == GENERIC_RELOC_LOCAL_SECTDIFF)
+-#endif /* powerpc_HOST_ARCH */
+                     {
+                         *wordPtr = word;
+                     }
+-#if defined(powerpc_HOST_ARCH)
+-                    else if (scat->r_type == PPC_RELOC_LO16_SECTDIFF
+-                          || scat->r_type == PPC_RELOC_LO16)
+-                    {
+-                        ((unsigned short*) wordPtr)[1] = word & 0xFFFF;
+-                    }
+-                    else if (scat->r_type == PPC_RELOC_HI16_SECTDIFF
+-                          || scat->r_type == PPC_RELOC_HI16)
+-                    {
+-                        ((unsigned short*) wordPtr)[1] = (word >> 16) & 0xFFFF;
+-                    }
+-                    else if (scat->r_type == PPC_RELOC_HA16_SECTDIFF
+-                          || scat->r_type == PPC_RELOC_HA16)
+-                    {
+-                        ((unsigned short*) wordPtr)[1] = ((word >> 16) & 0xFFFF)
+-                            + ((word & (1<<15)) ? 1 : 0);
+-                    }
+-#endif /* powerpc_HOST_ARCH */
+                 }
+                 else
+                 {
+@@ -1184,40 +1070,13 @@ relocateSection(
+ 
+             if (reloc->r_length == 2) {
+                 unsigned long word = 0;
+-#if defined(powerpc_HOST_ARCH)
+-                unsigned long jumpIsland = 0;
+-                long offsetToJumpIsland = 0xBADBAD42; // initialise to bad value
+-                                                      // to avoid warning and to catch
+-                                                      // bugs.
+-#endif /* powerpc_HOST_ARCH */
+-
+                 unsigned long* wordPtr = (unsigned long*) (image + sect->offset + reloc->r_address);
+ 
+-                /* In this check we assume that sizeof(unsigned long) = 2 * sizeof(unsigned short)
+-                   on powerpc_HOST_ARCH */
+                 checkProddableBlock(oc,wordPtr, sizeof(unsigned long));
+ 
+                 if (reloc->r_type == GENERIC_RELOC_VANILLA) {
+                     word = *wordPtr;
+                 }
+-#if defined(powerpc_HOST_ARCH)
+-                else if (reloc->r_type == PPC_RELOC_LO16) {
+-                    word = ((unsigned short*) wordPtr)[1];
+-                    word |= ((unsigned long) relocs[i+1].r_address & 0xFFFF) << 16;
+-                }
+-                else if (reloc->r_type == PPC_RELOC_HI16) {
+-                    word = ((unsigned short*) wordPtr)[1] << 16;
+-                    word |= ((unsigned long) relocs[i+1].r_address & 0xFFFF);
+-                }
+-                else if (reloc->r_type == PPC_RELOC_HA16) {
+-                    word = ((unsigned short*) wordPtr)[1] << 16;
+-                    word += ((short)relocs[i+1].r_address & (short)0xFFFF);
+-                }
+-                else if (reloc->r_type == PPC_RELOC_BR24) {
+-                    word = *wordPtr;
+-                    word = (word & 0x03FFFFFC) | ((word & 0x02000000) ? 0xFC000000 : 0);
+-                }
+-#endif /* powerpc_HOST_ARCH */
+                 else {
+                     barf("Can't handle this Mach-O relocation entry "
+                          "(not scattered): "
+@@ -1246,20 +1105,6 @@ relocateSection(
+                     }
+ 
+                     if (reloc->r_pcrel) {
+-#if defined(powerpc_HOST_ARCH)
+-                            // In the .o file, this should be a relative jump to NULL
+-                            // and we'll change it to a relative jump to the symbol
+-                        ASSERT(word + reloc->r_address == 0);
+-                        jumpIsland = (unsigned long)
+-                                        &makeSymbolExtra(oc,
+-                                                         reloc->r_symbolnum,
+-                                                         (unsigned long) symbolAddress)
+-                                         -> jumpIsland;
+-                        if (jumpIsland != 0) {
+-                            offsetToJumpIsland = word + jumpIsland
+-                                - (((long)image) + sect->offset - sect->addr);
+-                        }
+-#endif /* powerpc_HOST_ARCH */
+                         word += (unsigned long) symbolAddress
+                                 - (((long)image) + sect->offset - sect->addr);
+                     }
+@@ -1272,60 +1117,6 @@ relocateSection(
+                     *wordPtr = word;
+                     continue;
+                 }
+-#if defined(powerpc_HOST_ARCH)
+-                else if(reloc->r_type == PPC_RELOC_LO16)
+-                {
+-                    ((unsigned short*) wordPtr)[1] = word & 0xFFFF;
+-                    i++;
+-                    continue;
+-                }
+-                else if(reloc->r_type == PPC_RELOC_HI16)
+-                {
+-                    ((unsigned short*) wordPtr)[1] = (word >> 16) & 0xFFFF;
+-                    i++;
+-                    continue;
+-                }
+-                else if(reloc->r_type == PPC_RELOC_HA16)
+-                {
+-                    ((unsigned short*) wordPtr)[1] = ((word >> 16) & 0xFFFF)
+-                        + ((word & (1<<15)) ? 1 : 0);
+-                    i++;
+-                    continue;
+-                }
+-                else if(reloc->r_type == PPC_RELOC_BR24)
+-                {
+-                    if ((word & 0x03) != 0) {
+-                        barf("%s: unconditional relative branch with a displacement "
+-                             "which isn't a multiple of 4 bytes: %#lx",
+-                             OC_INFORMATIVE_FILENAME(oc),
+-                             word);
+-                    }
+-
+-                    if((word & 0xFE000000) != 0xFE000000 &&
+-                        (word & 0xFE000000) != 0x00000000) {
+-                        // The branch offset is too large.
+-                        // Therefore, we try to use a jump island.
+-                        if (jumpIsland == 0) {
+-                            barf("%s: unconditional relative branch out of range: "
+-                                 "no jump island available: %#lx",
+-                                 OC_INFORMATIVE_FILENAME(oc),
+-                                 word);
+-                        }
+-
+-                        word = offsetToJumpIsland;
+-
+-                        if((word & 0xFE000000) != 0xFE000000 &&
+-                            (word & 0xFE000000) != 0x00000000) {
+-                            barf("%s: unconditional relative branch out of range: "
+-                                 "jump island out of range: %#lx",
+-                                 OC_INFORMATIVE_FILENAME(oc),
+-                                 word);
+-                    }
+-                    }
+-                    *wordPtr = (*wordPtr & 0xFC000003) | (word & 0x03FFFFFC);
+-                    continue;
+-                }
+-#endif /* powerpc_HOST_ARCH */
+             }
+             else
+             {
+@@ -1822,10 +1613,6 @@ ocResolve_MachO(ObjectCode* oc)
+         return 0;
+ #endif
+ 
+-#if defined (powerpc_HOST_ARCH)
+-    ocFlushInstructionCache( oc );
+-#endif
+-
+     return 1;
+ }
+ 
+@@ -1865,53 +1652,6 @@ ocRunInit_MachO ( ObjectCode *oc )
+     return 1;
+ }
+ 
+-#if defined(powerpc_HOST_ARCH)
+-/*
+- * The Mach-O object format uses leading underscores. But not everywhere.
+- * There is a small number of runtime support functions defined in
+- * libcc_dynamic.a whose name does not have a leading underscore.
+- * As a consequence, we can't get their address from C code.
+- * We have to use inline assembler just to take the address of a function.
+- * Yuck.
+- */
+-
+-extern void* symbolsWithoutUnderscore[];
+-
+-void
+-machoInitSymbolsWithoutUnderscore(void)
+-{
+-    void **p = symbolsWithoutUnderscore;
+-    __asm__ volatile(".globl _symbolsWithoutUnderscore\n.data\n_symbolsWithoutUnderscore:");
+-
+-#undef SymI_NeedsProto
+-#undef SymI_NeedsDataProto
+-
+-#define SymI_NeedsProto(x)  \
+-    __asm__ volatile(".long " # x);
+-
+-#define SymI_NeedsDataProto(x) \
+-    SymI_NeedsProto(x)
+-
+-    RTS_MACHO_NOUNDERLINE_SYMBOLS
+-
+-    __asm__ volatile(".text");
+-
+-#undef SymI_NeedsProto
+-#undef SymI_NeedsDataProto
+-
+-#define SymI_NeedsProto(x)  \
+-    ghciInsertSymbolTable("(GHCi built-in symbols)", symhash, #x, *p++, HS_BOOL_FALSE, NULL);
+-
+-#define SymI_NeedsDataProto(x) \
+-    SymI_NeedsProto(x)
+-
+-    RTS_MACHO_NOUNDERLINE_SYMBOLS
+-
+-#undef SymI_NeedsProto
+-#undef SymI_NeedsDataProto
+-}
+-#endif
+-
+ /*
+  * Figure out by how much to shift the entire Mach-O file in memory
+  * when loading so that its single segment ends up 16-byte-aligned
+@@ -1930,8 +1670,7 @@ machoGetMisalignment( FILE * f )
+     }
+     fseek(f, -sizeof(header), SEEK_CUR);
+ 
+-#if defined(x86_64_HOST_ARCH) || defined(powerpc64_HOST_ARCH) \
+-    || defined(aarch64_HOST_ARCH)
++#if defined(x86_64_HOST_ARCH) || defined(aarch64_HOST_ARCH)
+     if(header.magic != MH_MAGIC_64) {
+         barf("Bad magic. Expected: %08x, got: %08x.",
+              MH_MAGIC_64, header.magic);
+diff --git a/rts/linker/MachOTypes.h b/rts/linker/MachOTypes.h
+index 4176c4890fe29077d921795fcb5bd40b07bee056..dcea906021a8e3f02ffd567d66e0f96afb5d6968 100644
+--- a/rts/linker/MachOTypes.h
++++ b/rts/linker/MachOTypes.h
+@@ -6,14 +6,13 @@
+ 
+ #include <mach-o/loader.h>
+ 
+-#if defined(x86_64_HOST_ARCH) || defined(powerpc64_HOST_ARCH) \
++#if defined(x86_64_HOST_ARCH) \
+  || defined(aarch64_HOST_ARCH) || defined(arm64_HOST_ARCH)
+ typedef struct mach_header_64     MachOHeader;
+ typedef struct segment_command_64 MachOSegmentCommand;
+ typedef struct section_64         MachOSection;
+ typedef struct nlist_64           MachONList;
+-#elif defined(i386_HOST_ARCH) || defined(powerpc_HOST_ARCH) \
+- || defined(arm_HOST_ARCH)
++#elif defined(i386_HOST_ARCH) || defined(arm_HOST_ARCH)
+ typedef struct mach_header     MachOHeader;
+ typedef struct segment_command MachOSegmentCommand;
+ typedef struct section         MachOSection;
+diff --git a/testsuite/tests/rts/all.T b/testsuite/tests/rts/all.T
+index 41528405ae11dcc1cc41822a9bb6e3899f193569..ca8177c526df0d5d9ac38cbe5497f9e78889ad55 100644
+--- a/testsuite/tests/rts/all.T
++++ b/testsuite/tests/rts/all.T
+@@ -34,7 +34,6 @@ test('derefnull',
+       # The output under OS X is too unstable to readily compare
+       when(platform('i386-apple-darwin'), [ignore_stderr, exit_code(139)]),
+       when(platform('x86_64-apple-darwin'), [ignore_stderr, exit_code(139)]),
+-      when(platform('powerpc-apple-darwin'), [ignore_stderr, exit_code(139)]),
+       when(opsys('mingw32'), [ignore_stderr, exit_code(11)]),
+       # since these test are supposed to crash the
+       # profile report will be empty always.
+@@ -58,7 +57,6 @@ test('divbyzero',
+       # The output under OS X is too unstable to readily compare
+       when(platform('i386-apple-darwin'), [ignore_stderr, exit_code(136)]),
+       when(platform('x86_64-apple-darwin'), [ignore_stderr, exit_code(136)]),
+-      when(platform('powerpc-apple-darwin'), [ignore_stderr, exit_code(136)]),
+       # since these test are supposed to crash the
+       # profile report will be empty always.
+       # so disable the check for profiling
