@@ -170,14 +170,41 @@ cause identified and the pivot strategy documented.
 We will leave Phase 1/2 scripts and notes in place as "if someone
 ever takes the Leopard-intermediate route" reference material.
 
+## Addendum — Phase 3 prep also done tonight
+
+Didn't stop at the pivot. Went further:
+
+- **Cross-toolchain strategy** decided: reuse the sibling
+  `llvm-7-darwin-ppc` project's clang on `indium`. Confirmed it
+  produces PPC Mach-O for a trivial C program with `-target
+  powerpc-apple-darwin8 -isysroot $SDK`.
+- **Host GHC on indium installed**: 9.2.8 bindist from
+  haskell.org (aarch64-apple-darwin, 179 MB xz) extracted at
+  `~/tmp/ghc-9.2.8-aarch64-apple-darwin/`, `./configure
+  --prefix=~/.local/ghc-9.2.8 && make install` ran cleanly.
+  `hello.hs` compiles and runs on indium (arm64).
+- **Discovered indium is LAN-only**: it can reach the fleet and
+  uranium but not the internet. Captured in
+  `notes/cross-toolchain-strategy.md`. Not blocking (we can always
+  download on uranium and rsync).
+- **Synced GHC 9.2.8 source tree to indium**: 275 MB (with
+  submodules) at `~/tmp/ghc-modern/ghc-9.2.8-src/`. Also landed
+  the git submodule update (libffi-tarballs, ghc-boot, etc.)
+  in the local uranium clone and pushed to indium.
+- **`./boot` attempt on indium**: silently exits after "Booting
+  libraries/process/" without producing a `configure` script.
+  Noted in state.md as the next-session starting point. Likely a
+  five-minute fix (missing autotools deps, or env-var quirk).
+
 ## Next
 
-Start Phase 3: cross-toolchain decision, install modern GHC on
-main Mac, first `./configure --target=powerpc-apple-darwin8
---enable-unregisterised` attempt on ghc-9.2.8, expect it to fail
-at target detection, forward-port the configure.ac hunk first.
+Fix the `./boot` issue on indium, then run `./configure
+--target=powerpc-apple-darwin8 --enable-unregisterised`, expect
+it to fail at target detection, forward-port the configure.ac
+hunk first.
 
-See [`state.md`](../state.md) for immediate next-steps checklist.
+See [`state.md`](../state.md) for immediate next-steps checklist
+and the full resume recipe.
 
 ## Artefacts
 

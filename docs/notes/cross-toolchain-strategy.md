@@ -121,13 +121,49 @@ downgrading the host GHC or bumping the target GHC version.
 ghcup on indium, not brew, because ghcup offers exact-version
 pinning.
 
+## Known gotcha: indium has no internet
+
+Discovered while trying to `curl | sh` the ghcup installer from
+indium: indium is on a LAN-only segment. It can ssh to uranium
+and to the PPC fleet, but cannot reach 192.168.1.1's upstream
+(the router returns "Destination Net Unreachable" for outbound
+routes). This means:
+
+- Can't `curl` / `ghcup install` anything directly on indium.
+- Must download anything we want on indium via uranium and
+  rsync it over.
+- Same applies to any other modern-internet-requiring tool.
+
+For ghcup: either install it on uranium (works fine, then we
+share the `~/.ghcup` tree if filesystem layout permits — unlikely
+across different users / OSes), OR download the bindist tarball
+on uranium, rsync it to indium, extract locally.
+
+Recommended: download the **GHC 9.2.8 bindist tarball** from
+<https://downloads.haskell.org/~ghc/9.2.8/ghc-9.2.8-aarch64-apple-darwin.tar.xz>
+(~200 MB, pre-built for arm64 macOS), rsync to indium, run
+`./configure --prefix=$HOME/.ghc-9.2.8 && make install`. Skips
+ghcup entirely. See next session.
+
 ## Next action
 
-In next session, on indium:
+In the next session, on uranium:
 
 ```sh
-curl -sSf https://get-ghcup.haskell.org | BOOTSTRAP_HASKELL_NONINTERACTIVE=1 sh
-ghcup install ghc 9.2.8
+curl -fsSL -o external/ghc-9.2.8-aarch64-apple-darwin.tar.xz \
+    https://downloads.haskell.org/~ghc/9.2.8/ghc-9.2.8-aarch64-apple-darwin.tar.xz
+rsync external/ghc-9.2.8-aarch64-apple-darwin.tar.xz indium:~/tmp/
+```
+
+Then on indium:
+
+```sh
+cd ~/tmp
+tar -xJf ghc-9.2.8-aarch64-apple-darwin.tar.xz
+cd ghc-9.2.8
+./configure --prefix=$HOME/.local/ghc-9.2.8
+make install
+export PATH=$HOME/.local/ghc-9.2.8/bin:$PATH
 ghc --version  # sanity
 ```
 
