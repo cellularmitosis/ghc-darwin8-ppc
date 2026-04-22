@@ -1,0 +1,18 @@
+diff --git a/rts/linker/MachOTypes.h b/rts/linker/MachOTypes.h
+index 4df1a728..a9f0ed7a 100644
+--- a/rts/linker/MachOTypes.h
++++ b/rts/linker/MachOTypes.h
+@@ -12,6 +12,13 @@ typedef struct mach_header_64     MachOHeader;
+ typedef struct segment_command_64 MachOSegmentCommand;
+ typedef struct section_64         MachOSection;
+ typedef struct nlist_64           MachONList;
++#elif defined(powerpc_HOST_ARCH) || defined(i386_HOST_ARCH)
++/* 32-bit Mach-O used on ppc-darwin8 (Tiger) and 32-bit x86 Darwin.
++ * Restored from pre-374e44704b (GHC 8.6) for the PPC/Darwin revival. */
++typedef struct mach_header        MachOHeader;
++typedef struct segment_command    MachOSegmentCommand;
++typedef struct section            MachOSection;
++typedef struct nlist              MachONList;
+ #else
+ #error Unknown Darwin architecture
+ #endif

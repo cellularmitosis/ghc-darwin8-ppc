@@ -1,0 +1,53 @@
+--- ffi_darwin.c.orig	2026-04-22 07:48:38
++++ ffi_darwin.c	2026-04-22 07:50:38
+@@ -1110,6 +1110,7 @@
+   return FFI_OK;
+ }
+ 
++#if FFI_GO_CLOSURES
+ ffi_status
+ ffi_prep_go_closure (ffi_go_closure* closure,
+ 		     ffi_cif* cif,
+@@ -1125,7 +1126,7 @@
+         closure->cif = cif;
+         closure->fun = fun;
+         return FFI_OK;
+-      
++
+       // For now, ffi_prep_go_closure is only implemented for AIX, not for Darwin
+       default:
+         return FFI_BAD_ABI;
+@@ -1133,6 +1134,7 @@
+     }
+   return FFI_OK;
+ }
++#endif /* FFI_GO_CLOSURES */
+ 
+ static void
+ flush_icache(char *addr)
+@@ -1168,9 +1170,11 @@
+ ffi_closure_helper_DARWIN (ffi_closure *, void *,
+ 			   unsigned long *, ffi_dblfl *);
+ 
++#if FFI_GO_CLOSURES
+ ffi_type *
+ ffi_go_closure_helper_DARWIN (ffi_go_closure*, void *,
+ 			      unsigned long *, ffi_dblfl *);
++#endif /* FFI_GO_CLOSURES */
+ 
+ /* Basically the trampoline invokes ffi_closure_ASM, and on
+    entry, r11 holds the address of the closure.
+@@ -1430,6 +1434,7 @@
+ 				    closure->user_data, rvalue, pgr, pfr);
+ }
+ 
++#if FFI_GO_CLOSURES
+ ffi_type *
+ ffi_go_closure_helper_DARWIN (ffi_go_closure *closure, void *rvalue,
+ 			      unsigned long *pgr, ffi_dblfl *pfr)
+@@ -1437,4 +1442,5 @@
+   return ffi_closure_helper_common (closure->cif, closure->fun,
+ 				    closure, rvalue, pgr, pfr);
+ }
++#endif /* FFI_GO_CLOSURES */
+ 
