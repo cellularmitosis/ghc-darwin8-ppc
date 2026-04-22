@@ -45,15 +45,12 @@ for `powerpc-apple-darwin8` Mach-O output).
 
 Biggest open sub-choices (decide in the next session):
 
-1. **Cross-toolchain source.** Options in ease-of-adoption order:
-   - `cctools-port` + a powerpc-apple-darwin8 GCC built from GNU
-     GCC source (slow but predictable)
-   - Iain Sandoe's `darwin-xtools` (faster but "WIP" flagged)
-   - Reuse the sibling `llvm-7-darwin-ppc` project's working clang
-     (cross-project dependency but minimal extra work)
-2. **GHC host build tool.** Modern GHC for the host: `ghcup` route
-   on arm64 macOS 15 (main Mac) vs shipping to a Linux VM. Probably
-   `ghcup` — simpler.
+1. ~~**Cross-toolchain source.**~~ **Decided:** reuse the sibling
+   `llvm-7-darwin-ppc` project's clang on `indium`. First-contact
+   probe confirmed it produces PPC Mach-O for a trivial C program.
+   See [`notes/cross-toolchain-strategy.md`](notes/cross-toolchain-strategy.md).
+2. **GHC host build tool.** Tentative: `ghcup install ghc 9.2.8` on
+   indium. Install in next session; not a decision, just a step.
 3. **Initial target: unregisterised or direct?** Trommler recommends
    starting `--enable-unregisterised`. Non-negotiable for phase 3.
 
@@ -88,22 +85,27 @@ Biggest open sub-choices (decide in the next session):
 
 Target: a cross-compile of a trivial `hello.hs` to ppc Mach-O.
 
-1. **Pick the cross-C-toolchain for the main Mac.** Either
-   cctools-port + a fresh GCC cross-build, or reuse the sibling
-   LLVM-7 project's output. One-day spike to decide.
-2. **Install a modern GHC on the main Mac.** `brew install ghc`
-   or `ghcup install ghc 9.2.8`. Need this to drive the
-   cross-compile.
-3. **`cd external/ghc-modern/ghc-9.2.8 && ./configure
-      --target=powerpc-apple-darwin8 --enable-unregisterised`**
-   — expect this to fail at the target detection step (378447
-   removed the target from the supported list). Capture the
-   error, write the first patch.
-4. **Iterate through configure → build → (fail) cycle with
+1. **~~Pick the cross-C-toolchain.~~** Done — see
+   [`notes/cross-toolchain-strategy.md`](notes/cross-toolchain-strategy.md).
+   Using the sibling LLVM-7 project's clang on indium.
+2. **Install a modern GHC on indium.**
+   `ghcup install ghc 9.2.8 && ghcup set ghc 9.2.8`.
+   Required to drive the cross-compile.
+3. **Rsync GHC 9.2.8 source to indium.**
+   `~/bin/tiger-rsync.sh` won't work (it's Tiger-specific), just
+   use plain rsync or `git clone` on indium directly.
+4. **`./configure --target=powerpc-apple-darwin8
+      --enable-unregisterised CC=$CLANG CFLAGS="-target
+      powerpc-apple-darwin8 -isysroot $SDK"`** in the GHC source
+   tree. Expect this to fail at the target-recognition step
+   (374e447 deleted `powerpc-darwin` from recognized triples).
+   Capture the error, write the first patch
+   `patches/0001-restore-configure-ac-target-darwin-powerpc.patch`.
+5. **Iterate through configure → build → (fail) cycle with
    forward-ported hunks from 374e44704b**, one file at a time,
    following the priority list in
    [`notes/file-mapping-86-vs-modern.md`](notes/file-mapping-86-vs-modern.md).
-5. **Milestone:** unregisterised cross-compiler emits a PPC Mach-O
+6. **Milestone:** unregisterised cross-compiler emits a PPC Mach-O
    `hello.o` that a Tiger host runs after linking.
 
 ## Files to read first for anyone picking this up
