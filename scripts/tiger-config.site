@@ -1,0 +1,27 @@
+# Configure cache for cross-compile to powerpc-apple-darwin8 (Tiger 10.4).
+# Source this via CONFIG_SITE=...tiger-config.site ./configure ...
+
+# Tiger does NOT have these APIs:
+#   clock_gettime: Leopard 10.5+ (plus later macOS)
+#   pthread_condattr_setclock: Leopard 10.5+
+#   timer_create: Linux-only, not on any macOS
+#   getcontext/makecontext/setcontext: Leopard 10.5+
+#   dispatch_*: Snow Leopard 10.6+
+#   pthread_setname_np: Snow Leopard 10.6+
+#
+# Autoconf probes the HOST (arm64 macOS 15) for these, gets wrong answers
+# in cross-compile mode.  Force them to match Tiger reality.
+
+ac_cv_func_clock_gettime=no
+ac_cv_lib_rt_clock_gettime=no
+ac_cv_func_pthread_condattr_setclock=no
+ac_cv_func_timer_create=no
+ac_cv_func_getcontext=no
+ac_cv_func_makecontext=no
+ac_cv_func_setcontext=no
+ac_cv_func_dispatch_semaphore_create=no
+ac_cv_func_pthread_setname_np=no
+
+# Also: Tiger's header landscape
+ac_cv_header_sys_timerfd_h=no
+ac_cv_header_dispatch_dispatch_h=no
