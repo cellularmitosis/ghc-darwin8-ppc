@@ -17,6 +17,60 @@ Listed in the plan:
 All three can produce PPC Mach-O `.o` files. The tiebreakers are
 ease of adoption and project-level coupling.
 
+### Does GHC require LLVM?
+
+**No.** GHC has three backends and by default uses the Native Code
+Generator (NCG) which emits assembly directly. The `-fllvm` LLVM
+backend is optional. The third option — **unregisterised mode** —
+emits C code and compiles it with whatever `CC` is configured, no
+LLVM anywhere in the loop. Trommler specifically recommends starting
+unregisterised, so **LLVM is not on the critical path**.
+
+The `llvm-7-darwin-ppc` project's clang is used here only as a C
+cross-compiler — we are not using its LLVM IR path.
+
+### Why we don't use `/opt/gcc14` on pmacg5
+
+A native **GCC 14.2.0 for `powerpc-apple-darwin8.11.0`** is already
+installed on `pmacg5` and `imacg52` at `/opt/gcc14/` — self-contained
+(ships its own `as/ld/ar/nm/otool/install_name_tool`) and sysroot'd
+to `/Developer/SDKs/MacOSX10.4u.sdk`. Configured with
+`--enable-languages=c,c++,fortran,objc,obj-c++ --with-sysroot=...`.
+
+**GHC historically prefers GCC over Clang** for compiling RTS C and
+for the unregisterised backend's emitted C code (which uses GCC
+extensions like computed goto `&&label`, `__attribute__((section))`,
+and inline asm that Clang sometimes handles less gracefully). So
+`gcc14` would be *strictly a better C compiler* for the Haskell build
+if it were reachable.
+
+But it runs on Tiger, not on `indium` (arm64). For the current
+**cross-compile** on indium, we need a C compiler that runs on
+arm64 and targets PPC — which is what llvm-7-darwin-ppc's clang is.
+Using `gcc14` from indium would require wrapping it in ssh tunneling
+tricks (`CC="ssh pmacg5 /opt/gcc14/bin/gcc"` with file-staging) that
+aren't worth the complexity at the Phase-3 stage.
+
+### The gcc14 payoff comes in Phase 4+
+
+The cross-compile is a means to an end: a working unregisterised
+stage-1 GHC binary for `powerpc-apple-darwin8`. Once we install that
+on `pmacg5` (Phase 4), we have **a working native host GHC on
+Tiger** for the first time. From that point on, every subsequent
+build (the registerised native rebuild, the NCG revival, the GHCi
+work, the testsuite) can happen **natively on pmacg5 using
+`/opt/gcc14`** — no more cross-compile from indium.
+
+This matches Trommler's exact recipe:
+
+> configure `--enable-unregisterised`. **Then you have a working
+> compiler that you can use** to resurrect native code support for
+> Darwin.
+
+The cross-compile-on-indium story is only as durable as "Phase 3 +
+Phase 4." After that, we switch to native-on-pmacg5 for the real
+work. Document this transition point when we hit it.
+
 ## Strategy: use the sibling LLVM-7 project's clang
 
 **Decision: option 3 — reuse the `llvm-7-darwin-ppc` project's
