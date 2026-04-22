@@ -1,0 +1,182 @@
+Warning: Specifying an absolute path to the project file is deprecated. Use
+--project-dir to set the project's directory.
+Configuration is affected by cabal.project at
+'/Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/hadrian'.
+Up to date
+Warning: Specifying an absolute path to the project file is deprecated. Use
+--project-dir to set the project's directory.
+Configuration is affected by cabal.project at
+'/Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/hadrian'.
+| Configure package 'rts'
+| Run HsCpp: compiler/GHC/Builtin/primops.txt.pp => _build/stage0/compiler/build/primops.txt
+# cabal-configure (for _build/stage1/rts/setup-config)
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Types.hs => _build/stage0/utils/haddock/build/Haddock/Types.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-library/src/Documentation/Haddock/Parser.hs => _build/stage0/utils/haddock/build/Documentation/Haddock/Parser.o
+# cabal-autogen (for _build/stage1/rts/build/autogen/cabal_macros.h)
+| Remove directory _build/stage1/libffi/build
+| Remove directory _build/libffi-3.3-rc2
+| Run Tar Extract: libffi-tarballs/libffi-3.3-rc2+git20191103+88a7647.tar.gz => _build/stage1
+| Move directory: _build/stage1/libffi-3.3-rc2 => _build/stage1/libffi/build
+| Fix _build/stage1/libffi/build/Makefile.in
+| Copy file: config.guess => _build/stage1/libffi/build/config.guess
+| Copy file: config.sub => _build/stage1/libffi/build/config.sub
+| Run Configure "_build/stage1/libffi/build": _build/stage1/libffi/build/Makefile.in => _build/stage1/libffi/build/Makefile
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/ModuleTree.hs => _build/stage0/utils/haddock/build/Haddock/ModuleTree.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/InterfaceFile.hs => _build/stage0/utils/haddock/build/Haddock/InterfaceFile.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/GhcUtils.hs => _build/stage0/utils/haddock/build/Haddock/GhcUtils.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Utils.hs => _build/stage0/utils/haddock/build/Haddock/Utils.o
+configure: WARNING: using cross tools not prefixed with host triplet
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Options.hs => _build/stage0/utils/haddock/build/Haddock/Options.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Backends/Xhtml/Utils.hs => _build/stage0/utils/haddock/build/Haddock/Backends/Xhtml/Utils.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Doc.hs => _build/stage0/utils/haddock/build/Haddock/Doc.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Interface/Rename.hs => _build/stage0/utils/haddock/build/Haddock/Interface/Rename.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Backends/Hyperlinker/Parser.hs => _build/stage0/utils/haddock/build/Haddock/Backends/Hyperlinker/Parser.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Backends/LaTeX.hs => _build/stage0/utils/haddock/build/Haddock/Backends/LaTeX.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Backends/Hyperlinker/Utils.hs => _build/stage0/utils/haddock/build/Haddock/Backends/Hyperlinker/Utils.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Parser.hs => _build/stage0/utils/haddock/build/Haddock/Parser.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Backends/Hyperlinker/Renderer.hs => _build/stage0/utils/haddock/build/Haddock/Backends/Hyperlinker/Renderer.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Backends/Hoogle.hs => _build/stage0/utils/haddock/build/Haddock/Backends/Hoogle.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Backends/Xhtml/Themes.hs => _build/stage0/utils/haddock/build/Haddock/Backends/Xhtml/Themes.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Interface/ParseModuleHeader.hs => _build/stage0/utils/haddock/build/Haddock/Interface/ParseModuleHeader.o
+
+utils/haddock/haddock-api/src/Haddock/Backends/Hoogle.hs:34:1: warning: [-Wunused-imports]
+    The import of ‘GHC.Parser.Annotation’ is redundant
+      except perhaps to import instances from ‘GHC.Parser.Annotation’
+    To import instances alone, use: import GHC.Parser.Annotation()
+   |
+34 | import GHC.Parser.Annotation (IsUnicodeSyntax(..))
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Backends/Xhtml/Names.hs => _build/stage0/utils/haddock/build/Haddock/Backends/Xhtml/Names.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Interface/LexParseRn.hs => _build/stage0/utils/haddock/build/Haddock/Interface/LexParseRn.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Interface/Specialize.hs => _build/stage0/utils/haddock/build/Haddock/Interface/Specialize.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Interface/Json.hs => _build/stage0/utils/haddock/build/Haddock/Interface/Json.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Backends/Xhtml/DocMarkup.hs => _build/stage0/utils/haddock/build/Haddock/Backends/Xhtml/DocMarkup.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Backends/Hyperlinker.hs => _build/stage0/utils/haddock/build/Haddock/Backends/Hyperlinker.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Backends/Xhtml/Layout.hs => _build/stage0/utils/haddock/build/Haddock/Backends/Xhtml/Layout.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Convert.hs => _build/stage0/utils/haddock/build/Haddock/Convert.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Backends/Xhtml/Decl.hs => _build/stage0/utils/haddock/build/Haddock/Backends/Xhtml/Decl.o
+clang-7: error: unsupported option '-print-multi-os-directory'
+clang-7: error: no input files
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Interface/AttachInstances.hs => _build/stage0/utils/haddock/build/Haddock/Interface/AttachInstances.o
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Interface/Create.hs => _build/stage0/utils/haddock/build/Haddock/Interface/Create.o
+
+utils/haddock/haddock-api/src/Haddock/Interface/Create.hs:62:1: warning: [-Wunused-imports]
+    The import of ‘GHC.Parser.Annotation’ is redundant
+      except perhaps to import instances from ‘GHC.Parser.Annotation’
+    To import instances alone, use: import GHC.Parser.Annotation()
+   |
+62 | import GHC.Parser.Annotation (IsUnicodeSyntax (..))
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+utils/haddock/haddock-api/src/Haddock/Interface/Create.hs:78:1: warning: [-Wunused-imports]
+    The import of ‘GHC.Unit.Module.Warnings’ is redundant
+      except perhaps to import instances from ‘GHC.Unit.Module.Warnings’
+    To import instances alone, use: import GHC.Unit.Module.Warnings()
+   |
+78 | import GHC.Unit.Module.Warnings (WarningTxt (..), Warnings (..))
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+utils/haddock/haddock-api/src/Haddock/Interface/Create.hs:82:1: warning: [-Wunused-imports]
+    The import of ‘GHC.HsToCore.Docs’ is redundant
+      except perhaps to import instances from ‘GHC.HsToCore.Docs’
+    To import instances alone, use: import GHC.HsToCore.Docs()
+   |
+82 | import GHC.HsToCore.Docs hiding (mkMaps)
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+| Run Ghc CompileHs Stage0: utils/haddock/haddock-api/src/Haddock/Backends/Xhtml.hs => _build/stage0/utils/haddock/build/Haddock/Backends/Xhtml.o
+| Run Make "_build/stage1/libffi/build": none => none
+../src/powerpc/ffi_darwin.c:1114:22: error: unknown type name 'ffi_go_closure'
+ffi_prep_go_closure (ffi_go_closure* closure,
+                     ^
+../src/powerpc/ffi_darwin.c:1172:31: error: unknown type name 'ffi_go_closure'
+ffi_go_closure_helper_DARWIN (ffi_go_closure*, void *,
+                              ^
+../src/powerpc/ffi_darwin.c:1434:31: error: unknown type name 'ffi_go_closure'
+ffi_go_closure_helper_DARWIN (ffi_go_closure *closure, void *rvalue,
+                              ^
+3 errors generated.
+make[2]: *** [src/powerpc/ffi_darwin.lo] Error 1
+make[2]: *** Waiting for unfinished jobs....
+make[1]: *** [install-recursive] Error 1
+make: *** [install] Error 2
+Error when running Shake build system:
+  at action, called at src/Rules.hs:40:19 in hadrian-0.1.0.0-inplace-hadrian:Rules
+  at need, called at src/Rules.hs:62:5 in hadrian-0.1.0.0-inplace-hadrian:Rules
+* Depends on: _build/stage1/lib/package.conf.d/ghc-prim-0.8.0.conf
+  at apply1, called at src/Development/Shake/Internal/Rules/Oracle.hs:159:32 in shk-0.19.6-b851a4c0:Development.Shake.Internal.Rules.Oracle
+* Depends on: OracleQ (ContextDataKey (Context {stage = Stage1, package = Package {pkgType = Library, pkgName = "ghc-prim", pkgPath = "libraries/ghc-prim"}, way = v}))
+  at need, called at src/Hadrian/Oracles/Cabal/Rules.hs:54:9 in hadrian-0.1.0.0-inplace-hadrian:Hadrian.Oracles.Cabal.Rules
+* Depends on: _build/stage1/libraries/ghc-prim/setup-config
+  at need, called at src/Rules/Libffi.hs:72:5 in hadrian-0.1.0.0-inplace-hadrian:Rules.Libffi
+* Depends on: _build/stage1/libffi/.dynamiclibs
+  at &%>, called at src/Rules/Libffi.hs:164:34 in hadrian-0.1.0.0-inplace-hadrian:Rules.Libffi
+* Depends on: _build/stage1/libffi/build/inst/lib/libffi.a _build/stage1/libffi/.dynamiclibs
+  at cmd', called at src/Builder.hs:351:29 in hadrian-0.1.0.0-inplace-hadrian:Builder
+  at cmd, called at src/Builder.hs:483:8 in hadrian-0.1.0.0-inplace-hadrian:Builder
+* Raised the exception:
+Development.Shake.cmd, system command failed
+Command line: make -C _build/stage1/libffi/build MAKEFLAGS=-j6 install
+Exit code: 2
+Stderr and Stdout:
+MAKE aarch64-apple-darwin24.6.0 :        0 * install
+Making install in include
+make[3]: Nothing to be done for `install-exec-am'.
+ /opt/homebrew/bin/gmkdir -p '/Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/_build/stage1/libffi/build/inst/include'
+ /opt/homebrew/bin/ginstall -c -m 644 ffi.h ffitarget.h '/Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/_build/stage1/libffi/build/inst/include'
+Making install in testsuite
+make[3]: Nothing to be done for `install-exec-am'.
+make[3]: Nothing to be done for `install-data-am'.
+Making install in man
+make[3]: Nothing to be done for `install-exec-am'.
+ /opt/homebrew/bin/gmkdir -p '/Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/_build/stage1/libffi/build/inst/share/man/man3'
+ /opt/homebrew/bin/ginstall -c -m 644 ../../man/ffi.3 ../../man/ffi_call.3 ../../man/ffi_prep_cif.3 ../../man/ffi_prep_cif_var.3 '/Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/_build/stage1/libffi/build/inst/share/man/man3'
+Making install in doc
+make[3]: Nothing to be done for `install-exec-am'.
+ /opt/homebrew/bin/gmkdir -p '/Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/_build/stage1/libffi/build/inst/share/info'
+ /opt/homebrew/bin/ginstall -c -m 644 ../../doc/libffi.info '/Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/_build/stage1/libffi/build/inst/share/info'
+depbase=`echo src/prep_cif.lo | sed 's|[^/]*$|.deps/&|;s|\.lo$||'`;\
+	/bin/sh ./libtool  --tag=CC   --mode=compile /Users/cell/.local/ghc-ppc-xtools/bin-wrap/ppc-cc -DHAVE_CONFIG_H -I. -I..  -I. -I../include -Iinclude -I../src   --target=powerpc-apple-darwin -w -Wall -fexceptions -MT src/prep_cif.lo -MMD -MP -MF $depbase.Tpo -c -o src/prep_cif.lo ../src/prep_cif.c &&\
+	mv -f $depbase.Tpo $depbase.Plo
+depbase=`echo src/types.lo | sed 's|[^/]*$|.deps/&|;s|\.lo$||'`;\
+	/bin/sh ./libtool  --tag=CC   --mode=compile /Users/cell/.local/ghc-ppc-xtools/bin-wrap/ppc-cc -DHAVE_CONFIG_H -I. -I..  -I. -I../include -Iinclude -I../src   --target=powerpc-apple-darwin -w -Wall -fexceptions -MT src/types.lo -MMD -MP -MF $depbase.Tpo -c -o src/types.lo ../src/types.c &&\
+	mv -f $depbase.Tpo $depbase.Plo
+depbase=`echo src/raw_api.lo | sed 's|[^/]*$|.deps/&|;s|\.lo$||'`;\
+	/bin/sh ./libtool  --tag=CC   --mode=compile /Users/cell/.local/ghc-ppc-xtools/bin-wrap/ppc-cc -DHAVE_CONFIG_H -I. -I..  -I. -I../include -Iinclude -I../src   --target=powerpc-apple-darwin -w -Wall -fexceptions -MT src/raw_api.lo -MMD -MP -MF $depbase.Tpo -c -o src/raw_api.lo ../src/raw_api.c &&\
+	mv -f $depbase.Tpo $depbase.Plo
+depbase=`echo src/java_raw_api.lo | sed 's|[^/]*$|.deps/&|;s|\.lo$||'`;\
+	/bin/sh ./libtool  --tag=CC   --mode=compile /Users/cell/.local/ghc-ppc-xtools/bin-wrap/ppc-cc -DHAVE_CONFIG_H -I. -I..  -I. -I../include -Iinclude -I../src   --target=powerpc-apple-darwin -w -Wall -fexceptions -MT src/java_raw_api.lo -MMD -MP -MF $depbase.Tpo -c -o src/java_raw_api.lo ../src/java_raw_api.c &&\
+	mv -f $depbase.Tpo $depbase.Plo
+depbase=`echo src/closures.lo | sed 's|[^/]*$|.deps/&|;s|\.lo$||'`;\
+	/bin/sh ./libtool  --tag=CC   --mode=compile /Users/cell/.local/ghc-ppc-xtools/bin-wrap/ppc-cc -DHAVE_CONFIG_H -I. -I..  -I. -I../include -Iinclude -I../src   --target=powerpc-apple-darwin -w -Wall -fexceptions -MT src/closures.lo -MMD -MP -MF $depbase.Tpo -c -o src/closures.lo ../src/closures.c &&\
+	mv -f $depbase.Tpo $depbase.Plo
+depbase=`echo src/powerpc/ffi_darwin.lo | sed 's|[^/]*$|.deps/&|;s|\.lo$||'`;\
+	/bin/sh ./libtool  --tag=CC   --mode=compile /Users/cell/.local/ghc-ppc-xtools/bin-wrap/ppc-cc -DHAVE_CONFIG_H -I. -I..  -I. -I../include -Iinclude -I../src   --target=powerpc-apple-darwin -w -Wall -fexceptions -MT src/powerpc/ffi_darwin.lo -MMD -MP -MF $depbase.Tpo -c -o src/powerpc/ffi_darwin.lo ../src/powerpc/ffi_darwin.c &&\
+	mv -f $depbase.Tpo $depbase.Plo
+libtool: compile:  /Users/cell/.local/ghc-ppc-xtools/bin-wrap/ppc-cc -DHAVE_CONFIG_H -I. -I.. -I. -I../include -Iinclude -I../src --target=powerpc-apple-darwin -w -Wall -fexceptions -MT src/java_raw_api.lo -MMD -MP -MF src/.deps/java_raw_api.Tpo -c ../src/java_raw_api.c  -fno-common -DPIC -o src/.libs/java_raw_api.o
+libtool: compile:  /Users/cell/.local/ghc-ppc-xtools/bin-wrap/ppc-cc -DHAVE_CONFIG_H -I. -I.. -I. -I../include -Iinclude -I../src --target=powerpc-apple-darwin -w -Wall -fexceptions -MT src/closures.lo -MMD -MP -MF src/.deps/closures.Tpo -c ../src/closures.c  -fno-common -DPIC -o src/.libs/closures.o
+libtool: compile:  /Users/cell/.local/ghc-ppc-xtools/bin-wrap/ppc-cc -DHAVE_CONFIG_H -I. -I.. -I. -I../include -Iinclude -I../src --target=powerpc-apple-darwin -w -Wall -fexceptions -MT src/prep_cif.lo -MMD -MP -MF src/.deps/prep_cif.Tpo -c ../src/prep_cif.c  -fno-common -DPIC -o src/.libs/prep_cif.o
+libtool: compile:  /Users/cell/.local/ghc-ppc-xtools/bin-wrap/ppc-cc -DHAVE_CONFIG_H -I. -I.. -I. -I../include -Iinclude -I../src --target=powerpc-apple-darwin -w -Wall -fexceptions -MT src/powerpc/ffi_darwin.lo -MMD -MP -MF src/powerpc/.deps/ffi_darwin.Tpo -c ../src/powerpc/ffi_darwin.c  -fno-common -DPIC -o src/powerpc/.libs/ffi_darwin.o
+libtool: compile:  /Users/cell/.local/ghc-ppc-xtools/bin-wrap/ppc-cc -DHAVE_CONFIG_H -I. -I.. -I. -I../include -Iinclude -I../src --target=powerpc-apple-darwin -w -Wall -fexceptions -MT src/raw_api.lo -MMD -MP -MF src/.deps/raw_api.Tpo -c ../src/raw_api.c  -fno-common -DPIC -o src/.libs/raw_api.o
+libtool: compile:  /Users/cell/.local/ghc-ppc-xtools/bin-wrap/ppc-cc -DHAVE_CONFIG_H -I. -I.. -I. -I../include -Iinclude -I../src --target=powerpc-apple-darwin -w -Wall -fexceptions -MT src/types.lo -MMD -MP -MF src/.deps/types.Tpo -c ../src/types.c  -fno-common -DPIC -o src/.libs/types.o
+../src/powerpc/ffi_darwin.c:1114:22: error: unknown type name 'ffi_go_closure'
+ffi_prep_go_closure (ffi_go_closure* closure,
+                     ^
+../src/powerpc/ffi_darwin.c:1172:31: error: unknown type name 'ffi_go_closure'
+ffi_go_closure_helper_DARWIN (ffi_go_closure*, void *,
+                              ^
+libtool: compile:  /Users/cell/.local/ghc-ppc-xtools/bin-wrap/ppc-cc -DHAVE_CONFIG_H -I. -I.. -I. -I../include -Iinclude -I../src --target=powerpc-apple-darwin -w -Wall -fexceptions -MT src/types.lo -MMD -MP -MF src/.deps/types.Tpo -c ../src/types.c -o src/types.o >/dev/null 2>&1
+../src/powerpc/ffi_darwin.c:1434:31: error: unknown type name 'ffi_go_closure'
+ffi_go_closure_helper_DARWIN (ffi_go_closure *closure, void *rvalue,
+                              ^
+3 errors generated.
+libtool: compile:  /Users/cell/.local/ghc-ppc-xtools/bin-wrap/ppc-cc -DHAVE_CONFIG_H -I. -I.. -I. -I../include -Iinclude -I../src --target=powerpc-apple-darwin -w -Wall -fexceptions -MT src/prep_cif.lo -MMD -MP -MF src/.deps/prep_cif.Tpo -c ../src/prep_cif.c -o src/prep_cif.o >/dev/null 2>&1
+libtool: compile:  /Users/cell/.local/ghc-ppc-xtools/bin-wrap/ppc-cc -DHAVE_CONFIG_H -I. -I.. -I. -I../include -Iinclude -I../src --target=powerpc-apple-darwin -w -Wall -fexceptions -MT src/raw_api.lo -MMD -MP -MF src/.deps/raw_api.Tpo -c ../src/raw_api.c -o src/raw_api.o >/dev/null 2>&1
+libtool: compile:  /Users/cell/.local/ghc-ppc-xtools/bin-wrap/ppc-cc -DHAVE_CONFIG_H -I. -I.. -I. -I../include -Iinclude -I../src --target=powerpc-apple-darwin -w -Wall -fexceptions -MT src/java_raw_api.lo -MMD -MP -MF src/.deps/java_raw_api.Tpo -c ../src/java_raw_api.c -o src/java_raw_api.o >/dev/null 2>&1
+make[2]: *** [src/powerpc/ffi_darwin.lo] Error 1
+make[2]: *** Waiting for unfinished jobs....
+libtool: compile:  /Users/cell/.local/ghc-ppc-xtools/bin-wrap/ppc-cc -DHAVE_CONFIG_H -I. -I.. -I. -I../include -Iinclude -I../src --target=powerpc-apple-darwin -w -Wall -fexceptions -MT src/closures.lo -MMD -MP -MF src/.deps/closures.Tpo -c ../src/closures.c -o src/closures.o >/dev/null 2>&1
+make[1]: *** [install-recursive] Error 1
+make: *** [install] Error 2
+
+
+
