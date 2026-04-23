@@ -25,3 +25,17 @@ ac_cv_func_pthread_setname_np=no
 # Also: Tiger's header landscape
 ac_cv_header_sys_timerfd_h=no
 ac_cv_header_dispatch_dispatch_h=no
+
+# Tiger's sched.h lacks sched_setaffinity / cpu_set_t (Linux-only).
+# Force autoconf to believe we don't have those, even though it'll
+# detect the host as having them.
+ac_cv_func_sched_setaffinity=no
+
+# pthread_threadid_np: macOS 10.6+
+ac_cv_func_pthread_threadid_np=no
+
+# sysconf names GHC uses
+ac_cv_func_pthread_setname_np=no
+
+# Tiger has sched.h but not sched_getaffinity either
+ac_cv_func_sched_getaffinity=no

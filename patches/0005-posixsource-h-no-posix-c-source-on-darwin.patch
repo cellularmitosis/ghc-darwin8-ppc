@@ -1,0 +1,17 @@
+diff --git a/rts/PosixSource.h b/rts/PosixSource.h
+index 13fd7b0f..547f393e 100644
+--- a/rts/PosixSource.h
++++ b/rts/PosixSource.h
+@@ -32,6 +32,12 @@
+ #if defined(solaris2_HOST_OS)
+ #define _POSIX_C_SOURCE 200112L
+ #define _XOPEN_SOURCE   600
++#elif defined(darwin_HOST_OS)
++/* On Darwin/Tiger (10.4), setting _POSIX_C_SOURCE hides BSD types like
++ * u_char that the SDK's bsm/audit.h (pulled in via sys/sysctl.h in
++ * OSThreads.c) uses without an #ifdef.  Darwin's libc is POSIX-compliant
++ * natively; we don't need the XOPEN promotion.  (Pre-374e44704b
++ * GHC 8.6 behaviour also didn't require it on Darwin.) */
+ #else
+ #define _POSIX_C_SOURCE 200809L
+ #define _XOPEN_SOURCE   700

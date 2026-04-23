@@ -1,0 +1,65 @@
+diff --git a/rts/linker/MachO.c b/rts/linker/MachO.c
+index e54e7e44..44754b65 100644
+--- a/rts/linker/MachO.c
++++ b/rts/linker/MachO.c
+@@ -25,6 +25,10 @@
+ #  include <sys/mman.h>
+ #endif
+ 
++#if defined(powerpc_HOST_ARCH)
++#  include <mach-o/ppc/reloc.h>
++#endif
++
+ #if defined(x86_64_HOST_ARCH)
+ #  include <mach-o/x86_64/reloc.h>
+ #endif
+@@ -169,7 +173,48 @@ resolveImports(
+     unsigned long *indirectSyms);
+ 
+ #if NEED_SYMBOL_EXTRAS
+-#if defined(x86_64_HOST_ARCH) || defined(aarch64_HOST_ARCH)
++#if defined(powerpc_HOST_ARCH)
++
++/* Restored from pre-374e44704b (GHC 8.6) for the PPC/Darwin revival.
++ * On 32-bit PPC Mach-O, jump islands (SymbolExtras) are used to reach
++ * symbols beyond the +-32MB branch range; we only need to reserve one
++ * slot per UNDEFINED EXTERNAL, so find the first and last such nlist
++ * entry rather than reserving a slot for every symbol. */
++int
++ocAllocateExtras_MachO(ObjectCode* oc)
++{
++    IF_DEBUG(linker, debugBelch("ocAllocateExtras_MachO: start\n"));
++
++    unsigned min = oc->info->symCmd->nsyms, max = 0;
++
++    for (unsigned i = 0; i < oc->info->symCmd->nsyms; i++) {
++
++        if (oc->info->nlist[i].n_type & N_STAB) {
++            ;
++        } else if (oc->info->nlist[i].n_type & N_EXT) {
++
++            if((oc->info->nlist[i].n_type & N_TYPE) == N_UNDF
++                && (oc->info->nlist[i].n_value == 0)) {
++
++                if (i < min) {
++                    min = i;
++                }
++
++                if (i > max) {
++                    max = i;
++                }
++            }
++        }
++    }
++
++    if (max >= min) {
++        return ocAllocateExtras(oc, max - min + 1, min, 0);
++    }
++
++    return ocAllocateExtras(oc, 0, 0, 0);
++}
++
++#elif defined(x86_64_HOST_ARCH) || defined(aarch64_HOST_ARCH)
+ 
+ int
+ ocAllocateExtras_MachO(ObjectCode* oc)
