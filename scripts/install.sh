@@ -102,11 +102,22 @@ if [ -z "$CCTOOLS_BIN" ]; then
         CCTOOLS_BIN="$HOME/.local/cctools-ppc/install/bin"
 fi
 
-BINDIST_SRC="./ghc-9.2.8-powerpc-apple-darwin8"
-[ -d "$BINDIST_SRC" ] || {
-    echo "error: $BINDIST_SRC/ not found.  Run: tar xJf ghc-9.2.8-stage1-cross-to-ppc-darwin8.tar.xz"
+# Locate the bindist source dir.  Support two layouts:
+#   1. Running from alongside a freshly-extracted `ghc-9.2.8-powerpc-apple-darwin8/`.
+#   2. Running from *inside* that dir (which is the case when install.sh
+#      ships embedded in the tarball itself).
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+if [ -d "./ghc-9.2.8-powerpc-apple-darwin8" ]; then
+    BINDIST_SRC="./ghc-9.2.8-powerpc-apple-darwin8"
+elif [ -f "$SCRIPT_DIR/lib/package.conf.d/rts-1.0.2.conf" ]; then
+    BINDIST_SRC="$SCRIPT_DIR"
+elif [ -f "./lib/package.conf.d/rts-1.0.2.conf" ]; then
+    BINDIST_SRC="."
+else
+    echo "error: can't find the bindist.  Run this script from either the"
+    echo "       parent of ghc-9.2.8-powerpc-apple-darwin8/, or from inside it."
     exit 1
-}
+fi
 
 echo "== Install config =="
 echo "  prefix:          $PREFIX"
