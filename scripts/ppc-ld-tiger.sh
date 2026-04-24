@@ -61,9 +61,10 @@ while [ $# -gt 0 ]; do
             REMOTE_ARGS+=("-o" "$LINK_DIR/$(basename "$2")")
             shift 2
             ;;
-        -L/Users/*|-L_build/*)
-            # Local build-tree path; strip it (we'll rewrite to $LINK_DIR).
-            # Remember the original dir so we can search for -l libs.
+        -L/Users/*|-L_build/*|-L/tmp/*|-L/var/*|-L/private/*)
+            # Local build-tree / install-tree path; strip it (we'll
+            # rewrite to $LINK_DIR).  Remember the original dir so we
+            # can search for -l libs.
             LOCAL_LIBDIRS+=("${1#-L}")
             shift
             ;;
@@ -72,17 +73,18 @@ while [ $# -gt 0 ]; do
             shift 2
             ;;
         -L*)
-            # System -L paths (e.g. -L/opt/...) we can't really pass through
-            # directly -- but pmacg5 has its own /opt and /usr/lib.  Only
-            # intercept paths that reference build-tree.
-            case "${1#-L}" in
-                /Users/*|_build/*)
-                    LOCAL_LIBDIRS+=("${1#-L}")
-                    ;;
-                *)
-                    REMOTE_ARGS+=("$1")
-                    ;;
-            esac
+            # Heuristic: if the path exists locally on this host AND
+            # contains a libHS*.{a,dylib} or libC*.{a,dylib}, treat as
+            # a local build-tree path that needs rsyncing.  Otherwise
+            # assume it's a system path (/opt/..., /usr/...) that
+            # also exists on the remote PPC host.
+            ldir="${1#-L}"
+            if [ -d "$ldir" ] && ls "$ldir"/lib*.{a,dylib} >/dev/null 2>&1 \
+               && ! echo "$ldir" | grep -qE '^(/opt|/usr|/System|/Library)'; then
+                LOCAL_LIBDIRS+=("$ldir")
+            else
+                REMOTE_ARGS+=("$1")
+            fi
             shift
             ;;
         -lmingwex)
