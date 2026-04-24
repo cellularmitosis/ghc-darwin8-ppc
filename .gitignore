@@ -33,3 +33,15 @@ _build/
 
 # Logs from background builds we didn't mean to commit.
 *.log
+
+# Test battery outputs (regenerated on every run).
+tests/bin/
+tests/actual/
+tests/expected/
+
+# Claude Code session scratch (if any lands here).
+.claude/
+
+# Intermediate compiler outputs in test-programs dir.
+tests/programs/*.hi
+tests/programs/*.o
