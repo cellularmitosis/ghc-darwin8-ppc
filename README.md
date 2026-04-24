@@ -56,12 +56,26 @@ Verified byte-identical to host-GHC output across 25 test programs
   [subprojects/bug-pi-double-literal](subprojects/bug-pi-double-literal/).
 - **Stage2 native ghc binary** runs `--version` but can't compile —
   typechecker's `tcl_env` comes up empty.  Deferred; see
-  [subprojects/stage2-native](subprojects/stage2-native/).
+  [docs/proposals/stage2-native.md](docs/proposals/stage2-native.md).
 - **GHCi / TemplateHaskell** — the runtime Mach-O loader needs PPC
   relocation code restored.  See
-  [subprojects/ghci-macho-loader](subprojects/ghci-macho-loader/).
+  [docs/proposals/ghci-macho-loader.md](docs/proposals/ghci-macho-loader.md).
 - **Profiling, dynamic libraries** — static-only (Quick-cross flavour
   dodges a PPC Mach-O 16 MB section limit for `.dyn_o`).
+
+## Cabal / Hackage packages
+
+**`cabal-install` on your arm64 macOS host compiles Hackage packages
+for Tiger**, via our cross-ghc.  Seven top-level packages verified
+end-to-end: `random` (via vendored splitmix), `async`, `vector`,
+`aeson` (with Generics instead of TH), `optparse-applicative`,
+`megaparsec`, `network` (pinned `< 3.0`).  30+ packages in their
+transitive graphs.
+
+See [`docs/cabal-cross.md`](docs/cabal-cross.md) for the recipe and
+[`tests/cabal-examples/`](tests/cabal-examples/) for 8 runnable
+project templates (with a `run-one.sh` that builds + ships + runs
+on Tiger in one command).
 
 ## Build
 
