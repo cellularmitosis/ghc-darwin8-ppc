@@ -1,0 +1,30 @@
+diff --git a/compiler/GHC/CmmToC.hs b/compiler/GHC/CmmToC.hs
+index 6bcf6202..27a7db86 100644
+--- a/compiler/GHC/CmmToC.hs
++++ b/compiler/GHC/CmmToC.hs
+@@ -632,10 +632,23 @@ staticLitsToWords platform = go . foldMap decomposeMultiWord
+ 
+     -- Decompose multi-word or floating-point literals into multiple
+     -- single-word (or smaller) literals.
++    --
++    -- Note [Recursive decompose for W64 Float on 32-bit]
++    -- --------------------------------------------------
++    -- `CmmFloat n W64` first becomes `CmmInt (bits n) W64`.  On a 32-bit
++    -- platform that W64 int must then be split into [CmmInt hi W32, CmmInt lo W32].
++    -- The top-level `foldMap decomposeMultiWord` is only single-pass, so
++    -- if we stopped at `[doubleToWord64 n]` we'd emit
++    -- `(StgWord64)0x...ULL` into a `StgWord[]` array, clang would
++    -- silently truncate to 32 bits, and the runtime would read garbage
++    -- out of the closure's Double payload.  See the `pi :: Double`
++    -- breakage on ppc-darwin8 reported in docs/proposals/bug-pi-double-literal.md.
++    -- Fix: on 32-bit targets, recurse on the int we just produced.
+     decomposeMultiWord :: CmmLit -> [CmmLit]
+     decomposeMultiWord (CmmFloat n W64)
+-      -- This will produce a W64 integer, which will then be broken up further
+-      -- on the next iteration on 32-bit platforms.
++      | W32 <- wordWidth platform
++      = decomposeMultiWord (doubleToWord64 n)
++      | otherwise
+       = [doubleToWord64 n]
+     decomposeMultiWord (CmmFloat n W32)
+       = [floatToWord32 n]

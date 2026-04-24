@@ -12,7 +12,7 @@ HOST_GHC=${HOST_GHC:-$HOME/.local/ghc-9.2.8/bin/ghc}
 
 mkdir -p expected actual bin
 
-declare -a PASS FAIL_COMPILE FAIL_RUN FAIL_OUTPUT
+declare -a PASS=() FAIL_COMPILE=() FAIL_RUN=() FAIL_OUTPUT=()
 
 generate_expected() {
   # Generate expected output by compiling+running on host GHC
@@ -90,14 +90,15 @@ done
 
 echo ""
 echo "=== Summary ==="
-echo "PASS:         ${#PASS[@]} - ${PASS[*]}"
-echo "FAIL_COMPILE: ${#FAIL_COMPILE[@]} - ${FAIL_COMPILE[*]}"
-echo "FAIL_RUN:     ${#FAIL_RUN[@]} - ${FAIL_RUN[*]}"
-echo "FAIL_OUTPUT:  ${#FAIL_OUTPUT[@]} - ${FAIL_OUTPUT[*]}"
+echo "PASS:         ${#PASS[@]} - ${PASS[*]:-}"
+echo "FAIL_COMPILE: ${#FAIL_COMPILE[@]} - ${FAIL_COMPILE[*]:-}"
+echo "FAIL_RUN:     ${#FAIL_RUN[@]} - ${FAIL_RUN[*]:-}"
+echo "FAIL_OUTPUT:  ${#FAIL_OUTPUT[@]} - ${FAIL_OUTPUT[*]:-}"
 
 echo ""
 echo "=== Output diffs (FAIL_OUTPUT) ==="
-for stem in "${FAIL_OUTPUT[@]}"; do
+for stem in "${FAIL_OUTPUT[@]:-}"; do
+  [ -z "$stem" ] && continue
   echo "--- $stem ---"
   diff "expected/${stem}.out" "actual/${stem}.out" | head -30
   echo ""

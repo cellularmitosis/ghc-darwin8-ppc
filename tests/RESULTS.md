@@ -1,15 +1,22 @@
 # Cross-build test battery results — 2026-04-24
 
-**Summary: 20 of 25 tests PASS with byte-identical output to host.**  The
-5 non-matching tests are listed below; most are test-design issues, not
-bugs.  One real PPC-specific codegen bug is found.
+**Summary: 21 of 25 tests PASS with byte-identical output to host**
+(after the pi-Double codegen fix landed mid-session).  The 4
+non-matching tests are test-design issues, not bugs.  **No real bugs
+known as of this run.**
+
+## History
+
+- **First run (before fix):** 20 PASS, 1 real bug (`pi :: Double`).
+- **This run (after fix):** 21 PASS, 0 real bugs.  `02_double_literal`
+  is now byte-identical to host.
 
 ## Full test coverage
 
 | # | Test | Status | Notes |
 |---|------|--------|-------|
 | 01 | Int arith | DIFF-expected | Int is 32-bit on PPC, 64-bit on arm64 |
-| 02 | Double literal | **BUG** | `pi :: Double` garbage; other literals fine |
+| 02 | Double literal | PASS | Fixed by patch 0008 (CmmToC W64 Float decompose) |
 | 03 | Double runtime (sqrt/sin/exp/log) | PASS | |
 | 04 | Float literals | PASS | |
 | 05 | Word8/16/32/64, Int8/16/32/64 sizes | PASS | |
@@ -34,17 +41,23 @@ bugs.  One real PPC-specific codegen bug is found.
 | 24 | FFI (getpid, strlen, abs via `ccall`) | DIFF-expected | pid differs (test design) |
 | 25 | Numeric boundaries (max/minBound, Int overflow, 1/0, 0/0, NaN) | DIFF-expected | Int is 32-bit |
 
-## Real bugs found
+## Fixed bugs
 
-### BUG-1: `pi :: Double` returns garbage on PPC
+### BUG-1 [FIXED]: `pi :: Double` returns garbage on PPC
 
-**Reproduction:**
+**Fix:** [`patches/0008-cmmtoc-split-w64-double-on-32bit.patch`](../patches/0008-cmmtoc-split-w64-double-on-32bit.patch).
+Recurse in `decomposeMultiWord` for `CmmFloat n W64` on 32-bit targets
+so the resulting W64 int gets further split into two W32 ints.  See
+[session 1 findings](../docs/sessions/2026-04-24-session-1-workflow-and-pi-probe/findings.md)
+for the full analysis.
+
+**Original reproduction (now all correct):**
 
 ```haskell
 main = do
-  putStrLn $ "pi = " ++ show (pi :: Double)        -- 8.61919789e97 (WRONG)
-  putStrLn $ "1.5 = " ++ show (1.5 :: Double)      -- 1.5 (correct)
-  putStrLn $ "3.14159265358979 = " ++ show (3.14159265358979 :: Double)  -- correct (14-digit literal)
+  putStrLn $ "pi = " ++ show (pi :: Double)        -- was 8.6e97; now 3.141592653589793
+  putStrLn $ "1.5 = " ++ show (1.5 :: Double)      -- was 1.5 (always correct)
+  putStrLn $ "3.14159265358979 = " ++ show (3.14159265358979 :: Double)  -- always correct
 ```
 
 **What is `pi`?** Defined in `libraries/base/GHC/Float.hs`:

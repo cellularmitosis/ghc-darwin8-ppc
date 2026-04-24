@@ -1,22 +1,24 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Draft: 2026-04-24.
+Last reviewed: 2026-04-24 session 1.
 
 ## What's done (baseline)
 
 - Stage1 cross-compiler on arm64 macOS → produces running PPC Mach-O binaries.
-- Hello-world, Fibonacci (libgmp Integer), stdin/sort/nub verified on Tiger.
-- 128 MB `.tar.xz` cross-bindist packaged.
-- Stage2 ppc-native `ghc` binary: runs `--version`, can't compile yet.
+- 25-program test battery: 21 PASS byte-identical to host, 4 test-design
+  diffs, 0 real bugs.
+- 128 MB `.tar.xz` cross-bindist packaged; v0.1.0 release on GitHub.
+- **pi-Double codegen bug fixed** (patch 0008) — `CmmToC.decomposeMultiWord`
+  now recurses on 32-bit targets.
+- Stage2 ppc-native `ghc` binary: runs `--version`, can't compile yet
+  (see B).
 
 ## Open engineering work, roughly ordered by cost
 
-### A. Bug fixes (found from stress testing)
+### A. Bug fixes
 
-*[Will be populated by this session's test battery — see `tests/`]*
-
-Known bugs already:
-1. **Double literals codegen broken on PPC32 unreg.** `1.5 :: Double` → `3.052865e-317` (garbage subnormal).  Root cause hypothesis: unregisterised codegen for a Double constant stores 64-bit IEEE bit pattern into a 32-bit `StgWord`, truncating.  Saw the warning: *"implicit conversion from 'StgWord64' to 'StgWord' changes value from 4614256656552045848 to 1413754136"* — the value is `0x400921FB54442D18` (i.e. `pi`) being cut to its low 32 bits.  This is a GHC NCG/StgToCmm bug specific to 32-bit unregisterised.
+*No user-facing bugs currently known.*  Completed items:
+- ~~Double literals codegen~~ fixed by [patch 0008](../patches/0008-cmmtoc-split-w64-double-on-32bit.patch).
 
 ### B. Stretch: native self-hosting stage2 GHC
 

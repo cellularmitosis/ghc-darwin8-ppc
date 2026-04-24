@@ -9,50 +9,62 @@ Project brief: [docs/plan.md](docs/plan.md).
 Current status: [docs/state.md](docs/state.md).
 Roadmap: [docs/roadmap.md](docs/roadmap.md).
 
-## Subprojects workflow
+## Repo layout
 
-All discrete chunks of work — bug fixes, build-chain shakedowns,
-investigations, tools — live under `subprojects/<slug>/`.  This is
-where plans, logs, and post-mortems get written.  Anything that isn't
-a reusable binary artifact but has a story worth capturing belongs in
-a subproject directory.
+```
+docs/
+  plan.md               — original project brief.
+  state.md              — all-time status snapshot.
+  roadmap.md            — prioritized forward work.
+  ghc-version-choice.md — why 9.2.8 vs 9.4 / 9.6 / newer.
+  experiments/          — historical phase write-ups (001–006).  These
+                          document work done before the sessions
+                          workflow existed.
+  sessions/             — one dir per session, dated.  See sessions/README.md.
+    YYYY-MM-DD-session-N-<slug>/
+      README.md         — narrative: arrival state, what was done, exit state.
+      findings.md       — "things learned that will matter later."
+      commits.md        — commits landed, one-liner each.
+  proposals/            — forward-looking plans for pieces of work
+                          that are scheduled but not yet started.
+                          Graduate to sessions as they get picked up.
+  notes/                — reference material (cross-toolchain strategy,
+                          fleet recon, file mapping, etc.).  Stable
+                          knowledge that outlasts any one session.
+  ref/                  — short factual refs (package anatomy, etc.).
+  log/                  — ad-hoc diagnostic logs.
+patches/                — git-format patches applied to the GHC source tree.
+scripts/                — cross-env, wrappers, linker shims, site cache.
+tests/                  — test battery + runner.  See tests/RESULTS.md.
+external/               — gitignored.  Where the GHC source tree is unpacked.
+```
 
-### Naming
+## Sessions workflow
 
-- Flat layout: `subprojects/<slug>/`, no nesting.
-- Slug is hyphenated, lowercase.  Prefix by theme so related work sorts
-  together: `stage1-cross`, `stage2-native`, `bug-pi-double-literal`,
-  `test-battery`, `ghci-macho-loader`, `bindist-installer`.
-- No numbering.  Ordering lives in `subprojects/README.md` and in each
-  subproject's declared dependencies.
+Substantive work lives in [`docs/sessions/`](docs/sessions/).  Each
+session is its own dated dir; see
+[`docs/sessions/README.md`](docs/sessions/README.md) for the checklist
+and end-of-session ritual.
 
-### Layout inside a subproject
-
-- `README.md` — entry point.  Current status in the first paragraph,
-  links to the rest.
-- `plan.md` — intent and approach.  Evolves as understanding does.
-- `log.md` — append-only chronological work log.  Dated entries.
-- `post-mortem.md` — written at completion.  What worked, what didn't,
-  what surprised.
-
-Minimum viable subproject is `plan.md` + `log.md`.  Add the others when
-they earn their keep.
-
-### Lifecycle
-
-Subprojects stay flat in `subprojects/` when done — don't move them into
-`done/`.  Moving breaks links, and completion state is already captured
-in the content.  Status at a glance lives in
-[subprojects/README.md](subprojects/README.md).
+Forward-looking work that's scheduled but not yet started lives as
+individual files under [`docs/proposals/`](docs/proposals/).  When a
+proposal gets picked up for real, the active session's `README.md`
+references it; when the work lands, the proposal can be archived or
+rolled into that session's notes.
 
 ### How this evolved
 
-Before this workflow we had `docs/experiments/001..006.md` as a flat
-chronological log.  That worked for a linear bootstrap sequence.  Going
-forward, branches of work (bug fixes, investigations, packaging) are
-concurrent and iterative — the subprojects layout fits better.  Keep
-the old `experiments/` files in place (they're still referenced by
-`docs/state.md`) but put new work in subprojects.
+Before the sessions workflow we briefly tried a `subprojects/` layout
+(chunks by theme: `stage1-cross/`, `bug-pi-double-literal/`, etc.).
+That was heavier than needed — each chunk wanted its own README +
+plan + log + post-mortem, which created lots of thin files.  Sessions
+(chunks by date) turned out to match the actual shape of the work
+better: one session touches whatever needs touching, and the log
+captures the decisions in order.
+
+The even-earlier `docs/experiments/001..006.md` format is kept as-is
+for the bootstrap phase — those files are the historical record and
+are referenced from [`docs/state.md`](docs/state.md).
 
 ## The ghc-9.2.8 pin
 
