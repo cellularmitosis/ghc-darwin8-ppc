@@ -76,3 +76,20 @@ Investigating would mean either:
 * Bisecting GHC history to find where PPC lost its Typeable code path.
 
 Deferred.  The cross-build from uranium is fully functional, so users have a path to running Haskell on Tiger today.
+
+## Follow-up investigation (same day)
+
+Ran `ghc -dno-typeable-binds -c foo.hs` on the native stage2 ghc — **this bypass works**.  Typeable-free code compiles: `NoMain.hs` (a module with no main, just `addOne :: Int -> Int`) produced a 152-byte .o file successfully.
+
+But for Main modules:
+- `-c hello.hs` still fails: **"GHC internal error: 'main' is not in scope during type checking"** in `tcLookupId main_name` inside `generateMainBinding`.
+- `--make hello.hs` suppresses the error (gets printed once) but produces an empty `hello.o` that doesn't contain `_Main_main_closure`.
+- Link then fails on `_ZCMain_main_closure` because the `:Main` synthesis module is never written.
+
+So the defect narrows:
+1. Typeable binding codegen is broken on stage2 (workaround: `-dno-typeable-binds`).
+2. `:Main.main = runMainIO Main.main` synthesis is also broken — `tcLookupId` returns empty tcl_env for the main Name.
+
+Both point at the typechecker's local environment being empty when it shouldn't be.  Theory: stage2's internal state machinery (something the `ghc` library sets up in `runGhc`/`initDynFlags`/`loadInterfaceEnv`) isn't wiring up properly when the library was cross-compiled to PPC.
+
+Leaving the deep dive for a future session.
