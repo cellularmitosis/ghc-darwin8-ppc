@@ -53,10 +53,11 @@ All verified end-to-end via `cabal build --with-compiler=<cross-ghc>`
 | `aeson-2.2.4.1` | ~20 pkgs incl `scientific`, `text-iso8601` | Works for Generics-derived ToJSON/FromJSON.  TH derivation via `deriveJSON` does NOT work (see below). |
 | `optparse-applicative-0.19.0.0` | `prettyprinter`, `ansi-terminal` | Pure.  CLI parsing + help text fully working on Tiger. |
 | `megaparsec-9.7.0` | `parser-combinators`, `case-insensitive` | Parser combinators, Text-based. |
+| `network-2.5.0.0` | — | Pin to `< 3.0` in cabal.project. Newer network uses `SOCK_CLOEXEC`/`IP_RECVTOS`/`IPV6_TCLASS` which don't exist in Tiger's SDK.  With `constraints: network < 3.0`, cabal picks 2.5 which is Tiger-safe.  **TCP echo server + client verified on Tiger.** |
 
-Plus a full-stack demo combining aeson + vector + optparse-applicative:
-reads a JSON array of `Person {name, age}`, sorts by age, prints a
-table.  Verified running on Tiger.
+Plus two full-stack demos verified on Tiger:
+- `aeson` + `vector` + `optparse-applicative` reading a JSON file and sorting.
+- `network` TCP echo server + client (forkIO-separated).
 
 ## Packages with known issues
 
@@ -77,15 +78,15 @@ loader ([roadmap C](roadmap.md)).  Deferred.
 `$(deriveJSON defaultOptions ''Person)`.  Verified to work with
 aeson-2.2.4.1.
 
-### `network-3.2.8.0` — needs Tiger SDK patches
+### Modern `network` (≥3.0) needs Tiger SDK patches
 
-Fails at hsc2hs preprocessing of `Cbits.hsc` because network
-references `SOCK_CLOEXEC` unconditionally, but the 10.4u SDK's
-`<sys/socket.h>` doesn't define it (added 10.7).
+Modern network references `SOCK_CLOEXEC`, `IP_RECVTOS`, `IPV6_TCLASS`
+unconditionally in its hsc files.  All three don't exist in the 10.4u
+SDK (added 10.6–10.7).
 
-Fixable by vendoring network with a `#ifdef SOCK_CLOEXEC` guard, or
-using an older network version (≤ 3.0) that predates the reference.
-Deferred.
+**Workaround:** pin to `network < 3.0` in your `cabal.project`.
+network 2.5.x is Tiger-safe out of the box.  Verified TCP client/
+server working on Tiger via `constraints: network < 3.0`.
 
 ### Anything depending on 10.5+ macOS frameworks
 

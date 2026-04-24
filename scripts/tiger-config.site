@@ -140,3 +140,12 @@ ac_cv_func_readlinkat=no
 ac_cv_func_mkdirat=no
 ac_cv_func_symlinkat=no
 ac_cv_func_fdopendir=no
+
+# network package probes
+# accept4 is Linux-only; Tiger doesn't have it.  HAVE_ACCEPT4 controls
+# HAVE_ADVANCED_SOCKET_FLAGS in network's HsNetDef.h, and downstream
+# Cbits.hsc references SOCK_CLOEXEC/SOCK_NONBLOCK only when set.
+ac_cv_func_accept4=no
+ac_cv_func_gai_strerror=yes
+ac_cv_func_gethostent=yes
+ac_cv_func_ifNameToIndex=yes
