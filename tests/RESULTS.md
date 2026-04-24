@@ -1,20 +1,22 @@
 # Cross-build test battery results — 2026-04-24
 
-**Summary: 26 of 30 tests PASS with byte-identical output to host.**
-Session 3 added 6 new tests (threaded RTS, STM, Data.Time, MVar
-contention, Int64 GC pressure, and earlier 28_random was removed as
-`random` isn't in the base install).  The 4 non-matching tests are
-all test-design issues (Int width, getpid, progname), not bugs.
-**No real bugs known as of this run.**
+**Summary: 30 of 34 tests PASS with byte-identical output to host.**
+Session 4 added 4 more tests (POSIX signals, Data.Map heavy use,
+weak refs + performGC, STM retry+orElse).  All PASS.  The 4 non-
+matching tests are all test-design issues (Int width, getpid,
+progname), not bugs.  **No real bugs known as of this run.**
 
 ## History
 
 - **Session 0 (first run before fix):** 20 PASS, 1 real bug (`pi :: Double`).
 - **Session 1 (after pi fix):** 21 PASS, 0 real bugs, `02_double_literal`
   byte-identical after patch 0008.
-- **Session 3 (this run):** 26 PASS out of 30.  New tests 26–27, 29–31
+- **Session 3:** 26 PASS out of 30.  New tests 26–27, 29–31
   all PASS.  Threaded RTS, STM, long-running GC (10⁶ allocations),
   Data.Time, MVar-contention producer/consumer all work.
+- **Session 4 (this run):** 30 PASS out of 34.  New tests 32–35 all
+  PASS.  POSIX signals (installHandler + raise + catch), Data.Map
+  heavy use, weak refs + performGC, STM retry + orElse all work.
 
 ## Full test coverage
 
@@ -50,6 +52,10 @@ all test-design issues (Int width, getpid, progname), not bugs.
 | 29 | Data.Time (epoch, fromGregorian, addDays, diffDays, TimeOfDay) | PASS | |
 | 30 | Long-running allocation (10⁶ records, Int64 sum 3.5 trillion) | PASS | GC under pressure |
 | 31 | MVar stress (2 producers × 2 consumers, 200 items) | PASS | non-threaded RTS |
+| 32 | POSIX signals (installHandler + raise SIGUSR1 × 3) | PASS | signalProcess + Catch handler |
+| 33 | Data.Map heavy (fromList, map, filter, keys/elems) | PASS | |
+| 34 | Weak references + performGC | PASS | finalizer ran correctly |
+| 35 | STM retry + orElse (producer/consumer with timeout) | PASS | |
 
 ## Fixed bugs
 
