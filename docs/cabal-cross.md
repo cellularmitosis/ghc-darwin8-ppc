@@ -52,6 +52,11 @@ All verified end-to-end via `cabal build --with-compiler=<cross-ghc>`
 | `vector-0.13.2.0` | `primitive`, `vector-stream` | Pure. |
 | `aeson-2.2.4.1` | ~20 pkgs incl `scientific`, `text-iso8601` | Works for Generics-derived ToJSON/FromJSON.  TH derivation via `deriveJSON` does NOT work (see below). |
 | `optparse-applicative-0.19.0.0` | `prettyprinter`, `ansi-terminal` | Pure.  CLI parsing + help text fully working on Tiger. |
+| `megaparsec-9.7.0` | `parser-combinators`, `case-insensitive` | Parser combinators, Text-based. |
+
+Plus a full-stack demo combining aeson + vector + optparse-applicative:
+reads a JSON array of `Person {name, age}`, sorts by age, prints a
+table.  Verified running on Tiger.
 
 ## Packages with known issues
 

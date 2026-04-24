@@ -1,6 +1,6 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-04-24 session 2.
+Last reviewed: 2026-04-24 session 6.
 
 ## What's done (baseline)
 
@@ -35,21 +35,25 @@ Ordered by the user's stated priority: **A → D → F → C → B → E**
   - Homebrew formula.
   - Bundle clang/SDK/cctools into one combined installer.
 
-### F. More test coverage
+### F. More test coverage — mostly done (sessions 3 + 4 + 6)
 
-Currently untested — each is a small piece of work, likely to surface
-more bugs:
-- Threaded RTS (`-threaded` flag + capabilities)
-- Profiling (`-prof`, heap profile with `hp2ps`)
-- STM (`atomically`, `retry`, `orElse`)
-- Socket / network IO (Network.Socket)
-- Signal handling (`installHandler`)
-- Data.Time
-- System.Random
-- Long-running programs (GC under pressure; 10^7+ allocations)
-- Dynamic linking (`-dynamic`) — currently disabled by QuickCross flavour.
-- Cabal package consumer (build a Hackage library).
-- `runghc`, `ghc-pkg list/describe/expose/hide`.
+✅ Done: threaded RTS, STM, Data.Time, long-running GC, MVar
+stress, POSIX signals, Data.Map, weak refs + performGC, STM
+retry+orElse (battery 30/34 PASS byte-identical).
+
+✅ **Cabal cross-compile** (session 6, v0.4.0): 30+ Hackage
+packages verified — random, splitmix (vendored), async, vector,
+aeson, optparse-applicative, megaparsec + transitive deps.
+Recipe in [`docs/cabal-cross.md`](cabal-cross.md).
+
+Remaining untested / future sessions:
+- Profiling (`-prof`, `hp2ps`)
+- Socket / network IO (blocked on `SOCK_CLOEXEC` gap in Tiger SDK;
+  vendor `network` with `#ifdef` guards)
+- Dynamic linking (`-dynamic` disabled by QuickCross; 24-bit scattered reloc limit)
+- `runghc` execution path
+- `ghc-pkg list/describe/expose/hide` commands
+- TLS / HTTPS (needs Tiger-compatible `openssl`)
 
 ### C. Stretch: GHCi / TemplateHaskell
 

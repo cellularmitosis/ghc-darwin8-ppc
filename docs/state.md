@@ -1,6 +1,6 @@
 # state.md — where are we right now
 
-*Updated: 2026-04-24 session 2 (post-v0.3.0, installer shipped).*
+*Updated: 2026-04-24 session 6 (post-v0.4.0, cabal cross-compile shipped).*
 
 ## Headline
 
@@ -12,10 +12,15 @@ Three programs verified on real Tiger hardware (pmacg5):
 - `fib.hs`    — lazy infinite list + libgmp Integer → F(100) = 354224848179261915075
 - `stdin.hs`  — getContents + Data.List.{sort,nub} → sorted unique words
 
-Plus a 25-program test battery (see [`tests/RESULTS.md`](../tests/RESULTS.md)) —
-21 PASS byte-identical to host output, 4 test-design diffs (Int size
-differences between 32-bit PPC and 64-bit arm64, process-pid
-differences).  **No real bugs.**
+Plus a 34-program test battery (see [`tests/RESULTS.md`](../tests/RESULTS.md))
+— 30 PASS byte-identical to host output, 4 test-design diffs (Int
+size differences between 32-bit PPC and 64-bit arm64, process-pid /
+program-name differences).  **No real bugs.**
+
+Plus **30+ Hackage packages** cross-compiled via `cabal-install` and
+running on Tiger (random, splitmix, async, vector, aeson, optparse-applicative,
+megaparsec, and their transitive deps — see
+[`docs/cabal-cross.md`](cabal-cross.md)).
 
 Each test binary is 8–12 MB statically-linked Mach-O PPC executable.
 
