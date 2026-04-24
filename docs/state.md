@@ -1,170 +1,120 @@
 # state.md — where are we right now
 
-*Updated: 2026-04-22 very late night, after many hours of pushing
-through Phase 3.*
+*Updated: 2026-04-24, after ~14 sessions of pushing this back into existence.*
 
-## Current phase
+## Headline
 
-**Phase 3 cross-build is iterating through real bitrot.** Status:
+**GHC 9.2.8 builds and runs Haskell programs on PowerPC Mac OS X 10.4 Tiger.**
+First time since commit 374e44704b removed PPC/Darwin support in Dec 2018.
 
-- Cross-toolchain assembled and working
-- configure passes with `--target=powerpc-apple-darwin8 --enable-unregisterised`
-- `make` didn't work (dep-file issues). **Dropped.**
-- **Hadrian works.** Built 24 Stage0 artefacts cleanly.
-- Stage1 RTS compile hit CC-wrapper issue. **Fixed.**
-- Now failing at libffi — a specific fixable bug in bundled libffi-3.3-rc2
-  (`ffi_go_closure` type used unconditionally in `ffi_darwin.c`).
+Three programs verified on real Tiger hardware (pmacg5):
+- `hello.hs`  — `putStrLn` → "hello from ppc darwin 8"
+- `fib.hs`    — lazy infinite list + libgmp Integer → F(100) = 354224848179261915075
+- `stdin.hs`  — getContents + Data.List.{sort,nub} → sorted unique words
 
-**Next session picks up by writing `patches/0001-libffi-gate-go-closure.patch`.**
+Each is an 8–9 MB statically-linked Mach-O PPC executable.
 
-## What is known to work
+## Two flavors of "working"
 
-### Cross-toolchain on uranium
+### 1. Cross-compile toolchain (RECOMMENDED — fully working)
 
-All installed under `~/.local/`:
-- Host GHC 9.2.8 at `~/.local/ghc-9.2.8/bin/ghc`
-- Auto-mkdir GHC wrapper at `~/.local/ghc-boot-wrap/bin/ghc`
-  (wraps host GHC to `mkdir -p` output dirs)
-- Cross clang 7.1.1 at `~/.local/ghc-ppc-xtools/clang`
-- Clang resource-dir at `~/.local/lib/clang/7.1.1/` (required for
-  the `float.h` #include_next path)
-- 10.4u SDK at `~/.local/ghc-ppc-xtools/MacOSX10.4u.sdk/`
-- cctools-port ld64-253.9-ppc at `~/.local/cctools-ppc/install/bin/`
-  with `powerpc-apple-darwin8-*` prefixes
-- Happy 1.20.1.1 and Alex 3.2.7.4 at `~/.local/bin/`
-- **Smart** cross-CC wrapper at `~/.local/ghc-ppc-xtools/bin-wrap/ppc-cc`
-  (probe / compile-only / compile-link / pure-link detection)
-- **Fake linker** at `~/.local/ghc-ppc-xtools/bin-wrap/ppc-ld-fake`
-  (writes a dummy Mach-O ppc header because ld64-253.9 can't
-  handle the 10.4u SDK's crt1.o reloc format)
+Runs on arm64 macOS (uranium), produces PPC binaries, final link shipped
+via SSH to pmacg5.
 
-Scripts to regenerate: `scripts/cross-env.sh`,
-`scripts/make-cross-cc-wrapper.sh`, `scripts/ppc-cc.sh`,
-`scripts/ppc-ld-fake.sh`, `scripts/tiger-config.site`.
+- `external/ghc-modern/ghc-9.2.8/_build/stage1/bin/powerpc-apple-darwin8-ghc`
+  (134 MB arm64 binary — the cross-compiler)
+- 33 libraries registered in `_build/stage1/lib/package.conf.d/` as ppc
+- Bindist tarball at
+  `external/ghc-modern/ghc-9.2.8/_build/bindist/ghc-9.2.8-stage1-cross-to-ppc-darwin8.tar.xz`
+  (128 MB — install on another arm64 macOS for cross-compile)
 
-### GHC 9.2.8 configure with Tiger-correct cache
-
-```bash
-CONFIG_SITE=$HOME/claude/ghc-darwin8-ppc/scripts/tiger-config.site \
-./configure \
-    --target=powerpc-apple-darwin8 \
-    --enable-unregisterised \
-    GHC=$HOME/.local/ghc-boot-wrap/bin/ghc \
-    CC="$HOME/.local/ghc-ppc-xtools/bin-wrap/ppc-cc"
+**Usage:**
+```
+source scripts/cross-env.sh
+_build/stage1/bin/powerpc-apple-darwin8-ghc hello.hs -o hello-ppc
+scp hello-ppc pmacg5:/tmp/ && ssh pmacg5 /tmp/hello-ppc
 ```
 
-`tiger-config.site` forces `ac_cv_func_clock_gettime=no`,
-`ac_cv_func_pthread_condattr_setclock=no`, and other Leopard+ APIs
-that autoconf otherwise incorrectly detects as present (because it
-probes the host, not the target).
+### 2. PPC-native `ghc` binary (RUNS BUT CAN'T COMPILE)
 
-### Hadrian build — 24 stage0 artefacts built
+128 MB Mach-O `ppc_7400` executable.  `ghc --version` prints the banner.
+`ghc -c foo.hs` panics inside `StgToCmm.Env` on a Typeable lookup.
+Documented in `docs/experiments/006-stage2-native-ghc.md`, deferred.
 
-```bash
-source ~/claude/ghc-darwin8-ppc/scripts/cross-env.sh
-export PATH=$HOME/.local/ghc-boot-wrap/bin:$HOME/.local/ghc-9.2.8/bin:$HOME/.local/bin:$HOME/.local/cctools-ppc/install/bin:$PATH
+## Infrastructure
+
+### Tools on uranium (arm64 macOS), under `~/.local/`:
+
+- Host GHC 9.2.8: `~/.local/ghc-9.2.8/bin/ghc`
+- Host GHC wrapper (auto-mkdir): `~/.local/ghc-boot-wrap/bin/ghc`
+- Cross clang 7.1.1: `~/.local/ghc-ppc-xtools/clang`
+- Clang resource-dir: `~/.local/lib/clang/7.1.1/`
+- 10.4u SDK: `~/.local/ghc-ppc-xtools/MacOSX10.4u.sdk/`
+- cctools-port ld64-253.9-ppc: `~/.local/cctools-ppc/install/bin/powerpc-apple-darwin8-*`
+- happy 1.20.1.1, alex 3.2.7.4: `~/.local/bin/`
+- PPC gmp.h (32-bit limbs, from pmacg5): `~/.local/ghc-ppc-xtools/include-ppc/gmp.h`
+- Cross-CC wrapper: `~/.local/ghc-ppc-xtools/bin-wrap/ppc-cc` (tracked at `scripts/ppc-cc.sh`)
+- Tiger-link SSH shim: `~/.local/ghc-ppc-xtools/bin-wrap/ppc-ld-tiger` (tracked at `scripts/ppc-ld-tiger.sh`)
+- Fake linker (for autoconf): `~/.local/ghc-ppc-xtools/bin-wrap/ppc-ld-fake`
+- ld shim (routes `-r` merge-objects via SSH): installed as `~/.local/cctools-ppc/install/bin/powerpc-apple-darwin8-ld` (tracked at `scripts/ppc-ld-shim.sh`)
+- install_name_tool shim (routes PPC Mach-O rewrites via SSH): `~/.local/bin/install_name_tool`
+- Cross-env: `source scripts/cross-env.sh` sets PATH + CONFIG_SITE + CROSS_CC etc.
+
+### On pmacg5 (PowerPC Tiger 10.4.11), under `/opt/`:
+
+- gcc 14.2 (Tigerbrew / port): `/opt/gcc14/bin/gcc`, `/opt/gcc14/bin/ld`
+- gmp 6.2.1: `/opt/gmp-6.2.1/lib/libgmp.dylib`, includes at `/opt/gmp-6.2.1/include/gmp.h`
+
+### Patches in `patches/` (applied to `external/ghc-modern/ghc-9.2.8/`)
+
+1. `0001-libffi-gate-go-closure-on-ppc-darwin.patch` — libffi 3.3-rc2 had `ffi_go_closure` used unconditionally in `ffi_darwin.c`; gate behind `FFI_GO_CLOSURES`.
+2. `0002-restore-32bit-machotypes-for-ppc.patch` — add 32-bit ppc/i386 case to `MachOTypes.h`.
+3. `0003-restore-loadarchive-ppc-darwin.patch` — restore PPC case in `LoadArchive.c`.
+4. `0004-macho-c-ppc-symbol-extras-and-reloc-include.patch` — `ocAllocateExtras_MachO` for PPC plus `<mach-o/ppc/reloc.h>`.
+5. `0005-posixsource-h-no-posix-c-source-on-darwin.patch` — skip `_POSIX_C_SOURCE` define on Darwin (Tiger compat).
+6. `0006-quickcross-static-only.patch` — `hadrian QuickCross` flavour: `libraryWays = [vanilla]` (static only).
+7. `0007-rts-gate-hs_xchg64-on-64bit.patch` — gate `-Wl,-u,_hs_xchg64` behind 64-bit word size.
+
+Additional in-tree edits NOT tracked as patches (regenerated by autoreconf):
+- `mk/config.h`: `#undef HAVE_PTHREAD_SET_NAME_NP`, `HAVE_PTHREAD_SETNAME_NP{,_DARWIN}`, `HAVE_EVENTFD`
+- `rts/rts.cabal`, `rts/rts.cabal.in`, `rts/package.conf.in`: gate `_hs_xchg64` / `_hs_cmpxchg64` by 64-bit
+- `rts/package.conf.in`: strip `mingwex` from `extra-libraries`
+- `rts/linker/MachO.c`: PPC stub in `ocResolve_MachO` (print error for runtime-loader attempts)
+- `hadrian/cfg/system.config`: `gmp-include-dir = /Users/cell/.local/ghc-ppc-xtools/include-ppc`
+
+### Config overrides in `scripts/tiger-config.site`
+
+~50 `ac_cv_func_*=no` and `ac_cv_header_*=no` entries telling autoconf that
+Tiger lacks clock_gettime, pthread_setname_np, utimensat/openat family,
+eventfd, epoll, kevent64, getclock, libRT, _chsize, lutimes, statx, inotify,
+copy_file_range, renameat2, lchmod, strerror_r, posix_spawn, dispatch_*,
+getcontext/makecontext, pthread_threadid_np, etc.
+
+## Known limitations / future work
+
+1. **Stage2 native ghc** — runs, doesn't compile.  `StgToCmm.Env: variable not found $trModule3_rwD` panic.  See `docs/experiments/006`.
+2. **No GHCi / TemplateHaskell** — the runtime Mach-O loader for PPC was discarded in 2018; our stub errors at runtime.  Users can't splice TH on Tiger.  Restoring it requires re-implementing `relocateSection()` for PPC `PPC_RELOC_*` types.
+3. **No profiling / dynamic libraries** — `QuickCross` sets `libraryWays = [vanilla]` to dodge PPC Mach-O's 24-bit `r_address` limit on scattered relocs (16 MB section limit hit by GHC.Hs.Instances as a dyn_o).  `dynamic` and `profiling` ways untested.
+4. **Not in upstream GHC** — these are all local edits in our vendored tree.  Not yet turned into an MR/PR.
+5. **No CI** — nothing keeps this working.  If GHC master moves, this bitrots.
+
+## Build instructions
+
+From scratch on arm64 macOS:
+
+```
 cd external/ghc-modern/ghc-9.2.8
+source ../../../../scripts/cross-env.sh
 ./hadrian/build --flavour=quick-cross --docs=none -j8
 ```
 
-Built (all with `powerpc-apple-darwin8-` prefix where applicable):
-- Tools: unlit, hp2ps, genapply, compareSizes, deriveConstants,
-  genprimopcode, hsc2hs
-- Libraries: ghc-boot-th, transformers, binary, mtl, ghc-heap,
-  template-haskell, hpc, ghc-boot, exceptions, ghci, text, parsec
-- Plus large chunks of stage0 `compiler` (GHC as library) and
-  `haddock` before hitting libffi
+About 16 minutes on M-series Mac, with ~200 SSH link round-trips to pmacg5.
 
-## What is currently blocking progress
+## Session log
 
-`libffi-3.3-rc2`'s `src/powerpc/ffi_darwin.c` uses the type
-`ffi_go_closure` without the `#if FFI_GO_CLOSURES` gate that
-declares the type in `ffi.h`. Per-
-[`experiments/004`](experiments/004-hadrian-wrapper-fix-libffi-bitrot.md):
-
-```
-../src/powerpc/ffi_darwin.c:1114:22: error:
-    unknown type name 'ffi_go_closure'
-```
-
-This is a pre-existing libffi 3.3-rc2 bug, not GHC bitrot, not
-Tiger-specific. Fixable with a small patch. See experiment 004 for
-three options.
-
-## Last-touched state
-
-- Git: `main` branch, **9 commits**, clean.
-- Latest commit: 711ea63 (Phase 3: Hadrian cross-build succeeds
-  for Stage0, hits Stage1 RTS bitrot).
-- `external/ghc-modern/ghc-9.2.8/_build/stage0/` exists with 24
-  built artefacts. `_build/stage1/rts/` partially configured.
-
-## Immediate next steps (for next session)
-
-**Priority 1: write `patches/0001-libffi-gate-go-closure.patch`.**
-
-Extract libffi-tarballs, patch `src/powerpc/ffi_darwin.c` to gate
-`ffi_prep_go_closure` and `ffi_go_closure_helper_DARWIN` in `#if
-FFI_GO_CLOSURES`. Repack the tarball (or skip the tarball and let
-Hadrian use the pre-extracted source).
-
-Commands:
-
-```bash
-source ~/claude/ghc-darwin8-ppc/scripts/cross-env.sh
-export PATH=$HOME/.local/ghc-boot-wrap/bin:$HOME/.local/ghc-9.2.8/bin:$HOME/.local/bin:$HOME/.local/cctools-ppc/install/bin:$PATH
-cd ~/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8
-
-# After the patch:
-./hadrian/build --flavour=quick-cross --docs=none -j8
-```
-
-**Priority 2: deal with whatever breaks next.**
-
-Likely candidates after libffi:
-- RTS C files using Tiger-incompatible APIs. Expand `tiger-config.site`.
-- The first Haskell compile for PPC target — this is where the
-  removal-commit bitrot surfaces.
-
-**Priority 3: real linking story.**
-
-Eventually we need to actually link a PPC executable. ld64-253.9-ppc
-on uranium can't handle the 10.4u SDK crt1.o. Options:
-- Ship `.o` files to Tiger (pmacg5 or imacg52), link there with
-  ld64-97.17-tigerbrew. Matches the LLVM-7 project's pattern.
-- Patch ld64-253.9 to handle the older reloc format.
-- Strip the problematic reloc from crt1.o (hack).
-
-Don't block on this until Hadrian asks for real linking — which
-will be at the end of the stage1 build, when linking the
-cross-compiled `ghc-stage1` binary (which is arm64, not ppc, so
-actually it WOULD use the arm64 linker). Only at stage2 would we
-hit real PPC linking.
-
-## Key open questions
-
-1. **At what point does Hadrian need to link a real PPC executable?**
-   Stage1 GHC is built to run on the BUILD host (arm64 macOS 15),
-   so it's arm64-linked. Stage2 (GHC itself running on Tiger) is
-   when real PPC linking happens. We'd have plenty of warning
-   before hitting that.
-2. **Is `--enable-unregisterised` sufficient for the NCG bitrot?**
-   Trommler's recipe: yes, unregisterised dodges the NCG entirely;
-   once we have a working unregisterised compiler, that's our
-   bootstrap for reviving the NCG. Still accurate.
-3. **Does the removal-commit content ever get touched in the
-   unregisterised path?** Some of it (the `MachRegs.h` STG-register
-   map) might not, because unregisterised doesn't use the STG
-   register set. Some of it (RTS `StgCRun.c`, `Adjustor.c`) still
-   does. Will find out when we hit it.
-
-## Files to read first for anyone picking this up
-
-1. [`plan.md`](plan.md) — the big picture
-2. [`state.md`](state.md) — this file (where we are)
-3. [`experiments/004-hadrian-wrapper-fix-libffi-bitrot.md`](experiments/004-hadrian-wrapper-fix-libffi-bitrot.md) — most recent
-4. [`experiments/003-hadrian-cross-build.md`](experiments/003-hadrian-cross-build.md)
-5. [`experiments/002-cross-configure-and-first-make.md`](experiments/002-cross-configure-and-first-make.md)
-6. [`experiments/001-ghc-704-pkg-on-tiger.md`](experiments/001-ghc-704-pkg-on-tiger.md)
-7. [`notes/cross-toolchain-strategy.md`](notes/cross-toolchain-strategy.md)
-8. [`notes/codebase-tour.md`](notes/codebase-tour.md) / [`notes/file-mapping-86-vs-modern.md`](notes/file-mapping-86-vs-modern.md) — what to port
+- Session 1: project setup, plan.md, fleet recon
+- Sessions 2–3: Phase 1 (trying stock GHC 7.0.4 on Tiger — dead end)
+- Sessions 4–6: Phase 3 cross-toolchain, configure, libffi fix
+- Sessions 7–13: stage1 library chain, CC wrapper, Tiger-link, RTS patches
+- Session 14: stage1 hello.hs runs on Tiger 🎉
+- Session 15: stage2 ppc-native ghc runs `--version`; compile panic, deferred
