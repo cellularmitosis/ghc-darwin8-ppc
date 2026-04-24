@@ -1,0 +1,4 @@
+packages: .
+
+constraints:
+  network < 3.0

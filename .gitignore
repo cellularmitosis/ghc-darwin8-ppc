@@ -45,3 +45,9 @@ tests/expected/
 # Intermediate compiler outputs in test-programs dir.
 tests/programs/*.hi
 tests/programs/*.o
+
+# Cabal-examples build artifacts.
+tests/cabal-examples/*/dist/
+tests/cabal-examples/*/.cabal-store/
+tests/cabal-examples/*/cabal.project.local
+tests/cabal-examples/*/cabal.project.local~

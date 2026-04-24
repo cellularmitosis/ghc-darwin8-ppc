@@ -1,0 +1,4 @@
+packages:
+  .
+  -- Tiger-friendly splitmix (no Security.framework).
+  ../../../vendor/splitmix/

@@ -1,0 +1,23 @@
+-- Known-good cabal.project template for PPC/Darwin8 cross-compile.
+-- Copy this to your project's cabal.project and adjust `packages:`.
+--
+-- Usage:
+--   cp cabal.project.tiger cabal.project
+--   cabal --with-compiler=<cross-ghc> --with-hsc2hs=<host-hsc2hs> build
+
+packages:
+  .
+  -- Vendored splitmix with Tiger-friendly /dev/urandom init.
+  -- Only needed if random / splitmix is in your dep graph.
+  /Users/cell/claude/ghc-darwin8-ppc/vendor/splitmix/
+
+-- Pin packages to Tiger-safe versions.  See docs/cabal-cross.md
+-- for the rationale on each.
+constraints:
+  -- network 3.x+ uses SOCK_CLOEXEC, IP_RECVTOS, IPV6_TCLASS which
+  -- don't exist in the 10.4u SDK.  Pin to 2.x.
+  network < 3.0
+
+-- If you're going to use Template Haskell, stop here — TH doesn't
+-- work on Tiger without the runtime Mach-O loader (see docs/roadmap.md).
+-- For aeson, use Generics derivation; for QQ, you're out of luck.

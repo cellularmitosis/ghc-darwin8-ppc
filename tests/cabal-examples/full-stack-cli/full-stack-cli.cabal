@@ -1,0 +1,9 @@
+cabal-version: 2.2
+name: full-stack-cli
+version: 0.1
+build-type: Simple
+
+executable full-stack-cli
+  default-language: Haskell2010
+  main-is: Main.hs
+  build-depends: base, aeson, bytestring, vector, optparse-applicative
