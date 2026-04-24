@@ -1,0 +1,5 @@
+packages:
+  .
+  -- splitmix is a transitive dep via aeson→scientific→random.
+  -- Upstream uses Security/SecRandom.h (not on Tiger).
+  ../../../vendor/splitmix/
