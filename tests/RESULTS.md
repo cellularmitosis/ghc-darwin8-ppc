@@ -1,15 +1,20 @@
 # Cross-build test battery results — 2026-04-24
 
-**Summary: 21 of 25 tests PASS with byte-identical output to host**
-(after the pi-Double codegen fix landed mid-session).  The 4
-non-matching tests are test-design issues, not bugs.  **No real bugs
-known as of this run.**
+**Summary: 26 of 30 tests PASS with byte-identical output to host.**
+Session 3 added 6 new tests (threaded RTS, STM, Data.Time, MVar
+contention, Int64 GC pressure, and earlier 28_random was removed as
+`random` isn't in the base install).  The 4 non-matching tests are
+all test-design issues (Int width, getpid, progname), not bugs.
+**No real bugs known as of this run.**
 
 ## History
 
-- **First run (before fix):** 20 PASS, 1 real bug (`pi :: Double`).
-- **This run (after fix):** 21 PASS, 0 real bugs.  `02_double_literal`
-  is now byte-identical to host.
+- **Session 0 (first run before fix):** 20 PASS, 1 real bug (`pi :: Double`).
+- **Session 1 (after pi fix):** 21 PASS, 0 real bugs, `02_double_literal`
+  byte-identical after patch 0008.
+- **Session 3 (this run):** 26 PASS out of 30.  New tests 26–27, 29–31
+  all PASS.  Threaded RTS, STM, long-running GC (10⁶ allocations),
+  Data.Time, MVar-contention producer/consumer all work.
 
 ## Full test coverage
 
@@ -40,6 +45,11 @@ known as of this run.**
 | 23 | forkIO + MVar synchronisation | PASS | Non-threaded RTS |
 | 24 | FFI (getpid, strlen, abs via `ccall`) | DIFF-expected | pid differs (test design) |
 | 25 | Numeric boundaries (max/minBound, Int overflow, 1/0, 0/0, NaN) | DIFF-expected | Int is 32-bit |
+| 26 | Threaded RTS (-threaded + atomicModifyIORef + 4 threads × 250k increments) | PASS | counter exactly 1000000 |
+| 27 | STM (atomically / retry / 2 threads transferring) | PASS | invariant preserved |
+| 29 | Data.Time (epoch, fromGregorian, addDays, diffDays, TimeOfDay) | PASS | |
+| 30 | Long-running allocation (10⁶ records, Int64 sum 3.5 trillion) | PASS | GC under pressure |
+| 31 | MVar stress (2 producers × 2 consumers, 200 items) | PASS | non-threaded RTS |
 
 ## Fixed bugs
 
