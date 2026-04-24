@@ -28,6 +28,15 @@ pass_through() {
                   -Wno-parentheses-equality \
                   -Wno-tautological-compare \
                   -Wno-deprecated-declarations \
+                  -Wno-return-type \
+                  -Wno-unused-function \
+                  -Wno-unused-variable \
+                  -Wno-unused-label \
+                  -Wno-pointer-to-int-cast \
+                  -Wno-int-to-pointer-cast \
+                  -Wno-implicit-function-declaration \
+                  -Wno-implicit-int \
+                  -Wno-incompatible-pointer-types \
                   "${all_args[@]}"
 }
 
@@ -65,11 +74,15 @@ if [ $is_dynamiclib -eq 1 ]; then
     tiger_link
 fi
 
-if [ $has_source -eq 1 ]; then
-    fake_link
+# Pure link with objects (no source) = real executable link, ship to Tiger.
+if [ $has_objlike -eq 1 ] && [ $has_source -eq 0 ]; then
+    tiger_link
 fi
 
-if [ $has_objlike -eq 1 ]; then
+# Compile+link with source = configure's CC-works test; fake it.
+# (Shipping .c files to Tiger for compile+link is slow and error-prone,
+# and configure only needs to see that "something was produced".)
+if [ $has_source -eq 1 ]; then
     fake_link
 fi
 

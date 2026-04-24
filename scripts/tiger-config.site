@@ -88,3 +88,55 @@ ac_cv_func_posix_spawn=no
 ac_cv_header_spawn_h=no
 ac_cv_func_posix_spawn_file_actions_addchdir_np=no
 ac_cv_func_posix_spawn_file_actions_addchdir=no
+
+# More Linux-only functions autoconf mis-detected
+ac_cv_func_eventfd=no
+ac_cv_func_eventfd_write=no
+ac_cv_func_pthread_set_name_np=no
+ac_cv_header_sys_eventfd_h=no
+
+# base's configure probes — wrong host answers to force to Tiger reality.
+# epoll: Linux-only
+ac_cv_func_epoll_ctl=no
+ac_cv_func_epoll_wait=no
+ac_cv_func_epoll_create=no
+ac_cv_func_epoll_create1=no
+ac_cv_header_sys_epoll_h=no
+
+# getclock: Solaris/AIX, not Darwin
+ac_cv_func_getclock=no
+
+# kevent64: Snow Leopard 10.6+; Tiger has kevent (10.4) but not kevent64
+ac_cv_func_kevent64=no
+# kevent (no 64): Tiger does have
+ac_cv_func_kevent=yes
+ac_cv_func_kqueue=yes
+ac_cv_header_sys_event_h=yes
+
+# librt: Linux-only (Darwin rt_clock funcs are in libSystem directly)
+ac_cv_lib_rt=no
+
+# _chsize: Windows MSVC only
+ac_cv_func__chsize=no
+
+# extra Leopard+/Linux-only checks
+ac_cv_func_statx=no
+ac_cv_header_linux_fs_h=no
+ac_cv_header_linux_magic_h=no
+ac_cv_header_sys_timerfd_h=no
+ac_cv_header_sys_inotify_h=no
+ac_cv_func_inotify_init=no
+ac_cv_func_inotify_init1=no
+ac_cv_func_copy_file_range=no
+ac_cv_func_renameat2=no
+ac_cv_func_lchmod=no
+ac_cv_func_strerror_r=no           # Tiger may not have XSI-compliant strerror_r
+ac_cv_func_openat=no
+ac_cv_func_fstatat=no
+ac_cv_func_renameat=no
+ac_cv_func_unlinkat=no
+ac_cv_func_linkat=no
+ac_cv_func_readlinkat=no
+ac_cv_func_mkdirat=no
+ac_cv_func_symlinkat=no
+ac_cv_func_fdopendir=no

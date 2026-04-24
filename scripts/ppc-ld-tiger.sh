@@ -152,8 +152,9 @@ while [ $# -gt 0 ]; do
 done
 
 if [ -z "$OUT" ]; then
-    echo "ppc-ld-tiger: no -o output specified" >&2
-    exit 1
+    # No -o: default to a.out (autoconf conftest convention)
+    OUT="./a.out"
+    REMOTE_ARGS+=("-o" "$LINK_DIR/a.out")
 fi
 
 # Always add the remote link dir as a -L path so libraries we ship land there
@@ -221,6 +222,15 @@ case "$OUT" in
         done
         ;;
 esac
+
+# Always link against libiconv on Darwin (base uses libiconv-prefixed API
+# names: libiconv, libiconv_open, libiconv_close, locale_charset).  These
+# are in /usr/lib/libiconv.dylib on Tiger.
+EXTRA_FLAGS="$EXTRA_FLAGS -liconv"
+
+# gmp lives at /opt/gmp-6.2.1 on pmacg5 (Tigerbrew bottle), not in gcc14's
+# default search path.  Add it for ghc-bignum-using executables.
+EXTRA_FLAGS="$EXTRA_FLAGS -L/opt/gmp-6.2.1/lib"
 
 echo "  ssh pmacg5 '/opt/gcc14/bin/gcc ${REMOTE_ARGS[*]} $EXTRA_FLAGS'" >> /tmp/ppc-ld-tiger-trace.log
 

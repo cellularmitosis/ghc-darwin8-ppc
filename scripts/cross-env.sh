@@ -33,6 +33,11 @@
 export XTOOLS=$HOME/.local/ghc-ppc-xtools
 export SDK=$XTOOLS/MacOSX10.4u.sdk
 
+# Autoconf cache: feed sub-package configures (time, base, unix, directory,
+# process, etc.) correct Tiger answers so their HsXxxConfig.h doesn't claim
+# clock_gettime/pthread_setname_np/etc. exist.
+export CONFIG_SITE=/Users/cell/claude/ghc-darwin8-ppc/scripts/tiger-config.site
+
 # Host GHC (needed to drive the cross-compile)
 export PATH=$HOME/.local/ghc-9.2.8/bin:$PATH
 

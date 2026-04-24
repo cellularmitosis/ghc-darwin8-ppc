@@ -47,6 +47,34 @@ while [ $# -gt 0 ]; do
             OUT="$2"
             REMOTE_ARGS+=("-o" "$LINK_DIR/$(basename "$2")")
             shift 2;;
+        -filelist)
+            # -filelist <file> : read list of .o paths from <file> (one per
+            # line, possibly with trailing whitespace).  Read each, ship
+            # it with a unique remote name, write a new remote filelist.
+            filelist="$2"
+            if [ ! -f "$filelist" ]; then
+                echo "ld-shim: filelist $filelist doesn't exist" >&2
+                exit 1
+            fi
+            REMOTE_FILELIST="$LINK_DIR/filelist.$$"
+            REMOTE_ARGS+=("-filelist" "$REMOTE_FILELIST")
+            FILELIST_REMOTE_PATHS=()
+            while IFS= read -r line; do
+                # Strip trailing whitespace
+                line="${line%"${line##*[![:space:]]}"}"
+                [ -z "$line" ] && continue
+                if is_linkable "$line"; then
+                    u=$(unique_name "$line")
+                    LOCAL_INPUTS+=("$line")
+                    LOCAL_RENAMES+=("$u")
+                    FILELIST_REMOTE_PATHS+=("$LINK_DIR/$u")
+                else
+                    FILELIST_REMOTE_PATHS+=("$line")
+                fi
+            done < "$filelist"
+            # Save the remote paths list; we'll write it to remote later
+            FILELIST_CONTENTS="$(printf '%s\n' "${FILELIST_REMOTE_PATHS[@]}")"
+            shift 2;;
         *)
             REMOTE_ARGS+=("$1")
             shift;;
@@ -67,6 +95,11 @@ if [ ${#LOCAL_INPUTS[@]} -gt 0 ]; then
             cp "${LOCAL_INPUTS[$idx]}" "$staging/${LOCAL_RENAMES[$idx]}"
     done
     rsync -q -a "$staging/" "pmacg5:$LINK_DIR/"
+fi
+
+# Write filelist to remote if we had one
+if [ -n "${REMOTE_FILELIST:-}" ]; then
+    echo "$FILELIST_CONTENTS" | ssh -q pmacg5 "cat > $REMOTE_FILELIST"
 fi
 
 if ! ssh -q pmacg5 "cd $LINK_DIR && /opt/gcc14/bin/ld ${REMOTE_ARGS[*]}" 2>&1; then

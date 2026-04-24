@@ -1,0 +1,31 @@
+diff --git a/hadrian/src/Settings/Flavours/QuickCross.hs b/hadrian/src/Settings/Flavours/QuickCross.hs
+index 5e9dc05f..194cd86b 100644
+--- a/hadrian/src/Settings/Flavours/QuickCross.hs
++++ b/hadrian/src/Settings/Flavours/QuickCross.hs
+@@ -11,17 +11,15 @@ quickCrossFlavour = defaultFlavour
+     { name        = "quick-cross"
+     , args        = defaultBuilderArgs <> quickCrossArgs <> defaultPackageArgs
+     , dynamicGhcPrograms = pure False
+-    , libraryWays = mconcat
+-                    [ pure [vanilla]
+-                    , notStage0 ? platformSupportsSharedLibs ? pure [dynamic] ]
+-    , rtsWays     = mconcat
+-                    [ pure
+-                      [ vanilla, threaded, logging, debug
+-                      , threadedDebug, threadedLogging, threaded ]
+-                    , notStage0 ? platformSupportsSharedLibs ? pure
+-                      [ dynamic, debugDynamic, threadedDynamic, loggingDynamic
+-                      , threadedDebugDynamic, threadedLoggingDynamic ]
+-                    ] }
++    -- Build static libraries only (no dynamic .dyn_o variants) to keep the
++    -- PPC/Darwin cross-build feasible: some huge stage1 compiler modules
++    -- (e.g. GHC.Hs.Instances) exceed the 16MB 24-bit r_address field of
++    -- PPC Mach-O scattered relocations when compiled dynamic.  Static
++    -- builds use different reloc encoding and don't hit the limit.
++    , libraryWays = pure [vanilla]
++    , rtsWays     = pure
++                    [ vanilla, threaded, logging, debug
++                    , threadedDebug, threadedLogging, threaded ] }
+ 
+ quickCrossArgs :: Args
+ quickCrossArgs = sourceArgs SourceArgs
