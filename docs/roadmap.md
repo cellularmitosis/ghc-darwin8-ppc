@@ -1,66 +1,97 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-04-24 session 1.
+Last reviewed: 2026-04-24 session 2.
 
 ## What's done (baseline)
 
 - Stage1 cross-compiler on arm64 macOS → produces running PPC Mach-O binaries.
 - 25-program test battery: 21 PASS byte-identical to host, 4 test-design
   diffs, 0 real bugs.
-- 128 MB `.tar.xz` cross-bindist packaged; v0.1.0 release on GitHub.
+- ~117 MB `.tar.xz` cross-bindist packaged; tagged v0.1.0, v0.2.0 (pi fix),
+  v0.3.0 (installer).
 - **pi-Double codegen bug fixed** (patch 0008) — `CmmToC.decomposeMultiWord`
   now recurses on 32-bit targets.
+- **One-command install** — `./install.sh --prefix --ppc-host` bundled
+  in the tarball.  Verifies prereqs, copies tree, writes settings,
+  smoke-tests.
 - Stage2 ppc-native `ghc` binary: runs `--version`, can't compile yet
-  (see B).
+  (see *Stage2 native ghc* below).
 
-## Open engineering work, roughly ordered by cost
+## Open engineering work
 
-### A. Bug fixes
+Ordered by the user's stated priority: **A → D → F → C → B → E**
+(done ✅ = struck through).
 
-*No user-facing bugs currently known.*  Completed items:
-- ~~Double literals codegen~~ fixed by [patch 0008](../patches/0008-cmmtoc-split-w64-double-on-32bit.patch).
+### ~~A. Bug fixes from stress testing~~ ✅ done
 
-### B. Stretch: native self-hosting stage2 GHC
+*No user-facing bugs currently known.*
+- ~~Double literals codegen~~ fixed by patch 0008 (session 1).
 
-1. **`StgToCmm.Env: variable not found $trModule3_rwD` panic.** Typeable binding generation works in TC but fails in codegen.  Bypass with `-dno-typeable-binds` lets plain modules compile.
-2. **`:Main.main` synthesis fails.** `tcLookupId main_name` finds empty tcl_env.  Breaks any executable compile.  Both bugs point at "runtime state isn't wired up".
-3. **Likely root cause** — stage2 ghc's internal mutable state (HscEnv, DynFlags refs, etc.) depends on Haskell runtime behavior we haven't verified on PPC.  Probably needs RTS-level debugging with gdb on pmacg5.
+### ~~D. Bindist / install experience~~ ✅ done (v0.3.0)
 
-### C. Stretch: GHCi / Template Haskell
+- ~~Installer script that handles tarball + settings rewrite + smoke test~~.
+- Follow-ups (later sessions):
+  - CI (GitHub Actions can't run ppc; need custom runners or self-hosted).
+  - Homebrew formula.
+  - Bundle clang/SDK/cctools into one combined installer.
 
-1. **Restore PPC runtime Mach-O loader** in `rts/linker/MachO.c`.  The old (pre-2018) PPC code handled `PPC_RELOC_VANILLA`, `PPC_RELOC_BR24`, `PPC_RELOC_HI16`/`LO16`/`HA16`, pair relocs, section-diff relocs, etc.  Needs to be restored from git history (commit ~374e44704b^).
-2. **`ocAllocateExtras_MachO` / symbol stubs** for PPC branch-range extension (already partially restored in patch 0004, but the runtime-load path isn't wired up yet).
-3. **Test with `ghci`** (needs stage2 to work anyway).
+### F. More test coverage
 
-### D. Stretch: upstream contribution
+Currently untested — each is a small piece of work, likely to surface
+more bugs:
+- Threaded RTS (`-threaded` flag + capabilities)
+- Profiling (`-prof`, heap profile with `hp2ps`)
+- STM (`atomically`, `retry`, `orElse`)
+- Socket / network IO (Network.Socket)
+- Signal handling (`installHandler`)
+- Data.Time
+- System.Random
+- Long-running programs (GC under pressure; 10^7+ allocations)
+- Dynamic linking (`-dynamic`) — currently disabled by QuickCross flavour.
+- Cabal package consumer (build a Hackage library).
+- `runghc`, `ghc-pkg list/describe/expose/hide`.
 
-1. Break current local changes into clean patch series for GHC trunk.
-2. Engage `ghc-devs` mailing list / GHC gitlab about reviving PPC support.
-3. Find a volunteer maintainer who can run CI against a PPC box.
+### C. Stretch: GHCi / TemplateHaskell
 
-### E. Stretch: ppc64 / ppc64le
+Restore PPC runtime Mach-O loader in `rts/linker/MachO.c`.
+- `PPC_RELOC_VANILLA`, `PPC_RELOC_BR14`/`BR24`, `PPC_RELOC_HI16`/`LO16`/`HA16`, pair relocs, section-diff relocs.
+- Branch-island (jump stub) insertion for out-of-range `bl`s.
+- Restore from GHC git history at commit 374e44704b^.
+- `ocAllocateExtras_MachO` for PPC (partially in patch 0004, not yet wired up).
+- Testing requires stage2 to work first (see next section) — *or* a
+  direct C test driver that calls `loadArchive` in the RTS.
 
-Not in scope today; could be a future project.
+Estimated effort: 1–2 days drop-in, up to a week if the runtime
+linker API has drifted.
 
-### F. Packaging / distribution
+### B. Stretch: stage2 native `ghc` bug
 
-1. Cabal for PPC.  Is there a working `cabal-install`?  Would need GHC 9.2.8-compatible Cabal lib (we have it) + a `cabal` binary (stage2 ghc + cabal-install package).
-2. Bindist installer script (tarball → install script that patches settings).
-3. CI (GitHub Actions can't run ppc; need custom runners).
+Current 128 MB ppc-native `ghc` binary runs `--version` but panics on
+compile with `StgToCmm.Env: variable not found $trModule3_rwD`.
+Typeable binding generation works in TC but fails in codegen.  Bypass
+with `-dno-typeable-binds` lets non-main modules compile.
 
-### G. Known test-battery candidates for future (not yet written)
+`:Main.main` synthesis also fails separately — `tcLookupId main_name`
+finds empty tcl_env.
 
-- `hp2ps` — build a program with `-hp -prof`, generate a heap profile.
-- `ghc-pkg` commands — list/describe/expose/hide.
-- `runghc`, `ghci` (after stretch B/C).
-- Long-running programs — verify heap GC works across many allocations.
-- Cabal library consumer — compile a small Hackage package via cabal build.
+Both smell like "runtime state isn't wired up" — `HscEnv`, `DynFlags`
+IORefs, maybe something specific to PPC32 atomics (given our earlier
+`_hs_xchg64` patch, the atomics ABI is suspect).
 
-## Interactive planning topics for user
+Needs gdb on pmacg5 for a ppc-native Haskell runtime trace, or
+careful comparison against a known-good stage2 build (chicken-and-egg).
 
-- **Priority:** Fix double literal bug first? Or continue stage2 native bootstrap? Or something else?
-- **Bindist:** package the stage1 cross-bindist as something others can install? Docs?
-- **Upstream:** is there interest in getting this merged back into GHC?
-- **Scope:** focus on GHC 9.2.8, or also attempt 9.4/9.6 modernisation?
-- **Tests:** is this test battery (25 programs) enough or want more coverage (benchmarks, QuickCheck-style property tests, full testsuite)?
-- **Sister projects:** LLVM-7-darwin-ppc and GHC-704-on-tiger efforts that this relates to — should we unify?
+See [`docs/experiments/006-stage2-native-ghc.md`](experiments/006-stage2-native-ghc.md)
+and [`docs/proposals/stage2-native.md`](proposals/stage2-native.md).
+
+### ~~E. Upstream contribution~~ on hold (user request)
+
+Paused until we're further down the road.
+
+## Sister project touch-points
+
+- **llvm-7-darwin-ppc** (private) — source of our cross clang + SDK
+  + the underlying LLVM-7 PPC backend.  Our patch 0008 to
+  `compiler/GHC/CmmToC.hs` is pure-Haskell and doesn't affect LLVM;
+  no change to that project needed.
+- **rogerppc** (private) — unrelated to this project.
