@@ -39,3 +39,52 @@ ac_cv_func_pthread_setname_np=no
 
 # Tiger has sched.h but not sched_getaffinity either
 ac_cv_func_sched_getaffinity=no
+
+# unix package: aggressive Tiger-vs-Linux/newer-macOS API overrides.
+# Tiger 10.4 predates POSIX-2008 at-family (openat/fstatat/renameat/
+# utimensat), predates clock_gettime-family, predates futimens.
+# Also no Linux-only APIs.
+ac_cv_func_utimensat=no
+ac_cv_func_futimens=no
+ac_cv_func_clearenv=no
+ac_cv_func_execvpe=no
+ac_cv_func_fdatasync=no
+ac_cv_func_posix_fadvise=no
+ac_cv_func_posix_fallocate=no
+ac_cv_func_mkostemp=no
+ac_cv_func_mkdtemp=no
+ac_cv_func_mkstemps=no
+ac_cv_func_nanosleep=yes          # Tiger has it
+ac_cv_func_lutimes=yes            # Tiger has it
+ac_cv_func_futimes=yes            # Tiger has it
+ac_cv_func_shm_open=yes           # Tiger has it
+ac_cv_func_shm_unlink=yes
+ac_cv_func_openpty=yes            # Tiger has it
+ac_cv_func_setitimer=yes
+
+# struct stat layout
+ac_cv_member_struct_stat_st_atim=no         # Linux
+ac_cv_member_struct_stat_st_atim_tv_nsec=no
+ac_cv_member_struct_stat_st_atimespec=yes   # BSD/Darwin
+ac_cv_member_struct_stat_st_atimespec_tv_nsec=yes
+ac_cv_member_struct_stat_st_atimensec=no
+ac_cv_member_struct_stat_st_atime_n=no
+ac_cv_member_struct_stat_st_mtim=no
+ac_cv_member_struct_stat_st_mtim_tv_nsec=no
+ac_cv_member_struct_stat_st_mtimespec=yes
+ac_cv_member_struct_stat_st_mtimespec_tv_nsec=yes
+ac_cv_member_struct_stat_st_mtimensec=no
+ac_cv_member_struct_stat_st_ctim=no
+ac_cv_member_struct_stat_st_ctim_tv_nsec=no
+ac_cv_member_struct_stat_st_ctimespec=yes
+ac_cv_member_struct_stat_st_ctimensec=no
+
+# pthread
+ac_cv_func_pthread_mutex_consistent_np=no   # Linux
+
+# Tiger lacks posix_spawn (added in 10.5)
+ac_cv_func_posix_spawnp=no
+ac_cv_func_posix_spawn=no
+ac_cv_header_spawn_h=no
+ac_cv_func_posix_spawn_file_actions_addchdir_np=no
+ac_cv_func_posix_spawn_file_actions_addchdir=no

@@ -22,7 +22,13 @@ done
 pass_through() {
     exec "$CLANG" -target powerpc-apple-darwin8 -mlinker-version=253.9 \
                   -mmacosx-version-min=10.4 \
-                  -isysroot "$SDK" "${all_args[@]}"
+                  -isysroot "$SDK" \
+                  -Wno-error \
+                  -Wno-unused-value \
+                  -Wno-parentheses-equality \
+                  -Wno-tautological-compare \
+                  -Wno-deprecated-declarations \
+                  "${all_args[@]}"
 }
 
 tiger_link() {

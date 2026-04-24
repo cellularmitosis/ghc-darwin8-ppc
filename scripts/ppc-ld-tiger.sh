@@ -202,16 +202,25 @@ if [ ${#EXTRA_LIBS[@]} -gt 0 ]; then
     scp -q "${EXTRA_LIBS[@]}" "pmacg5:$LINK_DIR/"
 fi
 
-# Run on pmacg5.  Add -Wl,-undefined,dynamic_lookup for -dynamiclib
-# cases so linking doesn't fail on libffi's missing symbols (they're
-# resolved at runtime against RTS/libSystem).
+# Run on pmacg5.  Add -Wl,-undefined,dynamic_lookup ONLY when
+# linking libffi.*.dylib (libffi has unresolvable ffi_call_go_AIX
+# and mkostemp symbols that we defer to runtime).  For all other
+# dylibs, use the default (libSystem linked automatically), which
+# lets the linker produce proper picsymbol stubs for libSystem
+# functions like memcmp.  Using -undefined dynamic_lookup for all
+# dylibs on PPC triggers "bl branch out of range" errors because
+# the linker skips stub allocation for dynamic-lookup symbols.
 EXTRA_FLAGS=""
-for a in "${REMOTE_ARGS[@]}"; do
-    if [ "$a" = "-dynamiclib" ]; then
-        EXTRA_FLAGS="-Wl,-undefined,dynamic_lookup"
-        break
-    fi
-done
+case "$OUT" in
+    *libffi*)
+        for a in "${REMOTE_ARGS[@]}"; do
+            if [ "$a" = "-dynamiclib" ]; then
+                EXTRA_FLAGS="-Wl,-undefined,dynamic_lookup"
+                break
+            fi
+        done
+        ;;
+esac
 
 echo "  ssh pmacg5 '/opt/gcc14/bin/gcc ${REMOTE_ARGS[*]} $EXTRA_FLAGS'" >> /tmp/ppc-ld-tiger-trace.log
 
