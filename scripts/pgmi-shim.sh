@@ -40,6 +40,9 @@ shift 2
 #  - DYLD_LIBRARY_PATH ensures iserv can dlopen libgmp.dylib + friends
 #    that the cross-bindist links against.
 REMOTE_DYLD=${REMOTE_DYLD:-/opt/gmp-6.2.1/lib:/opt/gcc14/lib}
-exec ssh -T -q "$PPC_HOST" \
+# `-e none` disables SSH's `~`-escape character (which can corrupt binary
+# data sent over stdin if the data contains a `~` after a newline).
+# `-T` suppresses pseudo-tty allocation so stdio is not line-cooked.
+exec ssh -e none -T -q "$PPC_HOST" \
     "DYLD_LIBRARY_PATH=$REMOTE_DYLD $REMOTE_ISERV 1 0 $*" \
     <&"$RFD" >&"$WFD"

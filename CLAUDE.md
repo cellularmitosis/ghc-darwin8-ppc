@@ -36,8 +36,57 @@ docs/
 patches/                — git-format patches applied to the GHC source tree.
 scripts/                — cross-env, wrappers, linker shims, site cache.
 tests/                  — test battery + runner.  See tests/RESULTS.md.
+demos/                  — one runnable Haskell program per release,
+                          showcasing what that release unlocked.  See
+                          demos/README.md.
 external/               — gitignored.  Where the GHC source tree is unpacked.
 ```
+
+## Release workflow
+
+Every GitHub release ships **two** things in addition to the bindist
+tarball:
+
+1. A **demo** under `demos/vX.Y.Z-<slug>.{hs,sh}` (or a subdir for
+   cabal projects), showcasing what the release unlocked.  Add a row
+   to `demos/README.md`'s table.  Pick a tiny program that compiles
+   and runs end-to-end on a real Tiger box; the goal is "someone
+   landing on the release tag can paste a one-liner and see it work."
+2. A **README update** so the front-page status reflects what just
+   shipped.  Specifically:
+   - The "Latest release" line at the top of the Status section.
+   - The relevant rows in the "Implementation status" tables — flip
+     ❌ → 🟡 / ✅ where appropriate, link to the new patch / session /
+     release tag.
+   - A new row in the "Releases" table at the bottom.
+
+The release isn't done until both have landed.  Patch + session
+notes + bindist tarball + demo + README + tag, in roughly that order,
+all in the commit/release that bears the version number.
+
+## README format
+
+The "Implementation status" section uses tables, one per area
+(compiler & cross-build, language & libraries, cabal, runtime
+linker, TemplateHaskell, tooling).  Status column uses three
+emojis in this priority order:
+
+- ✅ Working — lands a green test or a verified end-to-end run.
+- 🟡 Partial / Stub / Pinned / Deferred — works for the common case
+  but has known gaps; or works only with a workaround; or works for
+  one variant only.  Always followed by a one-line "what's missing"
+  in the Notes column.
+- ❌ Missing — known not to work, with a pointer to the proposal or
+  session that scopes the fix.
+
+Each row's "Notes" column is one or two sentences.  Anything longer
+goes in the linked session findings or proposal — keep the table
+scannable.
+
+This format is borrowed from the sister project
+[`ionpower-node`](https://github.com/cellularmitosis/ionpower-node);
+see its README's "Node API implementation status" section for the
+full original.
 
 ## Sessions workflow
 

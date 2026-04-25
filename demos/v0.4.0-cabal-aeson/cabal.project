@@ -1,0 +1,8 @@
+packages:
+  .
+  ../../vendor/splitmix/
+
+-- Tiger's 10.4u SDK predates `network`'s SOCK_CLOEXEC dependency
+-- (added in 10.7).  Pin the older version that doesn't reference it.
+constraints:
+  network < 3.0
