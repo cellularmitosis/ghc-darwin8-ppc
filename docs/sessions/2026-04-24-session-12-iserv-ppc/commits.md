@@ -2,7 +2,7 @@
 
 | SHA | Description |
 |-----|-------------|
-| (pending) | Session 12a: fix resolveImports per-section-mmap bug; add Haskell .o loader test (v0.6.1). |
+| 2aa238e | Session 12a: fix resolveImports per-section-mmap bug; add Haskell .o loader test (v0.6.1). |
 
 12a-only this session.  12b (iserv plumbing) deferred to a later
 session.
