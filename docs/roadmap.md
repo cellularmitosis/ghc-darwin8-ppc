@@ -1,6 +1,6 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-04-24 session 10.
+Last reviewed: 2026-04-24 session 11.
 
 ## What's done (baseline)
 
@@ -9,7 +9,8 @@ Last reviewed: 2026-04-24 session 10.
   diffs, 0 real bugs.
 - ~117 MB `.tar.xz` cross-bindist packaged; tagged v0.1.0, v0.2.0 (pi
   fix), v0.3.0 (installer), v0.4.0 (cabal cross-compile docs),
-  v0.5.0 (runghc-tiger bundled).
+  v0.5.0 (runghc-tiger bundled), v0.6.0 (PPC Mach-O runtime loader
+  restored).
 - **pi-Double codegen bug fixed** (patch 0008) — `CmmToC.decomposeMultiWord`
   now recurses on 32-bit targets.
 - **One-command install** — `./install.sh --prefix --ppc-host` bundled
@@ -68,18 +69,25 @@ Remaining untested / future sessions:
 - Dynamic linking (`-dynamic` disabled by QuickCross; 24-bit scattered reloc limit)
 - TLS / HTTPS (needs Tiger-compatible `openssl`)
 
-### C. Stretch: GHCi / TemplateHaskell
+### C. GHCi / TemplateHaskell — partly done (session 11, v0.6.0)
 
-Restore PPC runtime Mach-O loader in `rts/linker/MachO.c`.
-- `PPC_RELOC_VANILLA`, `PPC_RELOC_BR14`/`BR24`, `PPC_RELOC_HI16`/`LO16`/`HA16`, pair relocs, section-diff relocs.
-- Branch-island (jump stub) insertion for out-of-range `bl`s.
-- Restore from GHC git history at commit 374e44704b^.
-- `ocAllocateExtras_MachO` for PPC (partially in patch 0004, not yet wired up).
-- Testing requires stage2 to work first (see next section) — *or* a
-  direct C test driver that calls `loadArchive` in the RTS.
+✅ **PPC runtime Mach-O loader restored.**  Patch 0009 brings back
+`relocateSection()` for PPC, adapted from GHC 8.6.5 to 9.2.8's
+per-section restructured API.  `loadObj` + `resolveObjs` +
+`lookupSymbol` + calling the loaded code works end-to-end on Tiger.
+Test in `tests/macho-loader/`:
+- `PPC_RELOC_VANILLA` (scattered + non-scattered) ✅
+- `PPC_RELOC_BR24` + jump-island for out-of-range `bl`s ✅
+- `PPC_RELOC_HI16/LO16/HA16/LO14` (scattered + non-scattered) — code
+  ported, not exercised by the simple C test ⚠️
+- `PPC_RELOC_SECTDIFF` family — same ⚠️
 
-Estimated effort: 1–2 days drop-in, up to a week if the runtime
-linker API has drifted.
+❌ **GHCi REPL** still blocked on stage2 (roadmap B) — no in-process
+ghc to compile splice expressions.
+
+❌ **TemplateHaskell end-to-end** still needs iserv plumbing: build a
+PPC `ghc-iserv` binary, ship to Tiger, point the cross-bindist's
+`lib/settings` at it.  Estimated 1–2 sessions.
 
 ### B. Stretch: stage2 native `ghc` bug
 

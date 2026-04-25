@@ -1,0 +1,389 @@
+--- a/rts/linker/MachO.c
++++ b/rts/linker/MachO.c
+@@ -248,6 +248,16 @@
+ 
+     IF_DEBUG(linker, debugBelch("ocVerifyImage_MachO: start\n"));
+ 
++#if defined(powerpc_HOST_ARCH) || defined(i386_HOST_ARCH)
++    /* 32-bit Mach-O: ppc-darwin8 (Tiger) and 32-bit i386 darwin. */
++    if(header->magic != MH_MAGIC) {
++        errorBelch("Could not load image %s: bad magic!\n"
++                   "  Expected %08x (32bit), got %08x%s\n",
++                   oc->fileName, MH_MAGIC, header->magic,
++                   header->magic == MH_MAGIC_64 ? " (64bit)." : ".");
++        return 0;
++    }
++#else
+     if(header->magic != MH_MAGIC_64) {
+         errorBelch("Could not load image %s: bad magic!\n"
+                    "  Expected %08x (64bit), got %08x%s\n",
+@@ -255,6 +265,7 @@
+                    header->magic == MH_MAGIC ? " (32bit)." : ".");
+         return 0;
+     }
++#endif
+ 
+     // FIXME: do some more verifying here
+     IF_DEBUG(linker, debugBelch("ocVerifyImage_MachO: done\n"));
+@@ -1004,7 +1015,344 @@
+     return 1;
+ }
+ #endif /* x86_64_HOST_ARCH */
++
++#if defined(powerpc_HOST_ARCH)
++/* PPC Mach-O runtime relocation, restored from pre-374e44704b (GHC 8.6.5
++ * rts/linker/MachO.c lines 789-1348, PPC branches only).  Adapted to
++ * 9.2.8's per-section restructuring: the function now takes
++ * (oc, sectIdx) like relocateSectionAarch64 and pulls everything else
++ * from oc->info->...  Symbol lookup uses lookupDependentSymbol(nm, oc).
++ *
++ * Handles all the PPC-specific reloc types emitted by Apple's PPC
++ * assembler:
++ *   - GENERIC_RELOC_VANILLA, scattered + non-scattered (32-bit absolute fix)
++ *   - PPC_RELOC_SECTDIFF / LO16/HI16/HA16/LOCAL SECTDIFF (PIC differences)
++ *   - PPC_RELOC_HI16 / LO16 / HA16 / LO14 (16-bit halves of a 32-bit addr)
++ *   - PPC_RELOC_BR24 (branch ±32 MB; falls back to a jump island via
++ *     SymbolExtras if the displacement is out of range)
++ */
++
++/* Convert a target VA (as the assembler emitted it) to its in-memory
++ * load address, using the section table.  In 9.2.8 each section may
++ * be loaded at an arbitrary page (for r+x / r+w protection), so we
++ * compute (sect->start + (addr - macho_section->addr)). */
++static unsigned long
++relocateAddressPPC(ObjectCode *oc, unsigned long address)
++{
++    for (int i = 0; i < oc->n_sections; i++) {
++        Section *sect = &oc->sections[i];
++        if (sect->info == NULL) continue;
++        MachOSection *msect = sect->info->macho_section;
++        if (msect->addr <= address
++            && address < msect->addr + msect->size) {
++            return (unsigned long) sect->start
++                 + (address - msect->addr);
++        }
++    }
++    barf("relocateAddressPPC: address %lx not in any section of %s",
++         address, OC_INFORMATIVE_FILENAME(oc));
++}
++
++static int
++relocateSectionPPC(ObjectCode *oc, int curSection)
++{
++    Section *sect = &oc->sections[curSection];
++
++    if (sect->info == NULL)
++        return 1;
++
++    MachOSection *msect = sect->info->macho_section;
++    MachORelocationInfo *relocs = sect->info->relocation_info;
++    MachONList *nlist = oc->info->nlist;
++    MachOSymtabCommand *symLC = oc->info->symCmd;
++    char *image = (char *) oc->image;
++
++    IF_DEBUG(linker, debugBelch("relocateSectionPPC %d (%s, %s): start\n",
++                                curSection, msect->segname, msect->sectname));
++
++    if (!strcmp(msect->sectname, "__la_symbol_ptr")
++     || !strcmp(msect->sectname, "__nl_symbol_ptr")
++     || !strcmp(msect->sectname, "__la_sym_ptr2")
++     || !strcmp(msect->sectname, "__la_sym_ptr3"))
++        return 1;
++
++    int n = msect->nreloc;
++    IF_DEBUG(linker, debugBelch("relocateSectionPPC: nreloc = %d\n", n));
++
++    for (int i = 0; i < n; i++) {
++        if (relocs[i].r_address & R_SCATTERED) {
++            MachOScatteredRelocationInfo *scat =
++                (MachOScatteredRelocationInfo *) &relocs[i];
++
++            if (scat->r_pcrel) {
++                barf("relocateSectionPPC: PC-relative scattered reloc "
++                     "in %s; type=%ld addr=%#lx",
++                     OC_INFORMATIVE_FILENAME(oc),
++                     (long) scat->r_type,
++                     (long) scat->r_address);
++                return 0;
++            }
++
++            if (scat->r_length != 2) {
++                barf("relocateSectionPPC: scattered reloc with r_length=%ld "
++                     "(expected 2) in %s; type=%ld addr=%#lx",
++                     (long) scat->r_length,
++                     OC_INFORMATIVE_FILENAME(oc),
++                     (long) scat->r_type,
++                     (long) scat->r_address);
++                return 0;
++            }
++
++            unsigned long word = 0;
++            unsigned long *wordPtr =
++                (unsigned long *) ((char *) sect->start + scat->r_address);
++            checkProddableBlock(oc, wordPtr, sizeof(unsigned long));
++
++            if (scat->r_type == GENERIC_RELOC_VANILLA) {
++                word = *wordPtr
++                     + relocateAddressPPC(oc, scat->r_value)
++                     - scat->r_value;
++            }
++            else if (scat->r_type == PPC_RELOC_SECTDIFF
++                  || scat->r_type == PPC_RELOC_LO16_SECTDIFF
++                  || scat->r_type == PPC_RELOC_HI16_SECTDIFF
++                  || scat->r_type == PPC_RELOC_HA16_SECTDIFF
++                  || scat->r_type == PPC_RELOC_LOCAL_SECTDIFF) {
++                MachOScatteredRelocationInfo *pair =
++                    (MachOScatteredRelocationInfo *) &relocs[i+1];
++
++                if (!pair->r_scattered || pair->r_type != PPC_RELOC_PAIR) {
++                    barf("relocateSectionPPC: PPC_RELOC_*_SECTDIFF not "
++                         "followed by PPC_RELOC_PAIR in %s",
++                         OC_INFORMATIVE_FILENAME(oc));
++                    return 0;
++                }
++
++                word = relocateAddressPPC(oc, scat->r_value)
++                     - relocateAddressPPC(oc, pair->r_value);
++                i++;
++            }
++            else if (scat->r_type == PPC_RELOC_HI16
++                  || scat->r_type == PPC_RELOC_LO16
++                  || scat->r_type == PPC_RELOC_HA16
++                  || scat->r_type == PPC_RELOC_LO14) {
++                MachORelocationInfo *pair = &relocs[i+1];
++
++                if ((pair->r_address & R_SCATTERED)
++                    || pair->r_type != PPC_RELOC_PAIR) {
++                    barf("relocateSectionPPC: PPC_RELOC_HI/LO/HA16 not "
++                         "followed by PPC_RELOC_PAIR in %s",
++                         OC_INFORMATIVE_FILENAME(oc));
++                    return 0;
++                }
++
++                if (scat->r_type == PPC_RELOC_LO16) {
++                    word = ((unsigned short *) wordPtr)[1];
++                    word |= ((unsigned long) relocs[i+1].r_address & 0xFFFF) << 16;
++                }
++                else if (scat->r_type == PPC_RELOC_LO14) {
++                    barf("Unsupported Relocation: PPC_RELOC_LO14");
++                }
++                else if (scat->r_type == PPC_RELOC_HI16) {
++                    word = ((unsigned short *) wordPtr)[1] << 16;
++                    word |= ((unsigned long) relocs[i+1].r_address & 0xFFFF);
++                }
++                else if (scat->r_type == PPC_RELOC_HA16) {
++                    word = ((unsigned short *) wordPtr)[1] << 16;
++                    word += ((short) relocs[i+1].r_address & (short) 0xFFFF);
++                }
++
++                word += relocateAddressPPC(oc, scat->r_value) - scat->r_value;
++                i++;
++            }
++            else {
++                barf("relocateSectionPPC: unhandled scattered type %ld in %s "
++                     "addr=%#lx",
++                     (long) scat->r_type,
++                     OC_INFORMATIVE_FILENAME(oc),
++                     (long) scat->r_address);
++                return 0;
++            }
++
++            /* Step 2: write back. */
++            if (scat->r_type == GENERIC_RELOC_VANILLA
++             || scat->r_type == PPC_RELOC_SECTDIFF) {
++                *wordPtr = word;
++            }
++            else if (scat->r_type == PPC_RELOC_LO16_SECTDIFF
++                  || scat->r_type == PPC_RELOC_LO16) {
++                ((unsigned short *) wordPtr)[1] = word & 0xFFFF;
++            }
++            else if (scat->r_type == PPC_RELOC_HI16_SECTDIFF
++                  || scat->r_type == PPC_RELOC_HI16) {
++                ((unsigned short *) wordPtr)[1] = (word >> 16) & 0xFFFF;
++            }
++            else if (scat->r_type == PPC_RELOC_HA16_SECTDIFF
++                  || scat->r_type == PPC_RELOC_HA16) {
++                ((unsigned short *) wordPtr)[1] = ((word >> 16) & 0xFFFF)
++                    + ((word & (1 << 15)) ? 1 : 0);
++            }
++        }
++        else {
++            /* Non-scattered reloc. */
++            MachORelocationInfo *reloc = &relocs[i];
++
++            if (reloc->r_pcrel && !reloc->r_extern) {
++                IF_DEBUG(linker, debugBelch(
++                    "relocateSectionPPC: pc-relative non-extern, skipping\n"));
++                continue;
++            }
++
++            if (reloc->r_length != 2) {
++                barf("relocateSectionPPC: non-scattered reloc with "
++                     "r_length=%d (expected 2) in %s; type=%d addr=%#x",
++                     reloc->r_length,
++                     OC_INFORMATIVE_FILENAME(oc),
++                     reloc->r_type,
++                     reloc->r_address);
++                return 0;
++            }
++
++            unsigned long word = 0;
++            unsigned long jumpIsland = 0;
++            long offsetToJumpIsland = 0xBADBAD42;
++            unsigned long *wordPtr =
++                (unsigned long *) ((char *) sect->start + reloc->r_address);
++            checkProddableBlock(oc, wordPtr, sizeof(unsigned long));
++
++            if (reloc->r_type == GENERIC_RELOC_VANILLA) {
++                word = *wordPtr;
++            }
++            else if (reloc->r_type == PPC_RELOC_LO16) {
++                word = ((unsigned short *) wordPtr)[1];
++                word |= ((unsigned long) relocs[i+1].r_address & 0xFFFF) << 16;
++            }
++            else if (reloc->r_type == PPC_RELOC_HI16) {
++                word = ((unsigned short *) wordPtr)[1] << 16;
++                word |= ((unsigned long) relocs[i+1].r_address & 0xFFFF);
++            }
++            else if (reloc->r_type == PPC_RELOC_HA16) {
++                word = ((unsigned short *) wordPtr)[1] << 16;
++                word += ((short) relocs[i+1].r_address & (short) 0xFFFF);
++            }
++            else if (reloc->r_type == PPC_RELOC_BR24) {
++                word = *wordPtr;
++                word = (word & 0x03FFFFFC)
++                     | ((word & 0x02000000) ? 0xFC000000 : 0);
++            }
++            else {
++                barf("relocateSectionPPC: unhandled non-scattered type %d "
++                     "in %s addr=%#x",
++                     reloc->r_type,
++                     OC_INFORMATIVE_FILENAME(oc),
++                     reloc->r_address);
++                return 0;
++            }
++
++            if (!reloc->r_extern) {
++                /* Section-relative reloc: r_symbolnum is a 1-based section
++                 * index.  Adjust for that section's load delta. */
++                Section *targetSect = &oc->sections[reloc->r_symbolnum - 1];
++                MachOSection *targetMsect =
++                    targetSect->info ? targetSect->info->macho_section : NULL;
++                if (targetMsect == NULL) {
++                    barf("relocateSectionPPC: non-extern reloc into section "
++                         "%u with no info in %s",
++                         reloc->r_symbolnum,
++                         OC_INFORMATIVE_FILENAME(oc));
++                    return 0;
++                }
++                long delta = (long) targetSect->start
++                           - (long) targetMsect->addr;
++                word += delta;
++            }
++            else {
++                MachONList *symbol = &nlist[reloc->r_symbolnum];
++                char *nm = image + symLC->stroff + symbol->n_un.n_strx;
++                void *symbolAddress = lookupDependentSymbol(nm, oc);
++
++                if (!symbolAddress) {
++                    errorBelch("\nrelocateSectionPPC: unknown symbol `%s'", nm);
++                    return 0;
++                }
++
++                if (reloc->r_pcrel) {
++                    /* In the .o the displacement should be 0 (relative-to-NULL);
++                     * we patch it to point at the symbol or, if too far, a
++                     * jump island.  The bias `sect->start - msect->addr` is the
++                     * delta from assembler-output VA to in-memory load address;
++                     * combined with the initial `word == -r_address` (per the
++                     * ASSERT) this yields the desired `symAddr - PC`
++                     * displacement, modulo `msect->addr` which is normally 0. */
++                    ASSERT(word + reloc->r_address == 0);
++                    jumpIsland = (unsigned long)
++                        &makeSymbolExtra(oc, reloc->r_symbolnum,
++                                         (unsigned long) symbolAddress)->jumpIsland;
++                    if (jumpIsland != 0) {
++                        offsetToJumpIsland = word + jumpIsland
++                            - ((long) sect->start - (long) msect->addr);
++                    }
++                    word += (unsigned long) symbolAddress
++                          - ((long) sect->start - (long) msect->addr);
++                }
++                else {
++                    word += (unsigned long) symbolAddress;
++                }
++            }
++
++            if (reloc->r_type == GENERIC_RELOC_VANILLA) {
++                *wordPtr = word;
++                continue;
++            }
++            else if (reloc->r_type == PPC_RELOC_LO16) {
++                ((unsigned short *) wordPtr)[1] = word & 0xFFFF;
++                i++;
++                continue;
++            }
++            else if (reloc->r_type == PPC_RELOC_HI16) {
++                ((unsigned short *) wordPtr)[1] = (word >> 16) & 0xFFFF;
++                i++;
++                continue;
++            }
++            else if (reloc->r_type == PPC_RELOC_HA16) {
++                ((unsigned short *) wordPtr)[1] = ((word >> 16) & 0xFFFF)
++                    + ((word & (1 << 15)) ? 1 : 0);
++                i++;
++                continue;
++            }
++            else if (reloc->r_type == PPC_RELOC_BR24) {
++                if ((word & 0x03) != 0) {
++                    barf("relocateSectionPPC: BR24 displacement %#lx is not "
++                         "a multiple of 4 in %s",
++                         word, OC_INFORMATIVE_FILENAME(oc));
++                }
++                if ((word & 0xFE000000) != 0xFE000000
++                 && (word & 0xFE000000) != 0x00000000) {
++                    /* Out of ±32 MB; route via a jump island. */
++                    if (jumpIsland == 0) {
++                        barf("relocateSectionPPC: BR24 out of range and no "
++                             "jump island in %s; word=%#lx",
++                             OC_INFORMATIVE_FILENAME(oc), word);
++                    }
++                    word = offsetToJumpIsland;
++                    if ((word & 0xFE000000) != 0xFE000000
++                     && (word & 0xFE000000) != 0x00000000) {
++                        barf("relocateSectionPPC: BR24 jump island also out "
++                             "of range in %s; word=%#lx",
++                             OC_INFORMATIVE_FILENAME(oc), word);
++                    }
++                }
++                *wordPtr = (*wordPtr & 0xFC000003) | (word & 0x03FFFFFC);
++                continue;
++            }
++        }
++    }
+ 
++    IF_DEBUG(linker, debugBelch("relocateSectionPPC: done\n"));
++    return 1;
++}
++#endif /* powerpc_HOST_ARCH */
++
+ SectionKind
+ getSectionKind_MachO(MachOSection *section)
+ {
+@@ -1586,6 +1934,16 @@
+ #if defined(aarch64_HOST_ARCH)
+         if (!relocateSectionAarch64(oc, &oc->sections[i]))
+             return 0;
++#elif defined(powerpc_HOST_ARCH)
++        /* Restored from pre-374e44704b (GHC 8.6.5) for the PPC/Darwin
++         * revival.  Adapted to 9.2.8's per-section restructured API.
++         * See relocateSectionPPC() above for the body. */
++        if (!relocateSectionPPC(oc, i))
++            return 0;
++#elif defined(powerpc64_HOST_ARCH) || defined(powerpc64le_HOST_ARCH)
++        /* PPC64 not restored — only ppc-darwin8 (32-bit) is in scope. */
++        errorBelch("PPC64 runtime Mach-O relocation not implemented.");
++        return 0;
+ #else
+         if (!relocateSection(oc, i))
+             return 0;
