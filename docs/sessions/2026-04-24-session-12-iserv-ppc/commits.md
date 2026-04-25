@@ -5,7 +5,7 @@
 | 2aa238e | Session 12a: fix resolveImports per-section-mmap bug; add Haskell .o loader test (v0.6.1). |
 | 13bb96c | Session 12b/c: iserv cross-build + pgmi-shim.sh (v0.7.0). |
 | fc73648 | Session 12d: __eprintf stub + DYLD_LIBRARY_PATH; documents BR24 OOR for large .o (v0.7.1). |
-| (pending) | Session 12e: BR24 jump-island fix; symbol_extras placed inside RX segment (v0.7.2). |
+| 7751096 | Session 12e: BR24 jump-island fix; symbol_extras placed inside RX segment (v0.7.2). |
 
 12a (Haskell `.o` loader test) shipped as v0.6.1.  12b/c (iserv
 cross-build + ssh-piped TH protocol) shipped as v0.7.0.  12d (path
