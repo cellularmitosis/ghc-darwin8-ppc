@@ -1,0 +1,23 @@
+diff --git a/rts/LinkerInternals.h b/rts/LinkerInternals.h
+index f2c36e05..ce6f9ff0 100644
+--- a/rts/LinkerInternals.h
++++ b/rts/LinkerInternals.h
+@@ -422,11 +422,16 @@ HsInt loadArchive_ (pathchar *path);
+ #if defined(powerpc_HOST_ARCH)
+ #define SHORT_REL_BRANCH 1
+ #endif
+-#if defined(arm_HOST_ARCH)
++/* ghc-darwin8-ppc: PPC has the same ±32 MB BR24 limit as ARM32.
++ * Without SHORT_REL_BRANCH the m32_alloc path puts symbol_extras
++ * (where jump islands live) too far from a loaded `.o`'s text
++ * section, and `bl` instructions to jump-island stubs go out of
++ * range when loading large objects like base.o. */
++#if defined(arm_HOST_ARCH) || defined(powerpc_HOST_ARCH)
+ #define SHORT_REL_BRANCH 1
+ #endif
+ 
+-#if (RTS_LINKER_USE_MMAP && defined(SHORT_REL_BRANCH) && defined(linux_HOST_OS))
++#if (RTS_LINKER_USE_MMAP && defined(SHORT_REL_BRANCH) && (defined(linux_HOST_OS) || defined(darwin_HOST_OS)))
+ #define USE_CONTIGUOUS_MMAP 1
+ #else
+ #define USE_CONTIGUOUS_MMAP 0

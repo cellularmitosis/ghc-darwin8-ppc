@@ -1,6 +1,6 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-04-24 session 12d.
+Last reviewed: 2026-04-24 session 12e.
 
 ## What's done (baseline)
 
@@ -12,7 +12,9 @@ Last reviewed: 2026-04-24 session 12d.
   docs), v0.5.0 (runghc-tiger bundled), v0.6.0 (PPC Mach-O runtime
   loader restored), v0.6.1 (Haskell `.o` loader test + resolveImports
   fix), v0.7.0 (PPC ghc-iserv built + SSH-piped TH protocol working),
-  v0.7.1 (eprintf stub + DYLD + filesystem mirror docs).
+  v0.7.1 (eprintf stub + DYLD + filesystem mirror docs),
+  v0.7.2 (BR24 jump-island fix; all `.o` files including `base` load
+  via iserv).
 - **pi-Double codegen bug fixed** (patch 0008) — `CmmToC.decomposeMultiWord`
   now recurses on 32-bit targets.
 - **One-command install** — `./install.sh --prefix --ppc-host` bundled
@@ -101,13 +103,21 @@ What works (with manual filesystem mirror — see release notes):
 - TH `loadObj` succeeds for small Haskell `.o`s (ghc-prim,
   integer-gmp, bignum).
 
-What's broken (session 12e):
-- TH splices that load `base` (or other large `.o`s) hit
-  `BR24 jump island also out of range`.  The `symbol_extras`
-  allocation in 9.2.8's per-section-mmap world ends up too far
-  from the text section's mmap.  Fix needs either per-section
-  symbol_extras or wiring up the `Stub` infrastructure (NEED_PLT
-  for PPC).  See `docs/sessions/2026-04-24-session-12-iserv-ppc/findings.md`.
+✅ **Session 12e (v0.7.2):** BR24 jump-island fix.  `symbol_extras`
+now placed inside the RX segment's mmap so jump islands always
+stay within ±32 MB of all text sections.  All `.o` files load
+via iserv, including the multi-MB `base.o`.  Patch 0009 grew
+from 461 → 524 lines; patch 0012 enables `SHORT_REL_BRANCH` and
+`USE_CONTIGUOUS_MMAP` for PPC.
+
+⚠️ **Session 12f (TBD):** iserv binary protocol parses host's
+output up to byte ~133 then fails with "Unknown encoding for
+constructor".  All `.o`s already loaded by then; this is
+post-load, during splice evaluation.  Likely cause is endianness
+or word-size encoding mismatch in some inner field; or SSH
+stdio corruption; or version skew.  Debug shim
+(`/tmp/pgmi-shim-debug.sh`) tee's both directions for
+post-mortem analysis.  See [`docs/sessions/2026-04-24-session-12-iserv-ppc/12e-br24-fix.md`](sessions/2026-04-24-session-12-iserv-ppc/12e-br24-fix.md).
 
 ### B. Stretch: stage2 native `ghc` bug
 

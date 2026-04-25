@@ -90,7 +90,7 @@
 +    fprintf(stderr, fmt, file, line, expr);
 +    abort();
 +}
- 
++
 +/* PPC Mach-O runtime relocation, restored from pre-374e44704b (GHC 8.6.5
 + * rts/linker/MachO.c lines 789-1348, PPC branches only).  Adapted to
 + * 9.2.8's per-section restructuring: the function now takes
@@ -157,7 +157,7 @@
 +        if (relocs[i].r_address & R_SCATTERED) {
 +            MachOScatteredRelocationInfo *scat =
 +                (MachOScatteredRelocationInfo *) &relocs[i];
-+
+ 
 +            if (scat->r_pcrel) {
 +                barf("relocateSectionPPC: PC-relative scattered reloc "
 +                     "in %s; type=%ld addr=%#lx",
@@ -430,7 +430,55 @@
  SectionKind
  getSectionKind_MachO(MachOSection *section)
  {
-@@ -1521,20 +1893,23 @@
+@@ -1083,6 +1455,25 @@
+         }
+     }
+ 
++#if defined(powerpc_HOST_ARCH)
++    /* ghc-darwin8-ppc: PPC has a ±32 MB BR24 limit.  symbol_extras (where
++     * jump islands live) MUST be within that range of every text section.
++     * The default `m32_alloc(oc->rx_m32, ...)` path puts them wherever m32
++     * has memory, which can be far away when loading large `.o`s like base.o.
++     * Even with USE_CONTIGUOUS_MMAP=1 they're adjacent to oc->image but not
++     * to the per-segment mmap allocated below.
++     *
++     * Fix: reserve room for symbol_extras at the end of the RX segment.
++     * The RX segment is one mmap, so extras-in-segment are guaranteed
++     * within range of every text section in this object.  oc->symbol_extras
++     * gets overridden to point there after the segments are laid out.
++     * The original m32-allocated region is leaked (a few KB per object),
++     * which is acceptable. */
++    size_t ppc_extras_size = sizeof(SymbolExtra) * oc->n_symbol_extras;
++    size_t orig_size_rxSegment = size_rxSegment;
++    size_rxSegment = roundUpToAlign(size_rxSegment, 8) + ppc_extras_size;
++#endif
++
+     size_compound = roundUpToPage(size_rxSegment) +
+         roundUpToPage(size_rwSegment) +
+         roundUpToPage(size_gbZerofillSegment);
+@@ -1124,6 +1515,21 @@
+                     n_rxSections);
+         IF_DEBUG(linker, debugBelch("ocBuildSegments_MachO: init segment %d (RX) at %p size %zu\n",
+                                     curSegment, rxSegment->start, rxSegment->size));
++#if defined(powerpc_HOST_ARCH)
++        /* Override oc->symbol_extras to point at the end of this RX segment
++         * (after the original section data, before the page-rounding tail).
++         * makeSymbolExtra() will use the new pointer when laying down jump
++         * islands during relocateSectionPPC. */
++        if (oc->n_symbol_extras > 0) {
++            oc->symbol_extras = (SymbolExtra *)
++                ((char *) curMem + roundUpToAlign(orig_size_rxSegment, 8));
++            memset(oc->symbol_extras, 0, ppc_extras_size);
++            IF_DEBUG(linker,
++                debugBelch("ocBuildSegments_MachO: PPC symbol_extras moved to %p (in RX seg %p+%zu)\n",
++                           oc->symbol_extras, curMem,
++                           (size_t)((char*)oc->symbol_extras - (char*)curMem)));
++        }
++#endif
+         curMem = (char *)curMem + rxSegment->size;
+         curSegment++;
+     }
+@@ -1521,20 +1927,23 @@
                  || !strcmp(sectionName,"__la_sym_ptr2")
                  || !strcmp(sectionName,"__la_sym_ptr3"))
              {
@@ -457,7 +505,7 @@
                                     indirectSyms))
                      return 0;
              }
-@@ -1586,6 +1961,16 @@
+@@ -1586,6 +1995,16 @@
  #if defined(aarch64_HOST_ARCH)
          if (!relocateSectionAarch64(oc, &oc->sections[i]))
              return 0;
