@@ -1,14 +1,15 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-04-24 session 6.
+Last reviewed: 2026-04-24 session 10.
 
 ## What's done (baseline)
 
 - Stage1 cross-compiler on arm64 macOS → produces running PPC Mach-O binaries.
 - 25-program test battery: 21 PASS byte-identical to host, 4 test-design
   diffs, 0 real bugs.
-- ~117 MB `.tar.xz` cross-bindist packaged; tagged v0.1.0, v0.2.0 (pi fix),
-  v0.3.0 (installer).
+- ~117 MB `.tar.xz` cross-bindist packaged; tagged v0.1.0, v0.2.0 (pi
+  fix), v0.3.0 (installer), v0.4.0 (cabal cross-compile docs),
+  v0.5.0 (runghc-tiger bundled).
 - **pi-Double codegen bug fixed** (patch 0008) — `CmmToC.decomposeMultiWord`
   now recurses on 32-bit targets.
 - **One-command install** — `./install.sh --prefix --ppc-host` bundled
@@ -46,13 +47,25 @@ packages verified — random, splitmix (vendored), async, vector,
 aeson, optparse-applicative, megaparsec + transitive deps.
 Recipe in [`docs/cabal-cross.md`](cabal-cross.md).
 
+✅ **`runghc-tiger`** (session 10, v0.5.0): a `runghc` analog that
+makes sense for cross-compile — compile, scp to `$PPC_HOST`, ssh-run,
+return exit code, clean up.  Bundled in the bindist; install.sh
+patches the `PPC_HOST` default.
+
+✅ **`ghc-pkg`** (session 10): standard commands all work via
+`powerpc-apple-darwin8-ghc-pkg list/describe/field/latest/check`.
+
+⚠️ **Profiling** (session 9, deferred): `-prof` builds hit a clang-7
+PPC integrated-assembler bug (`lwz r2, 16(0)` rejected as
+displacement-form base register).  Documented in
+[`docs/sessions/2026-04-24-session-9-profiling/findings.md`](sessions/2026-04-24-session-9-profiling/findings.md).
+Workarounds for a future session.
+
 Remaining untested / future sessions:
-- Profiling (`-prof`, `hp2ps`)
 - Socket / network IO (blocked on `SOCK_CLOEXEC` gap in Tiger SDK;
-  vendor `network` with `#ifdef` guards)
+  vendor `network` with `#ifdef` guards — partially worked around in
+  session 7 by pinning `network < 3.0`).
 - Dynamic linking (`-dynamic` disabled by QuickCross; 24-bit scattered reloc limit)
-- `runghc` execution path
-- `ghc-pkg list/describe/expose/hide` commands
 - TLS / HTTPS (needs Tiger-compatible `openssl`)
 
 ### C. Stretch: GHCi / TemplateHaskell

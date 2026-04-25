@@ -1,6 +1,6 @@
 # state.md — where are we right now
 
-*Updated: 2026-04-24 session 6 (post-v0.4.0, cabal cross-compile shipped).*
+*Updated: 2026-04-24 session 10 (post-v0.5.0, runghc-tiger shipped).*
 
 ## Headline
 
@@ -36,10 +36,12 @@ via SSH to pmacg5.
 - 33 libraries registered in `_build/stage1/lib/package.conf.d/` as ppc
 - Bindist tarball at
   `external/ghc-modern/ghc-9.2.8/_build/bindist/ghc-9.2.8-stage1-cross-to-ppc-darwin8.tar.xz`
-  (117 MB — now includes `install.sh` at the root).  Released on
-  GitHub as
-  [v0.3.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.3.0).
+  (117 MB — includes `install.sh` at the root and `cross-scripts/runghc-tiger`).
+  Released on GitHub as
+  [v0.5.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.5.0).
   Install flow: `tar xJf <tarball> && cd ghc-9.2.8-powerpc-apple-darwin8 && ./install.sh --prefix=$PREFIX --ppc-host=<ssh-alias>`.
+  After install, `$PREFIX/bin/runghc-tiger foo.hs [args]` compiles +
+  scp's + ssh-runs the result on the configured Tiger box.
 
 **Usage:**
 ```
@@ -132,3 +134,6 @@ About 16 minutes on M-series Mac, with ~200 SSH link round-trips to pmacg5.
 - Sessions 7–13: stage1 library chain, CC wrapper, Tiger-link, RTS patches
 - Session 14: stage1 hello.hs runs on Tiger 🎉
 - Session 15: stage2 ppc-native ghc runs `--version`; compile panic, deferred
+- 2026-04-24 sessions 1–10: workflow + bug fixes + bindist installer +
+  test battery + cabal cross-compile + runghc-tiger / ghc-pkg verify
+  (v0.1.0 through v0.5.0).
