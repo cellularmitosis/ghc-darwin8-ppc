@@ -1,6 +1,14 @@
 --- a/rts/linker/MachO.c
 +++ b/rts/linker/MachO.c
-@@ -248,6 +248,16 @@
+@@ -169,6 +169,7 @@
+ static int
+ resolveImports(
+     ObjectCode* oc,
++    Section *sect_in_mem,  // per-section in-memory load location (for the writes)
+     MachOSection *sect,    // ptr to lazy or non-lazy symbol pointer section
+     unsigned long *indirectSyms);
+ 
+@@ -248,6 +249,16 @@
  
      IF_DEBUG(linker, debugBelch("ocVerifyImage_MachO: start\n"));
  
@@ -17,7 +25,7 @@
      if(header->magic != MH_MAGIC_64) {
          errorBelch("Could not load image %s: bad magic!\n"
                     "  Expected %08x (64bit), got %08x%s\n",
-@@ -255,6 +265,7 @@
+@@ -255,6 +266,7 @@
                     header->magic == MH_MAGIC ? " (32bit)." : ".");
          return 0;
      }
@@ -25,7 +33,44 @@
  
      // FIXME: do some more verifying here
      IF_DEBUG(linker, debugBelch("ocVerifyImage_MachO: done\n"));
-@@ -1004,7 +1015,344 @@
+@@ -264,6 +276,7 @@
+ static int
+ resolveImports(
+     ObjectCode* oc,
++    Section *sect_in_mem,  // per-section in-memory load location (for the writes)
+     MachOSection *sect,    // ptr to lazy or non-lazy symbol pointer section
+     unsigned long *indirectSyms)
+ {
+@@ -271,6 +284,15 @@
+ 
+     IF_DEBUG(linker, debugBelch("resolveImports: start\n"));
+ 
++    /* Writes go to the per-section in-memory location.  Older code wrote
++     * to (oc->image + sect->offset), which was correct for the old
++     * monolithic-image layout but is wrong in 9.2.8's per-section mmap
++     * scheme — each section now lives at its own address (sect_in_mem->start),
++     * independent of `oc->image`.  Using the wrong address tripped
++     * checkProddableBlock when loading PPC Haskell .o files (where
++     * __nl_symbol_ptr is heavily used). */
++    void **dest = (void **) sect_in_mem->start;
++
+     for(unsigned i = 0; i * itemSize < sect->size; i++)
+     {
+         // according to otool, reserved1 contains the first index into the
+@@ -297,10 +319,8 @@
+             return 0;
+         }
+ 
+-        checkProddableBlock(oc,
+-                            ((void**)(oc->image + sect->offset)) + i,
+-                            sizeof(void *));
+-        ((void**)(oc->image + sect->offset))[i] = addr;
++        checkProddableBlock(oc, dest + i, sizeof(void *));
++        dest[i] = addr;
+     }
+ 
+     IF_DEBUG(linker, debugBelch("resolveImports: done\n"));
+@@ -1004,7 +1024,344 @@
      return 1;
  }
  #endif /* x86_64_HOST_ARCH */
@@ -210,7 +255,7 @@
 +        else {
 +            /* Non-scattered reloc. */
 +            MachORelocationInfo *reloc = &relocs[i];
-+
+ 
 +            if (reloc->r_pcrel && !reloc->r_extern) {
 +                IF_DEBUG(linker, debugBelch(
 +                    "relocateSectionPPC: pc-relative non-extern, skipping\n"));
@@ -361,7 +406,7 @@
 +            }
 +        }
 +    }
- 
++
 +    IF_DEBUG(linker, debugBelch("relocateSectionPPC: done\n"));
 +    return 1;
 +}
@@ -370,7 +415,34 @@
  SectionKind
  getSectionKind_MachO(MachOSection *section)
  {
-@@ -1586,6 +1934,16 @@
+@@ -1521,20 +1878,23 @@
+                 || !strcmp(sectionName,"__la_sym_ptr2")
+                 || !strcmp(sectionName,"__la_sym_ptr3"))
+             {
+-                if(!resolveImports(oc,&oc->info->macho_sections[i],
++                if(!resolveImports(oc, &oc->sections[i],
++                                   &oc->info->macho_sections[i],
+                                    indirectSyms))
+                     return 0;
+             }
+             else if(!strcmp(sectionName,"__nl_symbol_ptr")
+                 ||  !strcmp(sectionName,"__pointers"))
+             {
+-                if(!resolveImports(oc,&oc->info->macho_sections[i],
++                if(!resolveImports(oc, &oc->sections[i],
++                                   &oc->info->macho_sections[i],
+                                    indirectSyms))
+                     return 0;
+             }
+             else if(!strcmp(sectionName,"__jump_table"))
+             {
+-                if(!resolveImports(oc,&oc->info->macho_sections[i],
++                if(!resolveImports(oc, &oc->sections[i],
++                                   &oc->info->macho_sections[i],
+                                    indirectSyms))
+                     return 0;
+             }
+@@ -1586,6 +1946,16 @@
  #if defined(aarch64_HOST_ARCH)
          if (!relocateSectionAarch64(oc, &oc->sections[i]))
              return 0;

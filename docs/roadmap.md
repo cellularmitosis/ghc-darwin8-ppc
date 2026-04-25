@@ -1,6 +1,6 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-04-24 session 11.
+Last reviewed: 2026-04-24 session 12a.
 
 ## What's done (baseline)
 
@@ -10,7 +10,7 @@ Last reviewed: 2026-04-24 session 11.
 - ~117 MB `.tar.xz` cross-bindist packaged; tagged v0.1.0, v0.2.0 (pi
   fix), v0.3.0 (installer), v0.4.0 (cabal cross-compile docs),
   v0.5.0 (runghc-tiger bundled), v0.6.0 (PPC Mach-O runtime loader
-  restored).
+  restored), v0.6.1 (Haskell `.o` loader test + resolveImports fix).
 - **pi-Double codegen bug fixed** (patch 0008) — `CmmToC.decomposeMultiWord`
   now recurses on 32-bit targets.
 - **One-command install** — `./install.sh --prefix --ppc-host` bundled
@@ -78,9 +78,12 @@ per-section restructured API.  `loadObj` + `resolveObjs` +
 Test in `tests/macho-loader/`:
 - `PPC_RELOC_VANILLA` (scattered + non-scattered) ✅
 - `PPC_RELOC_BR24` + jump-island for out-of-range `bl`s ✅
-- `PPC_RELOC_HI16/LO16/HA16/LO14` (scattered + non-scattered) — code
-  ported, not exercised by the simple C test ⚠️
-- `PPC_RELOC_SECTDIFF` family — same ⚠️
+- `PPC_RELOC_HI16/LO16/HA16/LO14` (scattered + non-scattered) ✅ —
+  exercised by `tests/macho-loader/run-haskell.sh` (loads a real
+  Haskell `.o` whose 261 text relocs are mostly HI16/LO16/HA16
+  pairs into `__nl_symbol_ptr`).
+- `PPC_RELOC_SECTDIFF` family ✅ — same Haskell `.o` test exercises
+  scattered LOCAL_SECTDIFF in `__eh_frame`.
 
 ❌ **GHCi REPL** still blocked on stage2 (roadmap B) — no in-process
 ghc to compile splice expressions.
