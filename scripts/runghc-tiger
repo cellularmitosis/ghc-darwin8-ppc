@@ -1,0 +1,62 @@
+#!/bin/bash
+# runghc-tiger — the cross-compile equivalent of `runghc`.
+#
+# `runghc` doesn't make sense for a cross-compiler: it'd compile to
+# PPC and then can't run the result on the host.  This wrapper does
+# the obvious thing: compile, scp to Tiger, ssh-run, return the exit
+# code, clean up.
+#
+# Usage:
+#     runghc-tiger foo.hs [args-to-foo...]
+#
+# Env vars:
+#     PPC_HOST   — ssh alias of the Tiger box (default: pmacg5)
+#     STAGE1     — path to the cross-ghc (default: auto-detect from script location)
+
+set -euo pipefail
+
+PPC_HOST=${PPC_HOST:-pmacg5}
+
+# Locate the cross-ghc.  Works whether the script is in a release
+# bindist or in our development tree.
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+if [ -z "${STAGE1:-}" ]; then
+    # Try the dev-tree location first.
+    DEV_STAGE1="$SCRIPT_DIR/../external/ghc-modern/ghc-9.2.8/_build/stage1/bin/powerpc-apple-darwin8-ghc"
+    if [ -x "$DEV_STAGE1" ]; then
+        STAGE1="$DEV_STAGE1"
+    elif command -v powerpc-apple-darwin8-ghc >/dev/null 2>&1; then
+        STAGE1=$(command -v powerpc-apple-darwin8-ghc)
+    else
+        echo "runghc-tiger: cannot find powerpc-apple-darwin8-ghc."
+        echo "  Add bindist-bin-dir to PATH, or set STAGE1=<path>."
+        exit 1
+    fi
+fi
+
+[ $# -ge 1 ] || { echo "usage: runghc-tiger foo.hs [args...]"; exit 2; }
+SCRIPT="$1"; shift
+[ -f "$SCRIPT" ] || { echo "runghc-tiger: no such file: $SCRIPT"; exit 1; }
+
+# Try to source cross-env.sh if it's nearby (sets PATH for ld/ar/etc).
+ENVS="$SCRIPT_DIR/cross-env.sh"
+[ -f "$ENVS" ] && . "$ENVS" >/dev/null 2>&1 || true
+
+# Compile to a temp file
+TMP=$(mktemp -d)
+trap 'rm -rf "$TMP"' EXIT
+SCRIPT_BASE=$(basename "$SCRIPT" .hs)
+LOCAL_BIN="$TMP/$SCRIPT_BASE"
+
+if ! "$STAGE1" -v0 "$SCRIPT" -o "$LOCAL_BIN" >&2; then
+    echo "runghc-tiger: compile failed"
+    exit 1
+fi
+
+# Ship + run + capture exit code
+REMOTE_BIN="/tmp/runghc-tiger-$$-$SCRIPT_BASE"
+scp -q "$LOCAL_BIN" "$PPC_HOST:$REMOTE_BIN"
+EXITCODE=0
+ssh -q "$PPC_HOST" "$REMOTE_BIN" "$@" || EXITCODE=$?
+ssh -q "$PPC_HOST" "rm -f $REMOTE_BIN" >/dev/null 2>&1 || true
+exit $EXITCODE

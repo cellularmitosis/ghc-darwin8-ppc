@@ -154,6 +154,15 @@ mkdir -p "$PREFIX"
 cp -R "$BINDIST_SRC/bin" "$PREFIX/"
 cp -R "$BINDIST_SRC/lib" "$PREFIX/"
 
+# Install scripts/runghc-tiger if present (compile + scp + ssh-run wrapper).
+if [ -f "$BINDIST_SRC/cross-scripts/runghc-tiger" ]; then
+    cp "$BINDIST_SRC/cross-scripts/runghc-tiger" "$PREFIX/bin/runghc-tiger"
+    chmod +x "$PREFIX/bin/runghc-tiger"
+    # Patch the script's PPC_HOST default to the user's --ppc-host.
+    /usr/bin/sed -i.bak "s|^PPC_HOST=.*|PPC_HOST=\${PPC_HOST:-$PPC_HOST}|" "$PREFIX/bin/runghc-tiger"
+    rm -f "$PREFIX/bin/runghc-tiger.bak"
+fi
+
 # Write settings
 echo "== Writing $PREFIX/lib/settings =="
 cat > "$PREFIX/lib/settings" <<EOF
