@@ -1,5 +1,7 @@
 # ghc-darwin8-ppc
 
+![](docs/media/haskell-tiger.png)
+
 GHC (the Glasgow Haskell Compiler) 9.2.8, resurrected for **PowerPC
 Mac OS X 10.4 Tiger**.
 
