@@ -1,16 +1,17 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-04-24 session 12a.
+Last reviewed: 2026-04-24 session 12c.
 
 ## What's done (baseline)
 
 - Stage1 cross-compiler on arm64 macOS → produces running PPC Mach-O binaries.
 - 25-program test battery: 21 PASS byte-identical to host, 4 test-design
   diffs, 0 real bugs.
-- ~117 MB `.tar.xz` cross-bindist packaged; tagged v0.1.0, v0.2.0 (pi
-  fix), v0.3.0 (installer), v0.4.0 (cabal cross-compile docs),
-  v0.5.0 (runghc-tiger bundled), v0.6.0 (PPC Mach-O runtime loader
-  restored), v0.6.1 (Haskell `.o` loader test + resolveImports fix).
+- ~117–123 MB `.tar.xz` cross-bindist packaged; tagged v0.1.0,
+  v0.2.0 (pi fix), v0.3.0 (installer), v0.4.0 (cabal cross-compile
+  docs), v0.5.0 (runghc-tiger bundled), v0.6.0 (PPC Mach-O runtime
+  loader restored), v0.6.1 (Haskell `.o` loader test + resolveImports
+  fix), v0.7.0 (PPC ghc-iserv built + SSH-piped TH protocol working).
 - **pi-Double codegen bug fixed** (patch 0008) — `CmmToC.decomposeMultiWord`
   now recurses on 32-bit targets.
 - **One-command install** — `./install.sh --prefix --ppc-host` bundled
@@ -88,9 +89,21 @@ Test in `tests/macho-loader/`:
 ❌ **GHCi REPL** still blocked on stage2 (roadmap B) — no in-process
 ghc to compile splice expressions.
 
-❌ **TemplateHaskell end-to-end** still needs iserv plumbing: build a
-PPC `ghc-iserv` binary, ship to Tiger, point the cross-bindist's
-`lib/settings` at it.  Estimated 1–2 sessions.
+⚠️ **TemplateHaskell end-to-end — partial.**  v0.7.0 ships:
+- PPC `ghc-iserv` (29.7 MB), bundled in the bindist `lib/bin/`.
+- `pgmi-shim.sh` SSH bridge for `-pgmi=`, installed to `$PREFIX/bin/`.
+- Patch 0010 enables iserv + libiserv in cross-builds and special-
+  cases the hadrian program-rule's stage0-copy path.
+
+The binary protocol works: ghc → SSH → iserv on Tiger talks back
+to host ghc.  But ghc passes host-side `.o` paths to iserv, and
+the target can't see them.  Two fixes for session 12d:
+- **Filesystem mirror**: rsync the bindist's `lib/ppc-osx-ghc-9.2.8/`
+  to the same path on Tiger before TH builds.  Crude, fast.
+- **iserv-proxy + remote-iserv**: GHC's official cross-iserv
+  architecture.  Proxy ships `.o` bytes over the wire; target
+  spills to temp files.  Cleaner, but needs `network` package
+  worked around for Tiger SDK and adds two more binaries.
 
 ### B. Stretch: stage2 native `ghc` bug
 

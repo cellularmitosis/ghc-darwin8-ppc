@@ -1,0 +1,38 @@
+diff --git a/hadrian/src/Rules/Program.hs b/hadrian/src/Rules/Program.hs
+index 04a3bf3a..a2e39ce7 100644
+--- a/hadrian/src/Rules/Program.hs
++++ b/hadrian/src/Rules/Program.hs
+@@ -99,8 +99,13 @@ buildProgram bin ctx@(Context{..}) rs = do
+ 
+   cross <- flag CrossCompiling
+   -- For cross compiler, copy @stage0/bin/<pgm>@ to @stage1/bin/@.
++  --
++  -- ghc-darwin8-ppc: iserv is special.  It needs to run on the
++  -- TARGET (PPC Tiger), not the host.  So we must NOT copy a
++  -- stage0 (host) binary into stage1 — instead, build from source
++  -- with the cross-ghc, producing a real target binary.
+   case (cross, stage) of
+-    (True, s) | s > Stage0 -> do
++    (True, s) | s > Stage0 && package /= iserv -> do
+         srcDir <- buildRoot <&> (-/- (stageString Stage0 -/- "bin"))
+         copyFile (srcDir -/- takeFileName bin) bin
+     (False, s) | s > Stage0 && (package `elem` [touchy, unlit]) -> do
+diff --git a/hadrian/src/Settings/Default.hs b/hadrian/src/Settings/Default.hs
+index 2ed81628..e6db07f6 100644
+--- a/hadrian/src/Settings/Default.hs
++++ b/hadrian/src/Settings/Default.hs
+@@ -122,8 +122,12 @@ stage1Packages = do
+              ]
+           ++ [ haddock  | not cross                  ]
+           ++ [ hpcBin   | not cross                  ]
+-          ++ [ iserv    | not cross ]
+-          ++ [ libiserv | not cross ]
++          -- ghc-darwin8-ppc: enable iserv + libiserv in cross builds.
++          -- Our restored runtime Mach-O loader (patch 0009) makes the
++          -- target side viable; we ship the resulting PPC iserv to
++          -- Tiger and spawn it through SSH (see scripts/pgmi-shim.sh).
++          ++ [ iserv    ]
++          ++ [ libiserv ]
+           ++ [ runGhc   | not cross                  ]
+           ++ [ touchy   | windowsHost                ]
+              -- See Note [Hadrian's ghci-wrapper package]

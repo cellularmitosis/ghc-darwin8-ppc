@@ -78,6 +78,115 @@ This validates that all the reloc paths I ported in v0.6.0 actually
 work for Haskell-emitted code.  HI16/LO16/HA16 (both scattered and
 non-scattered), scattered SECTDIFF/LOCAL_SECTDIFF — all green.
 
+## Session 12b — PPC iserv builds and runs ✅ (shipped as v0.7.0)
+
+The hadrian cross-build excludes `iserv` and `libiserv` by default
+(`hadrian/src/Settings/Default.hs:125-126` had `[iserv|not cross]`).
+Flipped both gates.  `libiserv` then built clean for PPC.
+
+`iserv` initially failed:
+
+```
+Unknown program "_build/stage0/bin/powerpc-apple-darwin8-ghc-iserv"
+```
+
+Root cause in `hadrian/src/Rules/Program.hs:102-105`: cross-compile
+builds *copy* stage1 programs from stage0 (assuming both are
+host-side tools).  But iserv must be a **target** binary built from
+source — never copied from a (non-existent) stage0 host iserv.
+Patched the rule to skip the copy path when `package == iserv`.
+
+Captured as `patches/0010-hadrian-cross-iserv.patch` (38 lines, two
+hunks: the Default.hs flip and the Program.hs special-case).
+
+Result:
+
+```
+| Successfully built program 'iserv' (Stage1).
+| Executable: _build/stage1/lib/bin/powerpc-apple-darwin8-ghc-iserv
+```
+
+29.7 MB PPC Mach-O.  Runs on Tiger, prints its usage banner:
+
+```
+$ scp ghc-iserv pmacg5:/tmp/ && ssh pmacg5 /tmp/ghc-iserv
+powerpc-apple-darwin8-ghc-iserv: usage: iserv <write-fd> <read-fd> [-v]
+```
+
+So our restored RTS, base library, libiserv, ghci library, all the
+way through to `dieWithUsage`, are sound.
+
+## Session 12c — pgmi-shim.sh and the protocol works ✅ (also v0.7.0)
+
+Wrote `scripts/pgmi-shim.sh` per the proposal: a 30-line bash wrapper
+that bridges ghc's local-iserv pipes to a remote `ghc-iserv` on
+Tiger via SSH stdio:
+
+```bash
+exec ssh -T -q "$PPC_HOST" "$REMOTE_ISERV" 1 0 "$@" <&"$RFD" >&"$WFD"
+```
+
+Cross-ghc invokes `pgmi-shim.sh <wfd> <rfd> [-v]`, the shim ssh's to
+Tiger's iserv with stdio bridged.
+
+End-to-end test with a TH splice (`tests/th-iserv/THSplice.hs`):
+
+```haskell
+{-# LANGUAGE TemplateHaskell #-}
+main = putStrLn $(stringE "hello from a TH splice on Tiger")
+```
+
+```
+$ powerpc-apple-darwin8-ghc -fexternal-interpreter \
+    -pgmi=/path/to/pgmi-shim.sh -opti-v THSplice.hs -o th-splice
+[1 of 1] Compiling Main             ( THSplice.hs, THSplice.o )
+powerpc-apple-darwin8-ghc-iserv: loadObj: /Users/cell/claude/.../HSghc-prim-0.8.0.o: file doesn't exist
+```
+
+**The protocol works.**  ghc successfully spawned iserv via SSH, the
+binary protocol over stdio went through, ghc sent a `loadObj`
+request, iserv tried to satisfy it.
+
+But iserv on Tiger looked for the path `/Users/cell/claude/.../HSghc-prim-0.8.0.o`
+— a uranium-side path that doesn't exist on Tiger.  The shim approach
+*does* hit this filesystem-namespace mismatch as predicted in the
+proposal: ghc passes host-side paths, iserv needs them locally.
+
+## What's *still* needed for TH end-to-end (12d)
+
+This is the layer above what we've shipped so far.  Two fixes
+possible:
+
+1. **Mirror the package paths.**  rsync the cross-bindist's
+   `lib/ppc-osx-ghc-9.2.8/` tree to the same path on Tiger before
+   each build that uses TH.  Crude but works.  install.sh could
+   add an `--mirror-to-target` flag that does this once.
+2. **Wire up `iserv-proxy` properly.**  The proxy reads `.o` bytes
+   from the host side and ships them over the wire to remote-iserv,
+   which spills to a temp file on the target.  This is GHC's
+   designed-for-cross architecture, and it sidesteps the path
+   problem entirely.  Requires building the proxy + remote-iserv
+   binaries (1–2 sessions of additional work, plus the `network`
+   package detour we keep avoiding).
+
+The shim approach is fine for users who can rsync.  iserv-proxy is
+fine if you can't.  Both are worth shipping eventually.
+
+## What lands in v0.7.0
+
+- `patches/0010-hadrian-cross-iserv.patch` — enable iserv +
+  libiserv in cross-builds; skip the stage0-copy path for iserv.
+- `scripts/pgmi-shim.sh` — SSH bridge for `-pgmi=`.
+- `tests/th-iserv/THSplice.hs` — example TH splice for testing.
+- Bindist tarball now includes
+  `lib/bin/powerpc-apple-darwin8-ghc-iserv` (29.7 MB, ~6 MB
+  larger than v0.6.1).
+- `install.sh` now ships `pgmi-shim.sh` to `$PREFIX/bin/` with the
+  `PPC_HOST` default patched.
+- Bindist now includes `cross-scripts/pgmi-shim.sh`.
+
+Old session 12b/12c plan superseded by the above ✅:
+
 ## Session 12b — iserv (⏸ multi-session)
 
 For TH end-to-end we need the host ghc to be able to evaluate splices

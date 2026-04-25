@@ -163,6 +163,14 @@ if [ -f "$BINDIST_SRC/cross-scripts/runghc-tiger" ]; then
     rm -f "$PREFIX/bin/runghc-tiger.bak"
 fi
 
+# Install scripts/pgmi-shim.sh if present (TemplateHaskell SSH bridge).
+if [ -f "$BINDIST_SRC/cross-scripts/pgmi-shim.sh" ]; then
+    cp "$BINDIST_SRC/cross-scripts/pgmi-shim.sh" "$PREFIX/bin/pgmi-shim.sh"
+    chmod +x "$PREFIX/bin/pgmi-shim.sh"
+    /usr/bin/sed -i.bak "s|^PPC_HOST=.*|PPC_HOST=\${PPC_HOST:-$PPC_HOST}|" "$PREFIX/bin/pgmi-shim.sh"
+    rm -f "$PREFIX/bin/pgmi-shim.sh.bak"
+fi
+
 # Write settings
 echo "== Writing $PREFIX/lib/settings =="
 cat > "$PREFIX/lib/settings" <<EOF
