@@ -37,4 +37,9 @@ shift 2
 # Bridge local fds to remote stdio.
 #  - SSH inherits stdin from rfd2, stdout to wfd1.
 #  - Remote iserv args are "1 0 [...]" so it talks via stdout/stdin.
-exec ssh -T -q "$PPC_HOST" "$REMOTE_ISERV" 1 0 "$@" <&"$RFD" >&"$WFD"
+#  - DYLD_LIBRARY_PATH ensures iserv can dlopen libgmp.dylib + friends
+#    that the cross-bindist links against.
+REMOTE_DYLD=${REMOTE_DYLD:-/opt/gmp-6.2.1/lib:/opt/gcc14/lib}
+exec ssh -T -q "$PPC_HOST" \
+    "DYLD_LIBRARY_PATH=$REMOTE_DYLD $REMOTE_ISERV 1 0 $*" \
+    <&"$RFD" >&"$WFD"

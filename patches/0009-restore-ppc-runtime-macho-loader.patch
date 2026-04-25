@@ -70,12 +70,27 @@
      }
  
      IF_DEBUG(linker, debugBelch("resolveImports: done\n"));
-@@ -1004,7 +1024,344 @@
+@@ -1004,7 +1024,359 @@
      return 1;
  }
  #endif /* x86_64_HOST_ARCH */
 +
 +#if defined(powerpc_HOST_ARCH)
++/* Stub for __eprintf, an old gcc-emitted helper for assert() macros.
++ * Used by ghc-bignum (and gmp on Tiger).  Defined in libSystem.B.dylib's
++ * _eprintf.o but NOT exported, so dlsym can't find it at runtime.
++ * Provide our own stub so the runtime Mach-O loader can resolve the
++ * symbol when loading bignum/gmp objects via iserv.  The real one
++ * aborts with a message; we do the same so behaviour is preserved. */
++#include <stdio.h>
++#include <stdlib.h>
++__attribute__((noreturn))
++void __eprintf(const char *fmt, const char *file, unsigned line,
++               const char *expr) {
++    fprintf(stderr, fmt, file, line, expr);
++    abort();
++}
+ 
 +/* PPC Mach-O runtime relocation, restored from pre-374e44704b (GHC 8.6.5
 + * rts/linker/MachO.c lines 789-1348, PPC branches only).  Adapted to
 + * 9.2.8's per-section restructuring: the function now takes
@@ -255,7 +270,7 @@
 +        else {
 +            /* Non-scattered reloc. */
 +            MachORelocationInfo *reloc = &relocs[i];
- 
++
 +            if (reloc->r_pcrel && !reloc->r_extern) {
 +                IF_DEBUG(linker, debugBelch(
 +                    "relocateSectionPPC: pc-relative non-extern, skipping\n"));
@@ -415,7 +430,7 @@
  SectionKind
  getSectionKind_MachO(MachOSection *section)
  {
-@@ -1521,20 +1878,23 @@
+@@ -1521,20 +1893,23 @@
                  || !strcmp(sectionName,"__la_sym_ptr2")
                  || !strcmp(sectionName,"__la_sym_ptr3"))
              {
@@ -442,7 +457,7 @@
                                     indirectSyms))
                      return 0;
              }
-@@ -1586,6 +1946,16 @@
+@@ -1586,6 +1961,16 @@
  #if defined(aarch64_HOST_ARCH)
          if (!relocateSectionAarch64(oc, &oc->sections[i]))
              return 0;

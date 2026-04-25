@@ -1,0 +1,31 @@
+diff --git a/rts/RtsSymbols.c b/rts/RtsSymbols.c
+index 534f30cd..8a04a407 100644
+--- a/rts/RtsSymbols.c
++++ b/rts/RtsSymbols.c
+@@ -301,6 +301,16 @@ extern char **environ;
+ #endif
+ 
+ 
++/* ghc-darwin8-ppc: __eprintf is needed by ghc-bignum/gmp loaded via
++ * iserv on Tiger.  libSystem has the .o but doesn't export it; we
++ * provide our own stub in rts/linker/MachO.c. */
++#if defined(powerpc_HOST_ARCH) && defined(darwin_HOST_OS)
++#define RTS_PPC_DARWIN_SYMBOLS \
++     SymI_HasProto(__eprintf)
++#else
++#define RTS_PPC_DARWIN_SYMBOLS
++#endif
++
+ #if defined(darwin_HOST_OS) && HAVE_PRINTF_LDBLSTUB
+ #define RTS_DARWIN_ONLY_SYMBOLS                             \
+      SymI_NeedsProto(asprintf$LDBLStub)                     \
+@@ -1155,7 +1165,8 @@ RtsSymbolVal rtsSyms[] = {
+       RTS_POSIX_ONLY_SYMBOLS
+       RTS_MINGW_ONLY_SYMBOLS
+       RTS_MINGW_COMPAT_SYMBOLS
+-      RTS_DARWIN_ONLY_SYMBOLS
++      RTS_DARWIN_ONLY_SYMBOLS                                           \
++      RTS_PPC_DARWIN_SYMBOLS
+       RTS_OPENBSD_ONLY_SYMBOLS
+       RTS_LIBGCC_SYMBOLS
+       RTS_FINI_ARRAY_SYMBOLS
