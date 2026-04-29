@@ -173,3 +173,9 @@ About 16 minutes on M-series Mac, with ~200 SSH link round-trips to pmacg5.
   constants).  Real localhost TCP echo round-trip on Tiger.  The
   `SOCK_CLOEXEC` concern from session 7 was stale — already gated by
   upstream's `HAVE_ACCEPT4` autoconf check.
+- 2026-04-29 session 14: stage2 native ghc investigation (no fix).
+  Narrowed bug to a miscompile in stage1's PPC build of
+  `compiler/GHC/Core/SimpleOpt.hs`'s `foldl' do_one` accumulator.
+  Ruled out the obvious data-structure-miscompile candidates;
+  next-session checklist documented.  Cross-compile path remains the
+  recommended way to build Haskell for Tiger.

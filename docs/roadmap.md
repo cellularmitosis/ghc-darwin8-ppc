@@ -129,23 +129,44 @@ a working stage2 native ghc.
 
 ### B. Stretch: stage2 native `ghc` bug
 
-Current 128 MB ppc-native `ghc` binary runs `--version` but panics on
-compile with `StgToCmm.Env: variable not found $trModule3_rwD`.
-Typeable binding generation works in TC but fails in codegen.  Bypass
-with `-dno-typeable-binds` lets non-main modules compile.
+Investigated freshly in session 14 against current stage1 (now with
+14 patches landed).  The earlier `-dno-typeable-binds` "bypass" turns
+out to be illusory — stage2 produces 152-byte EMPTY `.o` files when
+that flag silences the panic.
 
-`:Main.main` synthesis also fails separately — `tcLookupId main_name`
-finds empty tcl_env.
+The actual fault is upstream of code-gen.  Verbose output:
 
-Both smell like "runtime state isn't wired up" — `HscEnv`, `DynFlags`
-IORefs, maybe something specific to PPC32 atomics (given our earlier
-`_hs_xchg64` patch, the atomics ABI is suspect).
+```
+*** Desugar [M3]:
+Result size of Desugar (before optimization) = {terms: 6, ...}
+Result size of Desugar (after optimization)  = {terms: 0, ...}
+```
 
-Needs gdb on pmacg5 for a ppc-native Haskell runtime trace, or
-careful comparison against a known-good stage2 build (chicken-and-egg).
+The simple optimizer pass at `compiler/GHC/Core/SimpleOpt.hs:160`
+(a `foldl' do_one (emptyEnv, []) binds`) is collapsing its
+accumulator: all top-level user bindings drop out.  Stage1's PPC
+codegen-of-the-compiler-library miscompiles this specific pattern.
 
-See [`docs/experiments/006-stage2-native-ghc.md`](experiments/006-stage2-native-ghc.md)
-and [`docs/proposals/stage2-native.md`](proposals/stage2-native.md).
+Ruled out: Data.Map miscompile, simple `foldl'+tuple-cons` miscompile,
+even an isolated foldl' mimicking simple_opt_bind's exact shape works
+correctly via cross-compile.  The bug requires GHC-library-specific
+code patterns (likely strictness or tuple-ABI miscompile that only
+manifests across mutually-recursive multi-thousand-line modules).
+
+**Concrete next steps (from session 14 README):**
+1. Rebuild stage1 with `-O0` for `compiler/GHC/Core/*` and rebuild
+   stage2 against that.  If stage2 then works, bisect the optimizer
+   passes.
+2. gdb on Tiger inside `simpleOptPgm` to trace `binds'` after each
+   fold step.
+3. Diff the `.o` of `compiler/GHC/Core/SimpleOpt.o` between our
+   build and a known-good upstream PPC build (8.6.5 era).
+
+Multi-session work.  See
+[`docs/sessions/2026-04-29-session-14-stage2-investigation/`](sessions/2026-04-29-session-14-stage2-investigation/)
+for full investigation, [`docs/experiments/006-stage2-native-ghc.md`](experiments/006-stage2-native-ghc.md)
+for the original write-up, and [`docs/proposals/stage2-native.md`](proposals/stage2-native.md)
+for the original plan.
 
 ### ~~E. Upstream contribution~~ on hold (user request)
 
