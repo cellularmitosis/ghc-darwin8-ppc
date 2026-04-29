@@ -2,7 +2,7 @@
 
 | SHA | Description |
 |-----|-------------|
-| (pending) | Session 16: profiling builds work on Tiger (v0.10.0). |
+| d5ad7b8 | Session 16: profiling builds work on Tiger (v0.10.0). |
 
 Picks up LLVM-7 r4 from the sister project, re-enables
 `libraryWays = [vanilla, profiling]` in QuickCross, and adds two
