@@ -32,8 +32,9 @@ running Tigerbrew's gcc14, because our local cross-ld doesn't speak
 Tiger's crt1.
 
 Latest release:
-[**v0.7.2**](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.7.2)
-— `base.o` loads via iserv (BR24 jump-island fix).
+[**v0.8.0**](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.0)
+— **TemplateHaskell works end-to-end on Tiger** 🎉.  First-ever TH on
+PPC/Darwin8 since GHC 8.6 (2018).
 
 ## Implementation status
 
@@ -113,8 +114,8 @@ differences from 32-bit Int / process-pid / program-name).
 | Spawn iserv on Tiger via SSH | ✅ Working | Verified iserv prints its usage banner; binary protocol round-trips. |
 | `loadObj` of all bindist `.o`s through iserv | ✅ Working | [v0.7.2](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.7.2).  ghc-prim, integer-gmp, ghc-bignum, **base** all load successfully. |
 | `__eprintf` symbol resolution | ✅ Working | [v0.7.1](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.7.1).  Tiger's libSystem has the symbol but doesn't export it, so `dlsym` fails.  RTS now ships its own stub via [patch 0011](patches/0011-rts-eprintf-stub.patch). |
-| TH splice end-to-end (host ghc → SSH → iserv → result) | 🟡 Partial | Loader works.  Last hop hits `Data.Binary.Get.runGet at position 133: Unknown encoding for constructor` after all `.o`s loaded.  Likely endianness/word-size encoding mismatch in some iserv-protocol field, or SSH stdio corruption.  Debug shim (`tests/th-iserv/` + tee'd `pgmi-shim.sh`) captures byte streams.  Scoped as session 12f. |
-| GHCi REPL | ❌ Missing | Needs stage2 native ghc working (currently panics on Typeable lookup) — see roadmap B. |
+| TH splice end-to-end (host ghc → SSH → iserv → result) | ✅ Working | [v0.8.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.0).  `$(stringE …)`, `$(litE …)`, compile-time arithmetic — all evaluated by `ghc-iserv` on Tiger, then spliced into the output binary by host GHC.  Two bugs caught during 12f: (a) cross-built `binary` library mis-encoded Generic-derived sum tags as Word64 instead of Word8 ([patch 0013](patches/0013-binary-generic-direct-numeric-guards.patch)); (b) BCO array contents need byte-swap on host/target endian mismatch ([patch 0014](patches/0014-ghci-bco-byteswap-on-endian-mismatch.patch)). |
+| GHCi REPL | ❌ Missing | Needs stage2 native ghc working (currently panics on Typeable lookup) — see roadmap B.  Use `-fexternal-interpreter` instead (full TH support). |
 
 ### Tooling
 
@@ -202,6 +203,7 @@ instead.
 | [v0.7.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.7.0) | 2026-04-25 | PPC `ghc-iserv` 🛰 + `pgmi-shim.sh` (patch 0010). |
 | [v0.7.1](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.7.1) | 2026-04-25 | TH gets closer 🎯 (`__eprintf` stub + DYLD, patch 0011). |
 | [v0.7.2](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.7.2) | 2026-04-25 | `base.o` loads via iserv ⛓️ (BR24 jump-island fix, patch 0012). |
+| [v0.8.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.0) | 2026-04-29 | **TemplateHaskell works on Tiger** 🪄 (patches 0013 + 0014). |
 
 ## Licence
 

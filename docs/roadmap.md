@@ -1,20 +1,20 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-04-24 session 12e.
+Last reviewed: 2026-04-29 session 12f.
 
 ## What's done (baseline)
 
 - Stage1 cross-compiler on arm64 macOS → produces running PPC Mach-O binaries.
 - 25-program test battery: 21 PASS byte-identical to host, 4 test-design
   diffs, 0 real bugs.
-- ~117–123 MB `.tar.xz` cross-bindist packaged; tagged v0.1.0,
+- ~117–124 MB `.tar.xz` cross-bindist packaged; tagged v0.1.0,
   v0.2.0 (pi fix), v0.3.0 (installer), v0.4.0 (cabal cross-compile
   docs), v0.5.0 (runghc-tiger bundled), v0.6.0 (PPC Mach-O runtime
   loader restored), v0.6.1 (Haskell `.o` loader test + resolveImports
   fix), v0.7.0 (PPC ghc-iserv built + SSH-piped TH protocol working),
   v0.7.1 (eprintf stub + DYLD + filesystem mirror docs),
   v0.7.2 (BR24 jump-island fix; all `.o` files including `base` load
-  via iserv).
+  via iserv), **v0.8.0 (TemplateHaskell works end-to-end on Tiger 🎉)**.
 - **pi-Double codegen bug fixed** (patch 0008) — `CmmToC.decomposeMultiWord`
   now recurses on 32-bit targets.
 - **One-command install** — `./install.sh --prefix --ppc-host` bundled
@@ -73,7 +73,7 @@ Remaining untested / future sessions:
 - Dynamic linking (`-dynamic` disabled by QuickCross; 24-bit scattered reloc limit)
 - TLS / HTTPS (needs Tiger-compatible `openssl`)
 
-### C. GHCi / TemplateHaskell — partly done (session 11, v0.6.0)
+### ~~C. GHCi / TemplateHaskell~~ ✅ TH done (session 12f, v0.8.0)
 
 ✅ **PPC runtime Mach-O loader restored.**  Patch 0009 brings back
 `relocateSection()` for PPC, adapted from GHC 8.6.5 to 9.2.8's
@@ -110,14 +110,18 @@ via iserv, including the multi-MB `base.o`.  Patch 0009 grew
 from 461 → 524 lines; patch 0012 enables `SHORT_REL_BRANCH` and
 `USE_CONTIGUOUS_MMAP` for PPC.
 
-⚠️ **Session 12f (TBD):** iserv binary protocol parses host's
-output up to byte ~133 then fails with "Unknown encoding for
-constructor".  All `.o`s already loaded by then; this is
-post-load, during splice evaluation.  Likely cause is endianness
-or word-size encoding mismatch in some inner field; or SSH
-stdio corruption; or version skew.  Debug shim
-(`/tmp/pgmi-shim-debug.sh`) tee's both directions for
-post-mortem analysis.  See [`docs/sessions/2026-04-24-session-12-iserv-ppc/12e-br24-fix.md`](sessions/2026-04-24-session-12-iserv-ppc/12e-br24-fix.md).
+✅ **Session 12f (v0.8.0):** TH end-to-end on Tiger.  Two bugs:
+(a) cross-built `binary` library mis-encoded Generic-derived sum
+tags as Word64 instead of Word8 ([patch 0013](../patches/0013-binary-generic-direct-numeric-guards.patch));
+(b) BCO array contents need byte-swap on host/target endian
+mismatch ([patch 0014](../patches/0014-ghci-bco-byteswap-on-endian-mismatch.patch)).
+After both fixes, `$(stringE "...")` and friends evaluate on Tiger
+and splice into the output binary.  See [`docs/sessions/2026-04-24-session-12-iserv-ppc/12f-th-end-to-end.md`](sessions/2026-04-24-session-12-iserv-ppc/12f-th-end-to-end.md).
+Demo: [`demos/v0.8.0-th-splice.hs`](../demos/v0.8.0-th-splice.hs).
+
+❌ **GHCi REPL** still blocked on stage2 (roadmap B).  TH end-to-end
+via `-fexternal-interpreter` works; an in-process REPL would need
+a working stage2 native ghc.
 
 ### B. Stretch: stage2 native `ghc` bug
 

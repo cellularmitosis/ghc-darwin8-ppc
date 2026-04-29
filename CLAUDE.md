@@ -131,6 +131,14 @@ reasoning; short version:
 
 Switching to a newer series is a future project, not this one.
 
+## Document everything
+
+Default to capturing liberally in the current session directory.
+Plans, research, running work logs, decisions, dead ends, ambiguity discussions, scope shifts, gotchas-in-the-moment — all worth writing down.
+Surface what you create briefly so I have awareness.
+Err on the side of MORE capture, not less.
+The goal is that a future-me (or a future Claude session) can pick up the thread without me having to re-explain.
+
 ## Unsupervised mode
 
 When the user says "work unsupervised" (or similar wording), they're

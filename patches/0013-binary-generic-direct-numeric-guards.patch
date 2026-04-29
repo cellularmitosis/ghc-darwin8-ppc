@@ -1,0 +1,41 @@
+diff --git a/src/Data/Binary/Generic.hs b/src/Data/Binary/Generic.hs
+index 89f67f2..ff2d427 100644
+--- a/src/Data/Binary/Generic.hs
++++ b/src/Data/Binary/Generic.hs
+@@ -83,21 +83,28 @@ instance Binary a => GBinaryGet (K1 i a) where
+ -- encode the constructor. If it has 2^16 constructors or less it will
+ -- use two bytes, and so on till 2^64-1.
+ 
+-#define GUARD(WORD) (size - 1) <= fromIntegral (maxBound :: WORD)
+-#define PUTSUM(WORD) GUARD(WORD) = putSum (0 :: WORD) (fromIntegral size)
+-#define GETSUM(WORD) GUARD(WORD) = (get :: Get WORD) >>= checkGetSum (fromIntegral size)
+-
++-- ghc-darwin8-ppc: rewritten to avoid the multi-guard-with-where pattern
++-- where `size` came from a Word64 class-dispatch call.  The cross-built
++-- ppc-darwin8 GHC mis-compiled that pattern, always selecting the Word64
++-- branch even when size <= 256.  Direct numeric literal comparisons compile
++-- correctly on both host and target.
+ instance ( GSumPut  a, GSumPut  b
+          , SumSize    a, SumSize    b) => GBinaryPut (a :+: b) where
+-    gput | PUTSUM(Word8) | PUTSUM(Word16) | PUTSUM(Word32) | PUTSUM(Word64)
+-         | otherwise = sizeError "encode" size
++    gput x
++      | size <= 0x100        = putSum (0 :: Word8)  (fromIntegral size) x
++      | size <= 0x10000      = putSum (0 :: Word16) (fromIntegral size) x
++      | size <= 0x100000000  = putSum (0 :: Word32) (fromIntegral size) x
++      | otherwise            = putSum (0 :: Word64) size                x
+       where
+         size = unTagged (sumSize :: Tagged (a :+: b) Word64)
+ 
+ instance ( GSumGet  a, GSumGet  b
+          , SumSize    a, SumSize    b) => GBinaryGet (a :+: b) where
+-    gget | GETSUM(Word8) | GETSUM(Word16) | GETSUM(Word32) | GETSUM(Word64)
+-         | otherwise = sizeError "decode" size
++    gget
++      | size <= 0x100        = (get :: Get Word8)  >>= checkGetSum (fromIntegral size)
++      | size <= 0x10000      = (get :: Get Word16) >>= checkGetSum (fromIntegral size)
++      | size <= 0x100000000  = (get :: Get Word32) >>= checkGetSum (fromIntegral size)
++      | otherwise            = (get :: Get Word64) >>= checkGetSum size
+       where
+         size = unTagged (sumSize :: Tagged (a :+: b) Word64)
+ 

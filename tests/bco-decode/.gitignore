@@ -1,0 +1,10 @@
+*.hi
+*.o
+decode-bco
+minimal-test
+step-decode
+guard-test
+trace
+myenum-test
+word64-test
+iguard

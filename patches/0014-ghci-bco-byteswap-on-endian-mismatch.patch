@@ -1,0 +1,54 @@
+diff --git a/libraries/ghci/GHCi/CreateBCO.hs b/libraries/ghci/GHCi/CreateBCO.hs
+index 7d969efc..8162c7f0 100644
+--- a/libraries/ghci/GHCi/CreateBCO.hs
++++ b/libraries/ghci/GHCi/CreateBCO.hs
+@@ -22,12 +22,12 @@ import GHC.Data.SizedSeq
+ import System.IO (fixIO)
+ import Control.Monad
+ import Data.Array.Base
++import Data.Word (byteSwap16, byteSwap64)
+ import Foreign hiding (newArray)
+ import Unsafe.Coerce (unsafeCoerce)
+ import GHC.Arr          ( Array(..) )
+ import GHC.Exts
+ import GHC.IO
+-import Control.Exception ( ErrorCall(..) )
+ 
+ createBCOs :: [ResolvedBCO] -> IO [HValueRef]
+ createBCOs bcos = do
+@@ -37,13 +37,29 @@ createBCOs bcos = do
+      mapM (createBCO arr) bcos
+   mapM mkRemoteRef hvals
+ 
++-- ghc-darwin8-ppc: byte-swap the ResolvedBCO's array contents when host
++-- (the GHC compiler) and target (the iserv interpreter) disagree on
++-- endianness.  Host writes the Word16 instrs / Word64 bitmap / Word64 lits
++-- as raw bytes in HOST endian; on the target we read them in TARGET endian
++-- so each element is byte-swapped.  Reverse it here so the bytecode
++-- interpreter sees the right values.  Recursively swaps nested BCOs
++-- (ResolvedBCOPtrBCO).
++byteSwapResolvedBCO :: ResolvedBCO -> ResolvedBCO
++byteSwapResolvedBCO bco = bco
++  { resolvedBCOIsLE   = isLittleEndian
++  , resolvedBCOInstrs = amap byteSwap16 (resolvedBCOInstrs bco)
++  , resolvedBCOBitmap = amap byteSwap64 (resolvedBCOBitmap bco)
++  , resolvedBCOLits   = amap byteSwap64 (resolvedBCOLits bco)
++  , resolvedBCOPtrs   = fmap byteSwapResolvedBCOPtr (resolvedBCOPtrs bco)
++  }
++
++byteSwapResolvedBCOPtr :: ResolvedBCOPtr -> ResolvedBCOPtr
++byteSwapResolvedBCOPtr (ResolvedBCOPtrBCO sub) = ResolvedBCOPtrBCO (byteSwapResolvedBCO sub)
++byteSwapResolvedBCOPtr p = p
++
+ createBCO :: Array Int HValue -> ResolvedBCO -> IO HValue
+-createBCO _   ResolvedBCO{..} | resolvedBCOIsLE /= isLittleEndian
+-  = throwIO (ErrorCall $
+-        unlines [ "The endianness of the ResolvedBCO does not match"
+-                , "the systems endianness. Using ghc and iserv in a"
+-                , "mixed endianness setup is not supported!"
+-                ])
++createBCO arr bco
++  | resolvedBCOIsLE bco /= isLittleEndian = createBCO arr (byteSwapResolvedBCO bco)
+ createBCO arr bco
+    = do linked_bco <- linkBCO' arr bco
+         -- Note [Updatable CAF BCOs]
