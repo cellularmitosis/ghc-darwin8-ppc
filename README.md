@@ -32,10 +32,12 @@ running Tigerbrew's gcc14, because our local cross-ld doesn't speak
 Tiger's crt1.
 
 Latest release:
-[**v0.9.0**](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.9.0)
-— **HTTPS works on Tiger** 🔐.  Real TLS 1.x to example.com via
-vendored `HsOpenSSL` + `tiger.sh`'s OpenSSL 1.1.1t.  TH (v0.8.0) +
-TCP sockets (v0.8.1) still working.
+[**v0.10.0**](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.10.0)
+— **profiling builds work** 📊.  `-prof -fprof-auto` produces real
+`.prof` cost-centre reports and `.hp` heap-profile files on Tiger,
+unblocked by [LLVM-7 r4](https://github.com/cellularmitosis/llvm-darwin8-ppc/releases/tag/v7.1.1-r4)
+in the sister project.  Plus all of v0.9.0's HTTPS, v0.8.1's
+sockets, v0.8.0's TH, etc.
 
 ## Implementation status
 
@@ -126,7 +128,7 @@ differences from 32-bit Int / process-pid / program-name).
 | `runghc-tiger` (compile + scp + ssh-run) | ✅ Working | [v0.5.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.5.0).  Bundled in bindist; `install.sh` patches the `PPC_HOST` default. |
 | `ghc-pkg list/describe/field/latest/check` | ✅ Working | Verified [in session 10](docs/sessions/2026-04-24-session-10-runghc-and-ghc-pkg/).  Package conf db is target-arch-agnostic. |
 | `cabal --with-compiler=<cross-ghc>` | ✅ Working | See "Cabal / Hackage" above. |
-| Profiling (`-prof`, `hp2ps`) | 🟡 Deferred | clang-7's PPC integrated assembler rejects `lwz r2, 16(0)` displacement-form syntax that clang's own backend emits for `-prof -O2` builds.  Documented in [session 9 findings](docs/sessions/2026-04-24-session-9-profiling/findings.md). |
+| Profiling (`-prof`, `+RTS -p`, `+RTS -h`) | ✅ Working | [v0.10.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.10.0).  Unblocked by [LLVM-7 r4](https://github.com/cellularmitosis/llvm-darwin8-ppc/releases/tag/v7.1.1-r4) (BUG-003 fix to PPC asm printer's r0/ZERO operand) plus two Tiger compatibility shims (`__MAC_OS_X_VERSION_MIN_REQUIRED=1040` to take the right Tiger branch in `rts/posix/OSThreads.c`; a `tiger_strnlen` inline in `rts/RtsUtils.c` since Tiger's libSystem predates POSIX 2008's `strnlen`).  Smoke-test in [`tests/profiling/`](tests/profiling/). |
 | Dynamic linking (`-dynamic`) | ❌ Missing | Disabled by `quick-cross` flavour: `GHC.Hs.Instances` as `dyn_o` blows past PPC Mach-O's 24-bit scattered-reloc / 16 MB section limit. |
 | TLS / HTTPS | ❌ Missing | Needs Tiger-compatible openssl in the package set.  Not yet attempted. |
 
@@ -208,6 +210,7 @@ instead.
 | [v0.8.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.0) | 2026-04-29 | **TemplateHaskell works on Tiger** 🪄 (patches 0013 + 0014). |
 | [v0.8.1](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.1) | 2026-04-29 | `network` 3.x works 🌐 (vendored `IP_RECVTOS` / `IPV6_TCLASS` ifdef guards). |
 | [v0.9.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.9.0) | 2026-04-29 | **HTTPS works on Tiger** 🔐 (vendored `HsOpenSSL` `runInBoundThread` fallback + `tiger.sh` openssl-1.1.1t). |
+| [v0.10.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.10.0) | 2026-04-29 | **Profiling works on Tiger** 📊 (LLVM-7 r4 BUG-003 fix + Tiger compat shims for `__MAC_OS_X_VERSION_MIN_REQUIRED` + `strnlen`). |
 
 ## Licence
 

@@ -1,0 +1,7 @@
+*.hi
+*.o
+mandel
+mandel.prof
+mandel.hp
+mandel.aux
+mandel.ps

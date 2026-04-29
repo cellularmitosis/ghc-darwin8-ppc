@@ -1,0 +1,27 @@
+diff --git a/rts/RtsUtils.c b/rts/RtsUtils.c
+index d72a6a4b..fb67847b 100644
+--- a/rts/RtsUtils.c
++++ b/rts/RtsUtils.c
+@@ -109,6 +109,22 @@ stgCallocBytes (size_t count, size_t size, char *msg)
+     return space;
+ }
+ 
++/* ghc-darwin8-ppc: strnlen was added to POSIX in 2008 (macOS 10.7+);
++ * Tiger's libSystem doesn't ship it.  Inline a tiny replacement so the
++ * profiling RTS — which references stgStrndup from cost-centre / IPE
++ * code paths — links cleanly. */
++#if defined(darwin_HOST_OS) && \
++    defined(__MAC_OS_X_VERSION_MIN_REQUIRED) && \
++    __MAC_OS_X_VERSION_MIN_REQUIRED < 1070
++static size_t tiger_strnlen(const char *s, size_t n)
++{
++    const char *p = s;
++    while (n-- > 0 && *p) p++;
++    return (size_t)(p - s);
++}
++#define strnlen tiger_strnlen
++#endif
++
+ /* borrowed from the MUSL libc project */
+ char *stgStrndup(const char *s, size_t n)
+ {

@@ -1,6 +1,6 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-04-29 session 15.
+Last reviewed: 2026-04-29 session 16.
 
 ## What's done (baseline)
 
@@ -60,11 +60,12 @@ patches the `PPC_HOST` default.
 ✅ **`ghc-pkg`** (session 10): standard commands all work via
 `powerpc-apple-darwin8-ghc-pkg list/describe/field/latest/check`.
 
-⚠️ **Profiling** (session 9, deferred): `-prof` builds hit a clang-7
-PPC integrated-assembler bug (`lwz r2, 16(0)` rejected as
-displacement-form base register).  Documented in
-[`docs/sessions/2026-04-24-session-9-profiling/findings.md`](sessions/2026-04-24-session-9-profiling/findings.md).
-Workarounds for a future session.
+✅ **Profiling** (session 16, v0.10.0): `-prof -fprof-auto` produces
+`.prof` cost-centre reports and `.hp` heap-profile files on Tiger.
+Unblocked by the sister project's [LLVM-7 r4](https://github.com/cellularmitosis/llvm-darwin8-ppc/releases/tag/v7.1.1-r4)
+(BUG-003 fix to the PPC asm printer's r0/ZERO operand) plus two
+Tiger compat shims: `__MAC_OS_X_VERSION_MIN_REQUIRED` in our
+cross-cc, and `tiger_strnlen` in `rts/RtsUtils.c` (patch 0015).
 
 ✅ **`network` 3.x** (session 13, v0.8.1): vendored at `vendor/network/`
 with two `#ifdef` guards on `IP_RECVTOS` / `IPV6_TCLASS` (added in

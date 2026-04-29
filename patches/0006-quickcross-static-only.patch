@@ -1,8 +1,8 @@
 diff --git a/hadrian/src/Settings/Flavours/QuickCross.hs b/hadrian/src/Settings/Flavours/QuickCross.hs
-index 5e9dc05f..194cd86b 100644
+index 5e9dc05f..5c0a854a 100644
 --- a/hadrian/src/Settings/Flavours/QuickCross.hs
 +++ b/hadrian/src/Settings/Flavours/QuickCross.hs
-@@ -11,17 +11,15 @@ quickCrossFlavour = defaultFlavour
+@@ -11,17 +11,22 @@ quickCrossFlavour = defaultFlavour
      { name        = "quick-cross"
      , args        = defaultBuilderArgs <> quickCrossArgs <> defaultPackageArgs
      , dynamicGhcPrograms = pure False
@@ -22,10 +22,17 @@ index 5e9dc05f..194cd86b 100644
 +    -- (e.g. GHC.Hs.Instances) exceed the 16MB 24-bit r_address field of
 +    -- PPC Mach-O scattered relocations when compiled dynamic.  Static
 +    -- builds use different reloc encoding and don't hit the limit.
-+    , libraryWays = pure [vanilla]
++    -- Profiling re-enabled in v0.10.0 once LLVM-7 r4 shipped the
++    -- BUG-003 fix in llvm-7-darwin-ppc: clang's PPC asm printer no
++    -- longer emits bare `0` syntax for D-form rA=0 mem refs, so the
++    -- RTS profiling C code round-trips through clang's integrated
++    -- assembler.  See docs/sessions/2026-04-29-session-16-profiling/.
++    , libraryWays = pure [vanilla, profiling]
 +    , rtsWays     = pure
 +                    [ vanilla, threaded, logging, debug
-+                    , threadedDebug, threadedLogging, threaded ] }
++                    , threadedDebug, threadedLogging
++                    , profiling, threadedProfiling
++                    , debugProfiling, threadedDebugProfiling ] }
  
  quickCrossArgs :: Args
  quickCrossArgs = sourceArgs SourceArgs

@@ -20,8 +20,17 @@ for arg in "$@"; do
 done
 
 pass_through() {
+    # __MAC_OS_X_VERSION_MIN_REQUIRED is only defined by Apple's modern
+    # SDKs.  Tiger's 10.4u SDK uses MAC_OS_X_VERSION_MIN_REQUIRED (no
+    # leading underscores).  GHC's RTS gates several Lion+/SnowLeopard+
+    # APIs on the modern macro (e.g. rts/posix/OSThreads.c's
+    # kernelThreadId calls pthread_threadid_np unless MIN_REQUIRED < 1060).
+    # Define both here so all the version-gated code paths take the
+    # Tiger-compatible branch.
     exec "$CLANG" -target powerpc-apple-darwin8 -mlinker-version=253.9 \
                   -mmacosx-version-min=10.4 \
+                  -D__MAC_OS_X_VERSION_MIN_REQUIRED=1040 \
+                  -DMAC_OS_X_VERSION_MIN_REQUIRED=1040 \
                   -isysroot "$SDK" \
                   -Wno-error \
                   -Wno-unused-value \
