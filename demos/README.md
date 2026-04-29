@@ -9,7 +9,7 @@ to say "the runtime Mach-O loader works"; it is another to ship a
 Tiger-running Haskell program that uses it to load and call into a
 freshly cross-compiled `.o`.
 
-## What's here (v0.8.0)
+## What's here (v0.8.1)
 
 | File | Demonstrates | Added in |
 |---|---|---|
@@ -24,6 +24,7 @@ freshly cross-compiled `.o`.
 | [`v0.7.1-eprintf-stub.hs`](v0.7.1-eprintf-stub.hs) | Computes `21!` (forces ghc-bignum / libgmp), proving the bignum codepath works statically.  v0.7.1's `__eprintf` stub is what unblocks bignum loading via iserv (where `dlsym` can't see the symbol). | [v0.7.1](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.7.1) |
 | [`v0.7.2-large-load.hs`](v0.7.2-large-load.hs) | Loads `HSbase-4.16.4.0.o` (~3 MB) through the runtime linker.  Pre-v0.7.2 this tripped `BR24 jump island also out of range`; with the symbol_extras-in-RX-segment fix it's clean. | [v0.7.2](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.7.2) |
 | [`v0.8.0-th-splice.hs`](v0.8.0-th-splice.hs) | **TemplateHaskell splices on Tiger.**  `$(stringE "...")`, `$(litE (integerL ...))`, compile-time arithmetic — all evaluated by `ghc-iserv` running on a real PowerMac G5, then spliced into the output binary.  First-ever TH on PPC/Darwin8 since GHC 8.6 (2018).  Closes [roadmap C](../docs/roadmap.md). | [v0.8.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.0) |
+| [`v0.8.1-tcp-echo.hs`](v0.8.1-tcp-echo.hs) | **Real TCP socket round-trip on Tiger** via vendored `network-3.2.8.0`.  Localhost echo server + client; "hello tiger" → "echo: hello tiger".  Two `#ifdef` guards in `vendor/network/` work around `IP_RECVTOS` / `IPV6_TCLASS` (10.7+) absences in the 10.4u SDK. | [v0.8.1](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.1) |
 
 ## Building & running
 

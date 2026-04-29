@@ -32,9 +32,11 @@ running Tigerbrew's gcc14, because our local cross-ld doesn't speak
 Tiger's crt1.
 
 Latest release:
-[**v0.8.0**](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.0)
-— **TemplateHaskell works end-to-end on Tiger** 🎉.  First-ever TH on
-PPC/Darwin8 since GHC 8.6 (2018).
+[**v0.8.1**](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.1)
+— `network` 3.x sockets work on Tiger 🌐 (vendored fix for
+`IP_RECVTOS` / `IPV6_TCLASS`).  TH from
+[v0.8.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.0)
+still working.
 
 ## Implementation status
 
@@ -90,7 +92,7 @@ differences from 32-bit Int / process-pid / program-name).
 | `aeson` (Generics, not TH) | ✅ Working | + ~20 transitive deps incl. `scientific`, `text-iso8601`. |
 | `optparse-applicative` | ✅ Working | + `prettyprinter`, `ansi-terminal`. |
 | `megaparsec` | ✅ Working | + `parser-combinators`, `case-insensitive`. |
-| `network` | 🟡 Pinned `< 3.0` | Newer versions reference `SOCK_CLOEXEC` (added in 10.7) in `Cbits.hsc`.  3.x would need vendoring with `#ifdef` guards. |
+| `network` (3.x) | ✅ Working | [v0.8.1](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.1).  Vendored at `vendor/network/` with two `#ifdef` guards on `IP_RECVTOS` / `IPV6_TCLASS` (added in macOS 10.7).  `SOCK_CLOEXEC` was a *non-issue* — already gated by the package's `HAVE_ACCEPT4` autoconf check, which our `tiger-config.site` correctly disables.  Smoke-test in [`tests/cabal-examples/network-echo-three/`](tests/cabal-examples/network-echo-three/). |
 | 8 ready-to-go example projects | ✅ Working | [`tests/cabal-examples/`](tests/cabal-examples/) with `run-one.sh` that builds + scp + ssh-runs. |
 
 ### Runtime linker (loadObj / resolveObjs / lookupSymbol)
@@ -204,6 +206,7 @@ instead.
 | [v0.7.1](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.7.1) | 2026-04-25 | TH gets closer 🎯 (`__eprintf` stub + DYLD, patch 0011). |
 | [v0.7.2](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.7.2) | 2026-04-25 | `base.o` loads via iserv ⛓️ (BR24 jump-island fix, patch 0012). |
 | [v0.8.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.0) | 2026-04-29 | **TemplateHaskell works on Tiger** 🪄 (patches 0013 + 0014). |
+| [v0.8.1](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.1) | 2026-04-29 | `network` 3.x works 🌐 (vendored `IP_RECVTOS` / `IPV6_TCLASS` ifdef guards). |
 
 ## Licence
 

@@ -1,6 +1,6 @@
 # state.md — where are we right now
 
-*Updated: 2026-04-29 session 12f (post-v0.8.0, TemplateHaskell works end-to-end on Tiger).*
+*Updated: 2026-04-29 session 13 (post-v0.8.1, `network` 3.x sockets work).*
 
 ## Headline
 
@@ -168,3 +168,8 @@ About 16 minutes on M-series Mac, with ~200 SSH link round-trips to pmacg5.
   of Word8 (patch 0013); (b) BCO array contents need byte-swap on
   host/target endian mismatch (patch 0014).  First TH on PPC/Darwin8
   since GHC 8.6 (2018).  Closes roadmap C.
+- 2026-04-29 session 13: vendor `network-3.2.8.0` for Tiger (v0.8.1).
+  Two `#ifdef` guards on `IP_RECVTOS` / `IPV6_TCLASS` (10.7+
+  constants).  Real localhost TCP echo round-trip on Tiger.  The
+  `SOCK_CLOEXEC` concern from session 7 was stale — already gated by
+  upstream's `HAVE_ACCEPT4` autoconf check.

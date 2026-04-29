@@ -38,8 +38,13 @@ cabal --store-dir=./.cabal-store \
       --with-hsc2hs=$HSC2HS \
       --builddir=./dist 2>&1 | tail -5
 
-# Find the executable
-BIN=$(find dist/build -type f -perm -u+x ! -name "*.o" ! -name "*.hi" | head -1)
+# Find the executable.  Restrict to PPC Mach-O so we don't pick up
+# stray host-side helpers (e.g. autoconf's `config.status`, which is
+# also marked executable when a vendored package shipped a configure).
+BIN=$(find dist/build -type f -perm -u+x ! -name "*.o" ! -name "*.hi" \
+        | while read -r f; do
+            file "$f" 2>/dev/null | grep -q 'Mach-O.*ppc' && echo "$f"
+          done | head -1)
 [ -x "$BIN" ] || { echo "error: no binary produced"; exit 1; }
 
 echo ""

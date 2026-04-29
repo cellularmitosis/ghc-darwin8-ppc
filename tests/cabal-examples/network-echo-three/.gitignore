@@ -1,0 +1,3 @@
+dist/
+.cabal-store/
+.ghc.environment.*

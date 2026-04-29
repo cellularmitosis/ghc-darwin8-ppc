@@ -1,6 +1,6 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-04-29 session 12f.
+Last reviewed: 2026-04-29 session 13.
 
 ## What's done (baseline)
 
@@ -66,12 +66,16 @@ displacement-form base register).  Documented in
 [`docs/sessions/2026-04-24-session-9-profiling/findings.md`](sessions/2026-04-24-session-9-profiling/findings.md).
 Workarounds for a future session.
 
+✅ **`network` 3.x** (session 13, v0.8.1): vendored at `vendor/network/`
+with two `#ifdef` guards on `IP_RECVTOS` / `IPV6_TCLASS` (added in
+macOS 10.7).  Real localhost TCP echo round-trip verified on Tiger.
+The `SOCK_CLOEXEC` concern from session 7 was stale — already gated by
+upstream's `HAVE_ACCEPT4` autoconf check.
+
 Remaining untested / future sessions:
-- Socket / network IO (blocked on `SOCK_CLOEXEC` gap in Tiger SDK;
-  vendor `network` with `#ifdef` guards — partially worked around in
-  session 7 by pinning `network < 3.0`).
 - Dynamic linking (`-dynamic` disabled by QuickCross; 24-bit scattered reloc limit)
-- TLS / HTTPS (needs Tiger-compatible `openssl`)
+- TLS / HTTPS — `tiger.sh` provides modern openssl on Tiger, so the
+  path is "build hsopenssl / tls against /opt/tiger.sh's openssl".
 
 ### ~~C. GHCi / TemplateHaskell~~ ✅ TH done (session 12f, v0.8.0)
 
