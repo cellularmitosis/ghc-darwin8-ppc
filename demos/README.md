@@ -9,7 +9,7 @@ to say "the runtime Mach-O loader works"; it is another to ship a
 Tiger-running Haskell program that uses it to load and call into a
 freshly cross-compiled `.o`.
 
-## What's here (v0.8.1)
+## What's here (v0.9.0)
 
 | File | Demonstrates | Added in |
 |---|---|---|
@@ -25,6 +25,7 @@ freshly cross-compiled `.o`.
 | [`v0.7.2-large-load.hs`](v0.7.2-large-load.hs) | Loads `HSbase-4.16.4.0.o` (~3 MB) through the runtime linker.  Pre-v0.7.2 this tripped `BR24 jump island also out of range`; with the symbol_extras-in-RX-segment fix it's clean. | [v0.7.2](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.7.2) |
 | [`v0.8.0-th-splice.hs`](v0.8.0-th-splice.hs) | **TemplateHaskell splices on Tiger.**  `$(stringE "...")`, `$(litE (integerL ...))`, compile-time arithmetic — all evaluated by `ghc-iserv` running on a real PowerMac G5, then spliced into the output binary.  First-ever TH on PPC/Darwin8 since GHC 8.6 (2018).  Closes [roadmap C](../docs/roadmap.md). | [v0.8.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.0) |
 | [`v0.8.1-tcp-echo.hs`](v0.8.1-tcp-echo.hs) | **Real TCP socket round-trip on Tiger** via vendored `network-3.2.8.0`.  Localhost echo server + client; "hello tiger" → "echo: hello tiger".  Two `#ifdef` guards in `vendor/network/` work around `IP_RECVTOS` / `IPV6_TCLASS` (10.7+) absences in the 10.4u SDK. | [v0.8.1](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.1) |
+| [`v0.9.0-https-get.hs`](v0.9.0-https-get.hs) | **HTTPS to the real internet from Tiger.**  TLS 1.x handshake against example.com:443 via vendored `HsOpenSSL` + `tiger.sh`'s OpenSSL 1.1.1t.  Receives Cloudflare's `HTTP/1.1 200 OK` and the HTML body.  Vendor patch replaces three `runInBoundThread` calls with a fallback that runs in the current thread when the (PPC32-impossible) threaded RTS isn't available. | [v0.9.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.9.0) |
 
 ## Building & running
 

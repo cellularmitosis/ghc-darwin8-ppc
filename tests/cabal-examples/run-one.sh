@@ -32,11 +32,18 @@ if [ ! -f cabal.project ]; then
 fi
 
 echo "== Building $EXAMPLE =="
+EXTRA_FLAGS=()
+# OpenSSL paths: pass via env so https-get and friends can find headers/libs.
+if [ -n "${OPENSSL_PREFIX:-}" ]; then
+    EXTRA_FLAGS+=("--extra-include-dirs=$OPENSSL_PREFIX/include")
+    EXTRA_FLAGS+=("--extra-lib-dirs=$OPENSSL_PREFIX/lib")
+fi
 cabal --store-dir=./.cabal-store \
       build \
       --with-compiler=$STAGE1 \
       --with-hsc2hs=$HSC2HS \
-      --builddir=./dist 2>&1 | tail -5
+      --builddir=./dist \
+      "${EXTRA_FLAGS[@]}" 2>&1 | tail -5
 
 # Find the executable.  Restrict to PPC Mach-O so we don't pick up
 # stray host-side helpers (e.g. autoconf's `config.status`, which is
@@ -51,4 +58,7 @@ echo ""
 echo "== Running $BIN on $PPC_HOST =="
 EXE_NAME=$(basename "$BIN")
 scp -q "$BIN" "$PPC_HOST:/tmp/$EXE_NAME"
-ssh -q "$PPC_HOST" "/tmp/$EXE_NAME" "$@"
+# DYLD_LIBRARY_PATH set up so HsOpenSSL/libgmp linked binaries can find their
+# runtime deps on Tiger.  Adds nothing for examples that don't need them.
+REMOTE_DYLD=${REMOTE_DYLD:-/opt/openssl-1.1.1t/lib:/opt/gmp-6.2.1/lib:/opt/gcc14/lib}
+ssh -q "$PPC_HOST" "DYLD_LIBRARY_PATH=$REMOTE_DYLD /tmp/$EXE_NAME" "$@"

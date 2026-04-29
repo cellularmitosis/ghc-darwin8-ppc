@@ -1,0 +1,9 @@
+cabal-version: 2.2
+name: https-get
+version: 0.1
+build-type: Simple
+
+executable https-get
+  main-is: Main.hs
+  build-depends: base, HsOpenSSL, network, bytestring
+  default-language: Haskell2010

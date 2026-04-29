@@ -1,6 +1,6 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-04-29 session 13.
+Last reviewed: 2026-04-29 session 15.
 
 ## What's done (baseline)
 
@@ -72,10 +72,21 @@ macOS 10.7).  Real localhost TCP echo round-trip verified on Tiger.
 The `SOCK_CLOEXEC` concern from session 7 was stale — already gated by
 upstream's `HAVE_ACCEPT4` autoconf check.
 
+✅ **TLS / HTTPS** (session 15, v0.9.0): `HsOpenSSL-0.11.7.10` vendored
+at `vendor/HsOpenSSL/` with a 1-line `runInBoundThread` fallback
+patch.  Builds against `tiger.sh`'s `openssl-1.1.1t`.  Real
+`HTTP/1.1 200 OK` from Cloudflare via TLS 1.x verified on Tiger.
+See `docs/sessions/2026-04-29-session-15-tls/`.
+
 Remaining untested / future sessions:
 - Dynamic linking (`-dynamic` disabled by QuickCross; 24-bit scattered reloc limit)
-- TLS / HTTPS — `tiger.sh` provides modern openssl on Tiger, so the
-  path is "build hsopenssl / tls against /opt/tiger.sh's openssl".
+- HTTP client higher-level libraries (`http-client`, `req`, `wreq`).
+  Should layer on top of working HsOpenSSL.  Future session.
+- Threaded RTS / SMP — gcc14 on Tiger lacks `__atomic_*_8`
+  intrinsics, so the threaded RTS won't link.  Workaround in
+  `vendor/HsOpenSSL/` covers the TLS-handshake case; programs that
+  really need OS-thread parallelism need either a `__atomic_*_8`
+  shim, libatomic, or SMP rebuild.  Not blocking.
 
 ### ~~C. GHCi / TemplateHaskell~~ ✅ TH done (session 12f, v0.8.0)
 

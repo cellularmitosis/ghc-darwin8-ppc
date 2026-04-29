@@ -1,6 +1,6 @@
 # state.md — where are we right now
 
-*Updated: 2026-04-29 session 13 (post-v0.8.1, `network` 3.x sockets work).*
+*Updated: 2026-04-29 session 15 (post-v0.9.0, HTTPS to the real internet works).*
 
 ## Headline
 
@@ -179,3 +179,10 @@ About 16 minutes on M-series Mac, with ~200 SSH link round-trips to pmacg5.
   Ruled out the obvious data-structure-miscompile candidates;
   next-session checklist documented.  Cross-compile path remains the
   recommended way to build Haskell for Tiger.
+- 2026-04-29 session 15: TLS/HTTPS via tiger.sh's openssl-1.1.1t
+  (v0.9.0).  Vendored `HsOpenSSL-0.11.7.10` at `vendor/HsOpenSSL/`
+  with a 1-line patch wrapping `runInBoundThread` in a fallback that
+  runs the action in the current thread when the threaded RTS isn't
+  available (PPC32+gcc14 lacks `__atomic_*_8` intrinsics).  Real
+  TLS handshake + HTTPS GET to example.com:443 verified on
+  PowerMac G5 / Tiger 10.4.11.

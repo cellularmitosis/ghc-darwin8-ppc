@@ -32,11 +32,10 @@ running Tigerbrew's gcc14, because our local cross-ld doesn't speak
 Tiger's crt1.
 
 Latest release:
-[**v0.8.1**](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.1)
-— `network` 3.x sockets work on Tiger 🌐 (vendored fix for
-`IP_RECVTOS` / `IPV6_TCLASS`).  TH from
-[v0.8.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.0)
-still working.
+[**v0.9.0**](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.9.0)
+— **HTTPS works on Tiger** 🔐.  Real TLS 1.x to example.com via
+vendored `HsOpenSSL` + `tiger.sh`'s OpenSSL 1.1.1t.  TH (v0.8.0) +
+TCP sockets (v0.8.1) still working.
 
 ## Implementation status
 
@@ -93,6 +92,7 @@ differences from 32-bit Int / process-pid / program-name).
 | `optparse-applicative` | ✅ Working | + `prettyprinter`, `ansi-terminal`. |
 | `megaparsec` | ✅ Working | + `parser-combinators`, `case-insensitive`. |
 | `network` (3.x) | ✅ Working | [v0.8.1](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.1).  Vendored at `vendor/network/` with two `#ifdef` guards on `IP_RECVTOS` / `IPV6_TCLASS` (added in macOS 10.7).  `SOCK_CLOEXEC` was a *non-issue* — already gated by the package's `HAVE_ACCEPT4` autoconf check, which our `tiger-config.site` correctly disables.  Smoke-test in [`tests/cabal-examples/network-echo-three/`](tests/cabal-examples/network-echo-three/). |
+| TLS / HTTPS | ✅ Working | [v0.9.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.9.0).  `HsOpenSSL-0.11.7.10` vendored at `vendor/HsOpenSSL/` with a small `runInBoundThread` fallback patch.  Builds against `tiger.sh`'s `openssl-1.1.1t`.  Verified: real TLS 1.x handshake to example.com:443, fetched `HTTP/1.1 200 OK` from Cloudflare.  See [`tests/cabal-examples/https-get/`](tests/cabal-examples/https-get/) and [`vendor/HsOpenSSL/TIGER-PATCHES.md`](vendor/HsOpenSSL/TIGER-PATCHES.md). |
 | 8 ready-to-go example projects | ✅ Working | [`tests/cabal-examples/`](tests/cabal-examples/) with `run-one.sh` that builds + scp + ssh-runs. |
 
 ### Runtime linker (loadObj / resolveObjs / lookupSymbol)
@@ -207,6 +207,7 @@ instead.
 | [v0.7.2](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.7.2) | 2026-04-25 | `base.o` loads via iserv ⛓️ (BR24 jump-island fix, patch 0012). |
 | [v0.8.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.0) | 2026-04-29 | **TemplateHaskell works on Tiger** 🪄 (patches 0013 + 0014). |
 | [v0.8.1](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.1) | 2026-04-29 | `network` 3.x works 🌐 (vendored `IP_RECVTOS` / `IPV6_TCLASS` ifdef guards). |
+| [v0.9.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.9.0) | 2026-04-29 | **HTTPS works on Tiger** 🔐 (vendored `HsOpenSSL` `runInBoundThread` fallback + `tiger.sh` openssl-1.1.1t). |
 
 ## Licence
 
