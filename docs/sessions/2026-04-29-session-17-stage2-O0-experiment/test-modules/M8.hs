@@ -1,0 +1,11 @@
+module M8 where
+a = (1::Int)
+b = (2::Int)
+c = (3::Int)
+d = (4::Int)
+e = (5::Int)
+f = (6::Int)
+g = (7::Int)
+h = (8::Int)
+i = (9::Int)
+j = (10::Int)
