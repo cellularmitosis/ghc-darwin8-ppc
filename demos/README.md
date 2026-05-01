@@ -9,7 +9,7 @@ to say "the runtime Mach-O loader works"; it is another to ship a
 Tiger-running Haskell program that uses it to load and call into a
 freshly cross-compiled `.o`.
 
-## What's here (v0.10.0)
+## What's here (v0.11.0)
 
 | File | Demonstrates | Added in |
 |---|---|---|
@@ -27,6 +27,7 @@ freshly cross-compiled `.o`.
 | [`v0.8.1-tcp-echo.hs`](v0.8.1-tcp-echo.hs) | **Real TCP socket round-trip on Tiger** via vendored `network-3.2.8.0`.  Localhost echo server + client; "hello tiger" → "echo: hello tiger".  Two `#ifdef` guards in `vendor/network/` work around `IP_RECVTOS` / `IPV6_TCLASS` (10.7+) absences in the 10.4u SDK. | [v0.8.1](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.1) |
 | [`v0.9.0-https-get.hs`](v0.9.0-https-get.hs) | **HTTPS to the real internet from Tiger.**  TLS 1.x handshake against example.com:443 via vendored `HsOpenSSL` + `tiger.sh`'s OpenSSL 1.1.1t.  Receives Cloudflare's `HTTP/1.1 200 OK` and the HTML body.  Vendor patch replaces three `runInBoundThread` calls with a fallback that runs in the current thread when the (PPC32-impossible) threaded RTS isn't available. | [v0.9.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.9.0) |
 | [`v0.10.0-mandel-prof.hs`](v0.10.0-mandel-prof.hs) | **Cost-centre + heap profiling on Tiger.**  Mandelbrot printer compiled with `-O -prof -fprof-auto` runs natively on Tiger and emits a real `.prof` cost-centre report + `.hp` heap-profile file.  Unblocked by [LLVM-7 r4](https://github.com/cellularmitosis/llvm-darwin8-ppc/releases/tag/v7.1.1-r4) (BUG-003 fix to PPC asm printer) plus two Tiger compatibility shims (`__MAC_OS_X_VERSION_MIN_REQUIRED` macro definition + a `strnlen` shim in `rts/RtsUtils.c`). | [v0.10.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.10.0) |
+| [`v0.11.0-stage2-native.sh`](v0.11.0-stage2-native.sh) | **Native ghc on Tiger.**  Stage2 ghc binary running on a real PowerMac G5 compiles a `Hello` and a `Data.Map.Strict` word-count program, prints expected output for both.  No host involvement.  GC bug worked around with the `ghc-stage2-wrapper.sh` script that adds `+RTS -A1G -RTS` (see [session 17 GC-BUG-FOUND](../docs/sessions/2026-04-29-session-17-stage2-O0-experiment/GC-BUG-FOUND.md)).  Closes [roadmap B](../docs/roadmap.md). | [v0.11.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.11.0) |
 
 ## Building & running
 

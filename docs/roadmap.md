@@ -135,39 +135,35 @@ After both fixes, `$(stringE "...")` and friends evaluate on Tiger
 and splice into the output binary.  See [`docs/sessions/2026-04-24-session-12-iserv-ppc/12f-th-end-to-end.md`](sessions/2026-04-24-session-12-iserv-ppc/12f-th-end-to-end.md).
 Demo: [`demos/v0.8.0-th-splice.hs`](../demos/v0.8.0-th-splice.hs).
 
-❌ **GHCi REPL** still blocked on stage2 (roadmap B).  TH end-to-end
-via `-fexternal-interpreter` works; an in-process REPL would need
-a working stage2 native ghc.
+🟡 **GHCi REPL** — stage2 works as of v0.11.0, so an in-process
+REPL is now reachable.  Not yet wired up; future session.  TH
+end-to-end via `-fexternal-interpreter` already works (v0.8.0).
 
-### B. Stretch: stage2 native `ghc` bug
+### B. Stage2 native `ghc` — 🟡 working with workaround (v0.11.0)
 
-**Updated 2026-04-30 (session 17):** the session-14 hypothesis
-(stage1 miscompiles `simpleOptPgm`) is **wrong**.  The bug is much
-earlier in the pipeline and is **non-deterministic** across
-`-d…` flag combinations of the same input.
+**The dragon was a GC bug.**  After ruling out (session 17):
+- Optimiser passes (session 14's `simpleOptPgm` hypothesis).
+- LLVM-7 PPC backend (rebuilt without `-fllvm`, same bug).
+- User-level Bag/UniqSupply/atomic primitives (probes all PASS).
 
-Same binary, same input, same shell, different observable bindings
-depending on which dump flags are on.  That points at memory
-corruption / thunk-eval miscompile, not a pass-level bug.
+`+RTS -A1G -RTS` makes stage2 work: the giant allocation area
+keeps small compiles inside one block, no GC fires, no bug.
 
-User-code probes that exercise the same primitives ghc uses (Bag
-traversal, atomic counter via `fetchAddWordAddr#`, the full
-`mkSplitUniqSupply` pattern with `unsafeDupableInterleaveIO` +
-`noDuplicate#`) all run **correctly** when stage1-cross-built.
-The miscompile only manifests inside ghc-the-binary.
+✅ **v0.11.0** ships:
+- `scripts/ghc-stage2-wrapper.sh` — one-line wrapper that adds
+  `+RTS -A1G -RTS` so users don't have to think about it.
+- `scripts/deploy-stage2.sh` — cross-build + deploy + smoke-test
+  in one command.
+- Demo: [`demos/v0.11.0-stage2-native.sh`](../demos/v0.11.0-stage2-native.sh)
+  compiles `Hello.hs` and a `Data.Map.Strict` word-count program
+  on Tiger and runs both end-to-end.
 
-See [`docs/sessions/2026-04-29-session-17-stage2-O0-experiment/stage2-non-determinism-finding.md`](sessions/2026-04-29-session-17-stage2-O0-experiment/stage2-non-determinism-finding.md)
-for the full reproducer table and panic catalogue.
-
-**Current experiment (in flight):** rebuild stage1 with `-fllvm`
-removed from `hsLibrary` and `hsGhc` in
-`hadrian/src/Settings/Flavours/QuickCross.hs`.  This forces the
-unreg-C codegen path through gcc14 instead of LLVM-7.  If the
-resulting stage2 ghc compiles `M5.hs` correctly, the bug lives in
-the LLVM-7 PPC backend (file as a sister-project bug) and we can
-ship a "C-codegen flavour" of the bindist as a workaround.  If
-the rebuilt stage2 still drops bindings, the bug is in something
-both backends share — and the next step is `gdb` on Tiger.
+❌ **Underlying GC bug not yet fixed.**  See
+[`docs/sessions/2026-04-29-session-17-stage2-O0-experiment/GC-BUG-FOUND.md`](sessions/2026-04-29-session-17-stage2-O0-experiment/GC-BUG-FOUND.md)
+for the catalogue (which panic each input shape triggers, why
+LLVM and unreg-C both fail, the threshold table for `-A` sizes).
+Fixing the actual GC bug is multi-session work — likely a missing
+PPC memory-fence in 9.2.8's RTS that 8.6.5 had.
 
 **Older context, kept for the record:**
 [session 14](sessions/2026-04-29-session-14-stage2-investigation/),

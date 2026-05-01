@@ -32,11 +32,13 @@ running Tigerbrew's gcc14, because our local cross-ld doesn't speak
 Tiger's crt1.
 
 Latest release:
-[**v0.10.0**](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.10.0)
-— **profiling builds work** 📊.  `-prof -fprof-auto` produces real
-`.prof` cost-centre reports and `.hp` heap-profile files on Tiger,
-unblocked by [LLVM-7 r4](https://github.com/cellularmitosis/llvm-darwin8-ppc/releases/tag/v7.1.1-r4)
-in the sister project.  Plus all of v0.9.0's HTTPS, v0.8.1's
+[**v0.11.0**](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.11.0)
+— **stage2 native ghc works on Tiger** 🐯.  The PPC `ghc` binary
+runs natively on Tiger and compiles Haskell to PPC Mach-O without
+the host doing any of the work.  Wrapped with `+RTS -A1G -RTS` to
+work around the PPC-Darwin RTS GC bug investigated in
+[session 17](docs/sessions/2026-04-29-session-17-stage2-O0-experiment/GC-BUG-FOUND.md).
+Plus all of v0.10.0's profiling, v0.9.0's HTTPS, v0.8.1's
 sockets, v0.8.0's TH, etc.
 
 ## Implementation status
@@ -52,7 +54,7 @@ approximates, or explicitly stubs.  Updated as each release lands.
 | Final link (Tiger crt1 / dyld) | ✅ Working | `ppc-ld-tiger.sh` ssh's to `$PPC_HOST` for the link step (Tigerbrew gcc14 + ld there).  Wrapped transparently by the cross-cc. |
 | Bindist tarball | ✅ Working | `ghc-9.2.8-stage1-cross-to-ppc-darwin8.tar.xz` (~123 MB) on every GitHub release.  Includes `install.sh`, `cross-scripts/`, `lib/bin/ghc-iserv` (since v0.7.0). |
 | `install.sh --prefix --ppc-host` | ✅ Working | One-command install (since [v0.3.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.3.0)).  Detects cctools/clang/SDK from canonical locations, writes `lib/settings`, recaches ghc-pkg, smoke-tests. |
-| Stage2 native ghc | 🟡 Partial | 128 MB ppc-native `ghc` binary that runs `--version`, panics on compile in `StgToCmm.Env` (Typeable lookup).  Bypass with `-dno-typeable-binds` lets non-main modules compile.  See [`docs/experiments/006-stage2-native-ghc.md`](docs/experiments/006-stage2-native-ghc.md). |
+| Stage2 native ghc | 🟡 Working with workaround | [v0.11.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.11.0).  ~210 MB ppc-native `ghc` binary that compiles Haskell to PPC Mach-O on Tiger.  Wrapped with `+RTS -A1G -RTS` (`scripts/ghc-stage2-wrapper.sh`) to work around an unfixed PPC-Darwin RTS GC bug — major GC during a compile corrupts the typechecker's `Bag`-based binding store.  Workaround means Tiger-side compiles use ~1 GB RAM; not a blocker on G5s.  See [session 17 GC-BUG-FOUND](docs/sessions/2026-04-29-session-17-stage2-O0-experiment/GC-BUG-FOUND.md).  Deploy with `scripts/deploy-stage2.sh`. |
 
 ### Language & libraries (verified on Tiger)
 
@@ -211,6 +213,7 @@ instead.
 | [v0.8.1](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.1) | 2026-04-29 | `network` 3.x works 🌐 (vendored `IP_RECVTOS` / `IPV6_TCLASS` ifdef guards). |
 | [v0.9.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.9.0) | 2026-04-29 | **HTTPS works on Tiger** 🔐 (vendored `HsOpenSSL` `runInBoundThread` fallback + `tiger.sh` openssl-1.1.1t). |
 | [v0.10.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.10.0) | 2026-04-29 | **Profiling works on Tiger** 📊 (LLVM-7 r4 BUG-003 fix + Tiger compat shims for `__MAC_OS_X_VERSION_MIN_REQUIRED` + `strnlen`). |
+| [v0.11.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.11.0) | 2026-04-30 | **Stage2 native ghc works on Tiger** 🐯 (GC bug worked around with `+RTS -A1G -RTS`; `scripts/ghc-stage2-wrapper.sh` + `scripts/deploy-stage2.sh`). |
 
 ## Licence
 

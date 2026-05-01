@@ -1,6 +1,6 @@
 # state.md — where are we right now
 
-*Updated: 2026-04-29 session 16 (post-v0.10.0, profiling works on Tiger).*
+*Updated: 2026-04-30 session 17 (post-v0.11.0, stage2 native ghc works on Tiger).*
 
 ## Headline
 
@@ -50,11 +50,21 @@ _build/stage1/bin/powerpc-apple-darwin8-ghc hello.hs -o hello-ppc
 scp hello-ppc pmacg5:/tmp/ && ssh pmacg5 /tmp/hello-ppc
 ```
 
-### 2. PPC-native `ghc` binary (RUNS BUT CAN'T COMPILE)
+### 2. PPC-native `ghc` binary (WORKS, with `+RTS -A1G` workaround) — v0.11.0
 
-128 MB Mach-O `ppc_7400` executable.  `ghc --version` prints the banner.
-`ghc -c foo.hs` panics inside `StgToCmm.Env` on a Typeable lookup.
-Documented in `docs/experiments/006-stage2-native-ghc.md`, deferred.
+~210 MB Mach-O `ppc_7400` executable.  `ghc --version` prints the banner.
+`ghc Hello.hs -o hello` produces a working PPC binary on Tiger.
+`ghc -c Words.hs` (with `Data.Map.Strict` import) compiles correctly.
+
+The shipping wrapper (`scripts/ghc-stage2-wrapper.sh`) prepends
+`+RTS -A1G -RTS` to every invocation, sidestepping the unfixed
+PPC-Darwin RTS GC bug that corrupts the typechecker's `Bag`-based
+binding store after the first major collection.  See
+[`docs/sessions/2026-04-29-session-17-stage2-O0-experiment/GC-BUG-FOUND.md`](sessions/2026-04-29-session-17-stage2-O0-experiment/GC-BUG-FOUND.md)
+for the full investigation (panic catalogue, threshold table, why
+removing `-fllvm` and switching to unreg-C didn't fix it on its own).
+
+Deploy with `scripts/deploy-stage2.sh <ssh-host>`.
 
 ## Infrastructure
 
@@ -197,3 +207,13 @@ About 16 minutes on M-series Mac, with ~200 SSH link round-trips to pmacg5.
   in `rts/RtsUtils.c` (Tiger predates POSIX 2008's `strnlen`).
   Real `mandel.prof` cost-centre report + `mandel.hp` heap-profile
   produced on Tiger.
+- 2026-04-30 session 17: stage2 native ghc works on Tiger (v0.11.0).
+  Long-running investigation finally tracked the binding-loss bug
+  to garbage collection: a major GC during a compile corrupts the
+  typechecker's `Bag`-based binding store.  Workaround:
+  `+RTS -A1G -RTS` keeps small compiles inside one allocation block
+  so GC never fires.  Shipped as `scripts/ghc-stage2-wrapper.sh`
+  + `scripts/deploy-stage2.sh`.  Demo `demos/v0.11.0-stage2-native.sh`
+  compiles `Hello` and a `Data.Map.Strict` word-count program on a
+  PowerMac G5 and runs both end-to-end.  Underlying GC bug not yet
+  fixed (likely missing PPC memory fences in 9.2.8's RTS).
