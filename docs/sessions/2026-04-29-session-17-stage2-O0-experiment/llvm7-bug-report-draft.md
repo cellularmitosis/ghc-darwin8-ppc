@@ -1,8 +1,26 @@
 # DRAFT — LLVM-7 BUG-004 (or whatever the next number is)
 
-**Status:** draft, do not file yet.  Awaiting confirmation from the
+> ## ❌ OBSOLETE — DO NOT FILE
+>
+> The hypothesis this draft was built on (LLVM-7 PPC backend miscompiles
+> ghc) is **wrong**.  The bug is a PPC-Darwin RTS GC issue in GHC 9.2.8
+> itself — see [`GC-BUG-FOUND.md`](GC-BUG-FOUND.md) for the bisection
+> that proved it.  The unreg-C-via-gcc14 build path reproduces the
+> binding-loss in slightly different shape, ruling out LLVM as the cause.
+>
+> The sister project independently captured this in
+> [`llvm-7-darwin-ppc/docs/sessions/032-llvm8-primary-and-ghc/ghc-bug-correction.md`](../../../../llvm-7-darwin-ppc/docs/sessions/032-llvm8-primary-and-ghc/ghc-bug-correction.md).
+>
+> Kept on disk for the historical record and so search engines / future
+> spelunkers can find the resolution alongside the original hypothesis.
+> The text below is the original draft, unchanged.
+
+---
+
+**Status:** ~~draft, do not file yet.  Awaiting confirmation from the
 no-LLVM hadrian rebuild that the bug actually disappears in the
-unreg-C path.  If it does, this becomes the bug report.
+unreg-C path.  If it does, this becomes the bug report.~~  *Bisection
+came back: bug is in our own RTS GC, not LLVM.  Draft is now obsolete.*
 
 ## One-line summary
 
