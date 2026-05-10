@@ -1,6 +1,6 @@
 # state.md — where are we right now
 
-*Updated: 2026-05-10 session 20 (stage2 GC bug round 2 — proximate cause identified: wrong stack-frame bitmaps; root mechanism still unknown).*
+*Updated: 2026-05-10 session 21 (stage2 GC bug round 3 — bitmap-encoding step proven correct; bug now isolated to StgToCmm/LayoutStack stack-map construction).*
 
 ## Headline
 
@@ -73,6 +73,18 @@ have bitmaps that mark them as non-pointer but actually contain
 real heap pointers, so GC skips them and they go stale.
 Systematic across 6+ modules; root mechanism (why the bitmaps are
 wrong on PPC32 cross-build) is the next session's question.
+And [`docs/sessions/2026-05-10-session-21-stage2-bitmap-bug/`](sessions/2026-05-10-session-21-stage2-bitmap-bug/)
+for round 3 — bug narrowed by another layer: the bitmap-encoding
+step (`mkLivenessBits`) is correct, the .o faithfully encodes
+the StackRep that the Cmm IR specifies; therefore the bug lives
+in `compiler/GHC/Cmm/LayoutStack.hs::stackMapToLiveness` or
+earlier StgToCmm StackMap construction (a saved-pointer slot
+either isn't in `sm_regs` or has its `LocalReg` type
+misclassified).  93/106 of BAD pay=1 events trace to just 4
+info tables of bitmap shape `PN` or `PNP` — small frames with
+the middle slot wrongly marked non-pointer.  Pre-existing
+host/target `BITMAP_BITS_SHIFT` mismatch theory disproved
+(both = 5 on PPC32).
 
 Deploy with `scripts/deploy-stage2.sh <ssh-host>`.
 
@@ -238,6 +250,26 @@ About 16 minutes on M-series Mac, with ~200 SSH link round-trips to pmacg5.
   v0.11.0 demo green.  Side discovery: GHC's `-fllvm` is a no-op
   for unregisterised ABI targets — the swap is about which clang
   compiles GHC's C output, not about LLVM IR.
+- 2026-05-10 session 21: stage2 GC bug investigation, round 3.
+  Decoded the on-disk bitmap word format on PPC32
+  (BITMAP_BITS_SHIFT=5, MASK=0x1F).  Confirmed both compile-time
+  (`pc_BITMAP_BITS_SHIFT=5` in stage1's PlatformConstants) and
+  runtime (`SIZEOF_VOID_P=4` → shift=5 in Constants.h) agree —
+  no shift mismatch.  Re-attributed PROBE21BAD events: 93/106
+  of pay=1 BADs come from just 4 info tables, all with bitmap
+  layout 0x42 (PN size 2) or 0x43 (PNP size 3) — middle slot
+  wrongly marked non-pointer.  Cross-rebuilt
+  `Control/Monad/Catch.hs` with `-ddump-cmm`: the IR has
+  exactly 9 `[F,T,F]`/`[F,T]` StackReps matching the .o's 9
+  `PN`/`PNP` info tables.  **The bitmap-encoding step is
+  faithful.** Therefore the bug lives in
+  `compiler/GHC/Cmm/LayoutStack.hs::stackMapToLiveness` or
+  earlier StgToCmm StackMap construction.  Likely cause: a
+  saved-pointer slot doesn't make it into `sm_regs`, or its
+  `LocalReg` type is misclassified so `isGcPtrType` returns
+  False.  Two reusable analysis scripts
+  (decode-info-tables.py, correlate-probe21-bads.py) shipped.
+  Stage2 still ships unchanged.
 - 2026-05-10 session 20: stage2 GC bug investigation, round 2.
   Built PROBE20 + PROBE21 on top of the debug RTS to walk the
   running TSO's stack post-scavenge and classify every word.

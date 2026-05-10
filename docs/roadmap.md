@@ -184,6 +184,22 @@ much smaller than session 17 left it.  See:
   systematic GHC cross-codegen bug for PPC32, not per-module.
   Session-20 [`HANDOFF.md`](sessions/2026-05-10-session-20-stage2-gc-bug-round2/HANDOFF.md)
   points at finding the offending Cmm/StgToCmm path.
+- [`docs/sessions/2026-05-10-session-21-stage2-bitmap-bug/`](sessions/2026-05-10-session-21-stage2-bitmap-bug/)
+  — round 3.  **Bug narrowed by another layer.**  Decoded the
+  PPC32 bitmap-word format (`BITMAP_BITS_SHIFT=5`).  Confirmed
+  compile-time and runtime agree on the shift.  Cross-built
+  Catch.o has 9 `PN`/`PNP` info tables; `-ddump-cmm` of the
+  same source has exactly 9 matching `[F,T,F]`/`[F,T]`
+  StackReps.  **`mkLivenessBits` is innocent — the bitmap
+  encoding faithfully reflects the IR.**  93/106 of BAD pay=1
+  events come from just 4 info tables of bitmap shape `PN`
+  (size 2) or `PNP` (size 3), with the middle slot wrongly
+  marked non-pointer.  Bug lives in
+  `compiler/GHC/Cmm/LayoutStack.hs::stackMapToLiveness` or
+  earlier StgToCmm StackMap construction.  Session-21
+  [`HANDOFF.md`](sessions/2026-05-10-session-21-stage2-bitmap-bug/HANDOFF.md)
+  points at tracing slot-1 writes via `-ddump-cmm-final` and
+  comparing host vs cross-build StackRep counts.
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.
