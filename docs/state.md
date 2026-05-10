@@ -1,6 +1,6 @@
 # state.md — where are we right now
 
-*Updated: 2026-05-10 session 21 (stage2 GC bug round 3 — bitmap-encoding step proven correct; bug now isolated to StgToCmm/LayoutStack stack-map construction).*
+*Updated: 2026-05-10 session 22 (stage2 GC bug round 4 — session 21's "bitmap is wrong" hypothesis does NOT survive per-block audit; the dominant Catch.hs PNP bitmaps are the right answer, PROBE21's BAD events for those tables are false positives, the real bug is elsewhere).*
 
 ## Headline
 
@@ -76,15 +76,30 @@ wrong on PPC32 cross-build) is the next session's question.
 And [`docs/sessions/2026-05-10-session-21-stage2-bitmap-bug/`](sessions/2026-05-10-session-21-stage2-bitmap-bug/)
 for round 3 — bug narrowed by another layer: the bitmap-encoding
 step (`mkLivenessBits`) is correct, the .o faithfully encodes
-the StackRep that the Cmm IR specifies; therefore the bug lives
-in `compiler/GHC/Cmm/LayoutStack.hs::stackMapToLiveness` or
-earlier StgToCmm StackMap construction (a saved-pointer slot
-either isn't in `sm_regs` or has its `LocalReg` type
-misclassified).  93/106 of BAD pay=1 events trace to just 4
-info tables of bitmap shape `PN` or `PNP` — small frames with
-the middle slot wrongly marked non-pointer.  Pre-existing
-host/target `BITMAP_BITS_SHIFT` mismatch theory disproved
-(both = 5 on PPC32).
+the StackRep that the Cmm IR specifies.  Pre-existing host/target
+`BITMAP_BITS_SHIFT` mismatch theory disproved (both = 5 on PPC32).
+Session 21 hypothesised the bug must therefore be in
+`stackMapToLiveness` or earlier StackMap construction.
+And [`docs/sessions/2026-05-10-session-22-stage2-bitmap-bug/`](sessions/2026-05-10-session-22-stage2-bitmap-bug/)
+for round 4 — that session-21 hypothesis does **not** survive
+per-block audit.  All 15 `True`-containing StackReps in
+cross-built Catch.hs have True-marked slots that are **never
+read by the body** (only written/overwritten or
+passed-through-then-popped).  The bitmap is the right answer.
+Cross-host comparison: cross emits 8× more True-bit StackReps
+than host on the same source, but the audited host frames have
+the same dead-slot pattern — the difference is 32-bit codegen
+layout, not misclassification.  Conclusion: the dominant 93/106
+BAD pay=1 events PROBE21 attributed to 4 PNP/PN info tables in
+Catch.hs are PROBE21 **false positives** (heap-shaped values
+legitimately stranded in dead slots that GC correctly skips).
+The actual GC crash is real but somewhere else: another
+module's frames, a non-RET_SMALL frame type PROBE21 skipped,
+the RTS scavenger itself, or CAF/SRT scanning.  Next session's
+recommended experiment: poison-on-stale-slot RTS patch
+(overwrite each non-evac heap-shaped slot with `0xDEADBEEF`
+post-scavenge — decisive test of "real bug vs PROBE21
+false positive").
 
 Deploy with `scripts/deploy-stage2.sh <ssh-host>`.
 
@@ -250,6 +265,28 @@ About 16 minutes on M-series Mac, with ~200 SSH link round-trips to pmacg5.
   v0.11.0 demo green.  Side discovery: GHC's `-fllvm` is a no-op
   for unregisterised ABI targets — the swap is about which clang
   compiles GHC's C output, not about LLVM IR.
+- 2026-05-10 session 22: stage2 GC bug investigation, round 4.
+  Re-tested session 21's "bitmap is wrong" hypothesis with a
+  per-block audit: for every `_blk_NAME` in cross-built Catch.hs
+  whose StackRep contains `True`, check whether the body reads
+  the True-marked slot.  Result across all 15 True-containing
+  frames: **0 reads, 15 writes** — the bitmap is the right answer.
+  Cross-host comparison shows cross emits 8× more True-bit
+  StackReps than host on the same source, but the audited host
+  PNP frames have the same dead-slot pattern.  Verified the
+  bit-order convention end-to-end: bit 0 = first slot above the
+  info pointer in both compiler and runtime.  Conclusion:
+  PROBE21's BAD events for the 4 dominant Catch.hs PNP/PN info
+  tables are **false positives** (heap-shaped values stranded
+  in genuinely-dead slots).  The actual GC crash is real but
+  somewhere else.  Next session: build poison-on-stale-slot RTS
+  patch — overwrite each non-evac heap-shaped slot value with
+  `0xDEADBEEF` post-scavenge; if the typechecker crashes at
+  `0xDEADBEEF`, the slot was being read = real bug; if it
+  crashes at the original "variable not found" panic, slots are
+  truly dead = bug is RTS-side or in a non-RET_SMALL frame
+  type.  Two reusable audit scripts shipped.
+  Stage2 still ships unchanged.
 - 2026-05-10 session 21: stage2 GC bug investigation, round 3.
   Decoded the on-disk bitmap word format on PPC32
   (BITMAP_BITS_SHIFT=5, MASK=0x1F).  Confirmed both compile-time

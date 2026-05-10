@@ -185,21 +185,37 @@ much smaller than session 17 left it.  See:
   Session-20 [`HANDOFF.md`](sessions/2026-05-10-session-20-stage2-gc-bug-round2/HANDOFF.md)
   points at finding the offending Cmm/StgToCmm path.
 - [`docs/sessions/2026-05-10-session-21-stage2-bitmap-bug/`](sessions/2026-05-10-session-21-stage2-bitmap-bug/)
-  — round 3.  **Bug narrowed by another layer.**  Decoded the
-  PPC32 bitmap-word format (`BITMAP_BITS_SHIFT=5`).  Confirmed
-  compile-time and runtime agree on the shift.  Cross-built
-  Catch.o has 9 `PN`/`PNP` info tables; `-ddump-cmm` of the
-  same source has exactly 9 matching `[F,T,F]`/`[F,T]`
-  StackReps.  **`mkLivenessBits` is innocent — the bitmap
-  encoding faithfully reflects the IR.**  93/106 of BAD pay=1
-  events come from just 4 info tables of bitmap shape `PN`
-  (size 2) or `PNP` (size 3), with the middle slot wrongly
-  marked non-pointer.  Bug lives in
-  `compiler/GHC/Cmm/LayoutStack.hs::stackMapToLiveness` or
-  earlier StgToCmm StackMap construction.  Session-21
-  [`HANDOFF.md`](sessions/2026-05-10-session-21-stage2-bitmap-bug/HANDOFF.md)
-  points at tracing slot-1 writes via `-ddump-cmm-final` and
-  comparing host vs cross-build StackRep counts.
+  — round 3.  Decoded the PPC32 bitmap-word format
+  (`BITMAP_BITS_SHIFT=5`).  Confirmed compile-time and runtime
+  agree on the shift.  Cross-built Catch.o has 9 `PN`/`PNP` info
+  tables; `-ddump-cmm` of the same source has exactly 9 matching
+  `[F,T,F]`/`[F,T]` StackReps.  **`mkLivenessBits` is innocent —
+  the bitmap encoding faithfully reflects the IR.**  Hypothesised
+  the bug must therefore be in `stackMapToLiveness` or earlier
+  StackMap construction — but see session 22 below.
+- [`docs/sessions/2026-05-10-session-22-stage2-bitmap-bug/`](sessions/2026-05-10-session-22-stage2-bitmap-bug/)
+  — round 4.  **Session 21's hypothesis does NOT survive
+  per-block audit.**  For every `_blk_NAME` with `True` in its
+  StackRep in cross-built Catch.hs (15 frames total), check
+  whether the body reads the True-marked slot.  Result: 0 reads,
+  15 writes.  The bitmap is the right answer.  Cross-host
+  comparison: cross emits 8× more True-bit StackReps than host
+  on the same source, but the audited host PNP frames have the
+  same dead-slot pattern.  The 8× difference is 32-bit codegen
+  layout, not misclassification.  Verified end-to-end that bit
+  0 = first slot above the info pointer in both compiler and
+  runtime.  Conclusion: the dominant 93/106 BAD pay=1 events
+  PROBE21 attributed to 4 PNP/PN info tables in Catch.hs are
+  **PROBE21 false positives** — heap-shaped values legitimately
+  stranded in dead slots that GC correctly skips.  The actual
+  GC crash is real but somewhere else (different module, a
+  non-RET_SMALL frame type PROBE21 skipped, the RTS scavenger,
+  or CAF/SRT scanning).  Session-22
+  [`HANDOFF.md`](sessions/2026-05-10-session-22-stage2-bitmap-bug/HANDOFF.md)
+  proposes a poison-on-stale-slot RTS patch (overwrite each
+  non-evac heap-shaped slot value with `0xDEADBEEF` post-
+  scavenge — decisive test of "real bug vs PROBE21 false
+  positive" in one short cycle).
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.
