@@ -1,6 +1,6 @@
 # state.md — where are we right now
 
-*Updated: 2026-05-10 session 22 (stage2 GC bug round 4 — session 21's "bitmap is wrong" hypothesis does NOT survive per-block audit; the dominant Catch.hs PNP bitmaps are the right answer, PROBE21's BAD events for those tables are false positives, the real bug is elsewhere).*
+*Updated: 2026-05-10 session 23 (stage2 GC bug round 5 — bug confirmed REAL via PROBE22POISON; pinned to a frame in `GHC.Data.FastString`'s Cmm; not in the Catch.hs PNP/PN frames session 22 audited).*
 
 ## Headline
 
@@ -95,11 +95,29 @@ Catch.hs are PROBE21 **false positives** (heap-shaped values
 legitimately stranded in dead slots that GC correctly skips).
 The actual GC crash is real but somewhere else: another
 module's frames, a non-RET_SMALL frame type PROBE21 skipped,
-the RTS scavenger itself, or CAF/SRT scanning.  Next session's
-recommended experiment: poison-on-stale-slot RTS patch
-(overwrite each non-evac heap-shaped slot with `0xDEADBEEF`
-post-scavenge — decisive test of "real bug vs PROBE21
-false positive").
+the RTS scavenger itself, or CAF/SRT scanning.
+And [`docs/sessions/2026-05-10-session-23-stage2-poison-probe/`](sessions/2026-05-10-session-23-stage2-poison-probe/)
+for round 5 — **bug confirmed real and localised**.  PROBE22POISON
+(replace every non-evac heap-shape on the running TSO's stack with
+`0xDEADBEEF` post-scavenge) caused stage2 ghc compiling M5.hs under
+`+RTS -A1m -RTS` to crash deterministically (5/5 iterations) at
+`_blk_c7te + 112` with `EXC_BAD_ACCESS at 0xdeadbeef` in
+`__memcpy(_, src=0xdeadbeef, 16)`.  The src came from `MEM[Sp+12]`
+= slot 6 in PROBE22 coordinates of the most recent (gc_no=2) GC.
+Pre-poison value `0x0bf5f38a` was a tagged heap pointer in a
+non-evacuated nursery block.  `_blk_c7te` lives between
+`_s77C_entry` and
+`_ghc_GHCziDataziFastString_mkFastStringByteString_entry` per `nm`
+on stage2's text section — i.e. in some local closure /
+continuation Cmm block within `GHC.Data.FastString`.  Of the 9
+slots PROBE22POISON stomped per run, only 1 caused a read-after-
+poison crash; the other 8 were benign (PROBE21 false positives,
+exactly as session 22 said).  Session 22's "Catch frames are
+correct" stands; the bug is in a *different* module's bitmap.
+Next session: re-cross-compile `compiler/GHC/Data/FastString.hs`
+with `-ddump-cmm-final`, find the StackRep of the offending
+info table (block ~`c7te` or its sibling), and trace back to
+StgToCmm/LayoutStack to see why the slot got marked non-pointer.
 
 Deploy with `scripts/deploy-stage2.sh <ssh-host>`.
 
@@ -265,6 +283,29 @@ About 16 minutes on M-series Mac, with ~200 SSH link round-trips to pmacg5.
   v0.11.0 demo green.  Side discovery: GHC's `-fllvm` is a no-op
   for unregisterised ABI targets — the swap is about which clang
   compiles GHC's C output, not about LLVM IR.
+- 2026-05-10 session 23: stage2 GC bug investigation, round 5.
+  Built PROBE22POISON (RTS patch — replace every non-evac heap-
+  shape on the running TSO's stack with `0xDEADBEEF` post-
+  scavenge) and ran stage2 ghc against M5.hs under `+RTS -A1m`.
+  5/5 iterations crashed deterministically at `_blk_c7te + 112`
+  with `EXC_BAD_ACCESS at 0xdeadbeef`, in
+  `__memcpy(dst, src=0xdeadbeef, len=16)`.  The poisoned slot
+  is at `MEM[Sp+12]` of the topmost frame at crash time, which
+  corresponds to **slot 6** in PROBE22's coordinates from the
+  most recent (gc_no=2) GC — pre-poison value `0x0bf5f38a`,
+  a tagged heap pointer.  `_blk_c7te` lives between
+  `_s77C_entry` and
+  `_ghc_GHCziDataziFastString_mkFastStringByteString_entry` per
+  `nm` on stage2 ghc's text section, so the misclassifying
+  StackRep is in some local closure / continuation Cmm block
+  within `GHC.Data.FastString`.  Of the 9 slots PROBE22POISON
+  stomped per run, only 1 caused a read-after-poison crash;
+  the other 8 were benign (consistent with session 22's
+  per-block audit).  v0.12.0 ships unchanged; stage2 on pmacg5
+  reverted to clean RTS at session-23 end.  Next session: dump
+  cross-built FastString.hs Cmm, find the StackRep of the
+  offending info table, trace back to LayoutStack /
+  stackMapToLiveness.
 - 2026-05-10 session 22: stage2 GC bug investigation, round 4.
   Re-tested session 21's "bitmap is wrong" hypothesis with a
   per-block audit: for every `_blk_NAME` in cross-built Catch.hs

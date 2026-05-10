@@ -216,6 +216,29 @@ much smaller than session 17 left it.  See:
   non-evac heap-shaped slot value with `0xDEADBEEF` post-
   scavenge — decisive test of "real bug vs PROBE21 false
   positive" in one short cycle).
+- [`docs/sessions/2026-05-10-session-23-stage2-poison-probe/`](sessions/2026-05-10-session-23-stage2-poison-probe/)
+  — round 5.  **PROBE22POISON ran the experiment.  Bug confirmed
+  REAL and pinned to `GHC.Data.FastString`.**  Stage2 ghc compiling
+  M5.hs under `+RTS -A1m` crashed deterministically (5/5 iterations)
+  at `_blk_c7te + 112` with `EXC_BAD_ACCESS at 0xdeadbeef`, in
+  `__memcpy(_, src=0xdeadbeef, len=16)`.  The src came from
+  `MEM[Sp+12]` of the topmost frame at crash time, which corresponds
+  to **slot 6** in PROBE22's coordinates from the most recent
+  (gc_no=2) GC — pre-poison value `0x0bf5f38a`, a tagged heap
+  pointer in a non-evacuated nursery block.  Per `nm` on stage2's
+  text section, `_blk_c7te` lives between `_s77C_entry` and
+  `_ghc_GHCziDataziFastString_mkFastStringByteString_entry` — so
+  the misclassifying StackRep is in some local closure /
+  continuation Cmm block within `GHC.Data.FastString`'s
+  compilation unit.  Of the 9 slots PROBE22POISON stomped per
+  run, only 1 caused a read-after-poison crash; the other 8 were
+  benign (consistent with session 22's audit-says-most-are-dead
+  result).  Session-23
+  [`HANDOFF.md`](sessions/2026-05-10-session-23-stage2-poison-probe/HANDOFF.md)
+  scopes the next experiment: re-cross-compile FastString.hs with
+  `-ddump-cmm-final`, find the offending info table's StackRep,
+  and trace back to the StgToCmm/LayoutStack code that produced
+  it.
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.
