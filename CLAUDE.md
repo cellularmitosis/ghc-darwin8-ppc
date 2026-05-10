@@ -90,10 +90,14 @@ full original.
 
 ## Sessions workflow
 
-Substantive work lives in [`docs/sessions/`](docs/sessions/).  Each
-session is its own dated dir; see
-[`docs/sessions/README.md`](docs/sessions/README.md) for the checklist
-and end-of-session ritual.
+**Read [`docs/sessions/README.md`](docs/sessions/README.md) before
+starting work — that's the workflow you must follow.** Start-of-
+session checklist (including reading any HANDOFF.md from the prior
+session), end-of-session ritual, and per-session-dir file conventions
+all live there.
+
+Substantive work lives in [`docs/sessions/`](docs/sessions/) — each
+session is its own dated dir.
 
 Forward-looking work that's scheduled but not yet started lives as
 individual files under [`docs/proposals/`](docs/proposals/).  When a
