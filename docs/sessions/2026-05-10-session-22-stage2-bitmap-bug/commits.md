@@ -1,8 +1,7 @@
 # Session 22 commits
 
-(Backfill SHAs at session close after committing.)
-
-- `<SHA>` — Session 22: bitmap-content hypothesis revisited; per-block audit shows Catch.hs PNP frames are correctly marked dead.
+- [`a9fe1f1`](https://github.com/cellularmitosis/ghc-darwin8-ppc/commit/a9fe1f1) — Session 22: stage2 GC bug investigation, round 4 (per-block audit shows Catch.hs PNP frames are correctly marked dead; the dominant PROBE21 BAD events for those frames are false positives).
+- [`be53bce`](https://github.com/cellularmitosis/ghc-darwin8-ppc/commit/be53bce) — Session 22: state.md + roadmap.md reflect bitmap-content hypothesis disproved.
 
 This session is read-only investigation: no edits to
 `external/ghc-modern/`, no edits to `compiler/` or `rts/`, no
