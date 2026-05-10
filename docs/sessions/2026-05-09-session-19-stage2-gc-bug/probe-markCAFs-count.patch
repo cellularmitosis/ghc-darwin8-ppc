@@ -1,0 +1,76 @@
+SESSION 19 PROBE PATCH — DO NOT MERGE.
+
+Adds a printf to rts/sm/GCAux.c::markCAFs that reports the CAF
+count seen each time the GC walks dyn_caf_list.  Goal: see whether
+the count drops between GCs (which would confirm a CAF-list
+truncation bug as the root cause of the stage2 binding-loss bug).
+
+Apply with:
+    cd external/ghc-modern/ghc-9.2.8 && \
+        patch -p1 < ../../../docs/sessions/2026-05-09-session-19-stage2-gc-bug/probe-markCAFs-count.patch
+
+Revert with:
+    cd external/ghc-modern/ghc-9.2.8 && \
+        patch -p1 -R < ../../../docs/sessions/2026-05-09-session-19-stage2-gc-bug/probe-markCAFs-count.patch
+
+After applying, rebuild RTS only:
+    cd external/ghc-modern/ghc-9.2.8 && \
+        ./hadrian/build --flavour=quick-cross --freeze1 -j8 _build/stage1/rts/build/libHSrts-1.0.2_debug.a
+
+Then redeploy stage2:
+    bash scripts/exp-deploy-stage2-debug.sh pmacg5
+
+Then probe:
+    ssh pmacg5 'cd /tmp && rm -f M5.hi M5.o; \
+        DYLD_LIBRARY_PATH=/opt/gmp-6.2.1/lib:/opt/gcc14/lib \
+        /opt/ghc-stage2/bin/ghc-real-debug -c M5.hs +RTS -A1m -RTS' 2>&1 | grep PROBE19
+
+Each printed line:
+    PROBE19 markCAFs gc_no=N visited=K dyn_list_head_addr=0x...
+shows how many CAFs got their indirectee evac'd at GC #N.
+
+Expected normal pattern: K is monotonically non-decreasing and
+stays the same across GCs once the program reaches a stable CAF
+working set (typically ~3000-5000 for stage2 ghc).
+
+Symptom for the CAF-truncation hypothesis: K drops between GCs.
+
+diff --git a/rts/sm/GCAux.c b/rts/sm/GCAux.c
+index 8e98be33..7e7e7e7e 100644
+--- a/rts/sm/GCAux.c
++++ b/rts/sm/GCAux.c
+@@ -142,11 +142,15 @@ revertCAFs( void )
+     revertible_caf_list = (StgIndStatic*)END_OF_CAF_LIST;
+ }
+
++/* ghc-darwin8-ppc session 19: instrument markCAFs to count visited
++ * CAFs per GC, to test the CAF-list-truncation hypothesis. */
++static uint64_t probe19_gc_count = 0;
+ void
+ markCAFs (evac_fn evac, void *user)
+ {
+     StgIndStatic *c;
++    uint64_t visited = 0;
++    StgIndStatic *head = dyn_caf_list;
+
+     for (c = dyn_caf_list;
+          ((StgWord) c | STATIC_FLAG_LIST) != (StgWord)END_OF_CAF_LIST;
+@@ -154,6 +158,7 @@ markCAFs (evac_fn evac, void *user)
+     {
+         c = (StgIndStatic *)UNTAG_STATIC_LIST_PTR(c);
+         evac(user, &c->indirectee);
++        visited++;
+     }
+     for (c = revertible_caf_list;
+          ((StgWord) c | STATIC_FLAG_LIST) != (StgWord)END_OF_CAF_LIST;
+@@ -162,6 +167,11 @@ markCAFs (evac_fn evac, void *user)
+         c = (StgIndStatic *)UNTAG_STATIC_LIST_PTR(c);
+         evac(user, &c->indirectee);
+     }
++    fprintf(stderr,
++            "PROBE19 markCAFs gc_no=%llu visited=%llu dyn_list_head_addr=%p\n",
++            (unsigned long long) probe19_gc_count++,
++            (unsigned long long) visited,
++            (void *) head);
+ }
+
