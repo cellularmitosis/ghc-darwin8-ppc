@@ -1,6 +1,6 @@
 # state.md — where are we right now
 
-*Updated: 2026-05-09 session 18 (post-v0.12.0, cross-toolchain swapped to LLVM-8).*
+*Updated: 2026-05-10 session 19 (stage2 GC bug round 1 — search space narrowed, root cause not yet found).*
 
 ## Headline
 
@@ -61,8 +61,13 @@ The shipping wrapper (`scripts/ghc-stage2-wrapper.sh`) prepends
 PPC-Darwin RTS GC bug that corrupts the typechecker's `Bag`-based
 binding store after the first major collection.  See
 [`docs/sessions/2026-04-29-session-17-stage2-O0-experiment/GC-BUG-FOUND.md`](sessions/2026-04-29-session-17-stage2-O0-experiment/GC-BUG-FOUND.md)
-for the full investigation (panic catalogue, threshold table, why
-removing `-fllvm` and switching to unreg-C didn't fix it on its own).
+for the original investigation (panic catalogue, threshold table,
+why removing `-fllvm` and switching to unreg-C didn't fix it on its
+own), and
+[`docs/sessions/2026-05-09-session-19-stage2-gc-bug/`](sessions/2026-05-09-session-19-stage2-gc-bug/)
+for round 1 of the root-cause investigation (sanity check passes,
+SMP/atomic and CAF-list-truncation hypotheses ruled out, current
+top suspect = PPC32 `StgRegTable` field offset / TSO stack walk).
 
 Deploy with `scripts/deploy-stage2.sh <ssh-host>`.
 
@@ -228,3 +233,19 @@ About 16 minutes on M-series Mac, with ~200 SSH link round-trips to pmacg5.
   v0.11.0 demo green.  Side discovery: GHC's `-fllvm` is a no-op
   for unregisterised ABI targets — the swap is about which clang
   compiles GHC's C output, not about LLVM IR.
+- 2026-05-09→10 session 19: stage2 GC bug investigation, round 1.
+  Linked stage2 against `libHSrts-1.0.2_debug.a` and ran M5.hs
+  compiles under sanity check (`+RTS -DS`), single-generation
+  GC (`-G1`), zero-on-free (`-DZ`), and an instrumented
+  `markCAFs` that logged per-GC CAF counts.  Three big hypotheses
+  ruled out: SMP atomics (non-threaded RTS uses no fences anyway),
+  `large_alloc_lim` 32-bit overflow (1 MiB at default; doesn't
+  overflow), and CAF-list truncation (count grows monotonically
+  across all 25 GCs in every run).  Sanity check fires no
+  assertions — heap is internally consistent.  `-G1` doesn't
+  bypass the bug, so it's not specifically gen0→gen1 promotion.
+  PROBE19's per-GC trace is bit-for-bit deterministic across runs
+  while M5.o output is non-deterministic, which means the
+  corruption is in non-heap state (saved registers / stack slots
+  / `StgRegTable` field interpretation on PPC32).  Stage2 still
+  ships unchanged with the `-A1G` wrapper.

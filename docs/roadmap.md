@@ -158,12 +158,25 @@ keeps small compiles inside one block, no GC fires, no bug.
   compiles `Hello.hs` and a `Data.Map.Strict` word-count program
   on Tiger and runs both end-to-end.
 
-❌ **Underlying GC bug not yet fixed.**  See
-[`docs/sessions/2026-04-29-session-17-stage2-O0-experiment/GC-BUG-FOUND.md`](sessions/2026-04-29-session-17-stage2-O0-experiment/GC-BUG-FOUND.md)
-for the catalogue (which panic each input shape triggers, why
-LLVM and unreg-C both fail, the threshold table for `-A` sizes).
-Fixing the actual GC bug is multi-session work — likely a missing
-PPC memory-fence in 9.2.8's RTS that 8.6.5 had.
+❌ **Underlying GC bug not yet fixed** but the search space is
+much smaller than session 17 left it.  See:
+
+- [`docs/sessions/2026-04-29-session-17-stage2-O0-experiment/GC-BUG-FOUND.md`](sessions/2026-04-29-session-17-stage2-O0-experiment/GC-BUG-FOUND.md)
+  — original write-up: panic catalogue per input shape, the `-A`
+  threshold table, why LLVM and unreg-C both fail.
+- [`docs/sessions/2026-05-09-session-19-stage2-gc-bug/`](sessions/2026-05-09-session-19-stage2-gc-bug/)
+  — round 1 of the root-cause search.  Sanity check passes; SMP
+  atomics, `large_alloc_lim` overflow, and CAF-list truncation
+  all ruled out.  PROBE19 data shows GC trace is deterministic
+  while output is non-deterministic, implying corruption is in
+  non-heap state.  Top suspect now: PPC32 `StgRegTable` field
+  offsets / TSO stack walk.  Session-19 [`HANDOFF.md`](sessions/2026-05-09-session-19-stage2-gc-bug/HANDOFF.md)
+  has next-step probe ideas.
+
+Earlier "missing PPC memory fences" hypothesis is **dead** under
+our build configuration — non-threaded RTS uses no fences.
+
+Fixing the actual GC bug is still likely multi-session work.
 
 **Older context, kept for the record:**
 [session 14](sessions/2026-04-29-session-14-stage2-investigation/),
