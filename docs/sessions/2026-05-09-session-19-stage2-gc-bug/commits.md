@@ -2,7 +2,17 @@
 
 ## Landed in this session
 
-(filled in at end of session — see `git log --oneline` since session 18)
+- `80a3c7b` Session 19: stage2 GC bug investigation, round 1.
+  Adds `docs/sessions/2026-05-09-session-19-stage2-gc-bug/`
+  (README, HANDOFF, findings, step1/2/3 write-ups, PROBE19 patch).
+- `69b39c0` Session 19: helper scripts for stage2 debug-RTS probing.
+  Adds three `scripts/exp-*.sh` helpers (deploy debug stage2, run
+  debug-RTS probe suite, run PROBE19 probe).
+- `4e668ef` Session 19: state.md + roadmap.md reflect search-space
+  narrowing.  Earlier "missing PPC memory fences" hypothesis
+  marked dead.
+
+(This file's own update follows in a small follow-on commit.)
 
 ## Key local artifacts (not committed to repo, kept for reproducibility)
 
