@@ -4,7 +4,7 @@
 |---|---|
 | `4be313c` | docs: mark llvm7-bug-report-draft obsolete + propose LLVM-8 r4 swap |
 | `fd773b7` | Session 18 attempt 2: built clang-8 on uranium; new RTS miscompile blocks the swap |
-| (TBD)   | v0.12.0: cross-toolchain swapped to LLVM-8 (sister-project BUG-010 patch) |
+| `906cea4` | v0.12.0: cross-toolchain swap LLVM-7 r4 → LLVM-8 (sister-project BUG-010 patch) |
 
 `v0.12.0` tagged at the third commit.
 
