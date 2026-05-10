@@ -169,9 +169,21 @@ much smaller than session 17 left it.  See:
   atomics, `large_alloc_lim` overflow, and CAF-list truncation
   all ruled out.  PROBE19 data shows GC trace is deterministic
   while output is non-deterministic, implying corruption is in
-  non-heap state.  Top suspect now: PPC32 `StgRegTable` field
-  offsets / TSO stack walk.  Session-19 [`HANDOFF.md`](sessions/2026-05-09-session-19-stage2-gc-bug/HANDOFF.md)
-  has next-step probe ideas.
+  non-heap state.
+- [`docs/sessions/2026-05-10-session-20-stage2-gc-bug-round2/`](sessions/2026-05-10-session-20-stage2-gc-bug-round2/)
+  — round 2.  **Proximate cause found.**  PROBE20 + PROBE21 walk
+  the typechecker's stack post-scavenge and find ~184 slots that
+  are heap-shaped but not in `BF_EVACUATED` blocks.  The
+  bitmap-aware walker confirms 100% of these are at slots the
+  enclosing stack-frame bitmap marks as non-pointer.  GC is
+  doing its job; the bitmaps are wrong.  Pointer derefs yield
+  real info tables (2-tuples, closures from Control.Monad.Catch,
+  etc.).  Affects 14+ info tables across 6+ modules
+  (Data.Map.Strict.Internal, Control.Monad.Catch,
+  GHC.Iface.Binary, GHC.Base, GHC.List, Data.Map.Internal) —
+  systematic GHC cross-codegen bug for PPC32, not per-module.
+  Session-20 [`HANDOFF.md`](sessions/2026-05-10-session-20-stage2-gc-bug-round2/HANDOFF.md)
+  points at finding the offending Cmm/StgToCmm path.
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.

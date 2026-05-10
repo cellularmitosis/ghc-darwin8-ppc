@@ -1,6 +1,6 @@
 # state.md — where are we right now
 
-*Updated: 2026-05-10 session 19 (stage2 GC bug round 1 — search space narrowed, root cause not yet found).*
+*Updated: 2026-05-10 session 20 (stage2 GC bug round 2 — proximate cause identified: wrong stack-frame bitmaps; root mechanism still unknown).*
 
 ## Headline
 
@@ -66,8 +66,13 @@ why removing `-fllvm` and switching to unreg-C didn't fix it on its
 own), and
 [`docs/sessions/2026-05-09-session-19-stage2-gc-bug/`](sessions/2026-05-09-session-19-stage2-gc-bug/)
 for round 1 of the root-cause investigation (sanity check passes,
-SMP/atomic and CAF-list-truncation hypotheses ruled out, current
-top suspect = PPC32 `StgRegTable` field offset / TSO stack walk).
+SMP/atomic and CAF-list-truncation hypotheses ruled out) and
+[`docs/sessions/2026-05-10-session-20-stage2-gc-bug-round2/`](sessions/2026-05-10-session-20-stage2-gc-bug-round2/)
+for round 2 — proximate cause identified: ~184 stack-frame slots
+have bitmaps that mark them as non-pointer but actually contain
+real heap pointers, so GC skips them and they go stale.
+Systematic across 6+ modules; root mechanism (why the bitmaps are
+wrong on PPC32 cross-build) is the next session's question.
 
 Deploy with `scripts/deploy-stage2.sh <ssh-host>`.
 
@@ -233,6 +238,23 @@ About 16 minutes on M-series Mac, with ~200 SSH link round-trips to pmacg5.
   v0.11.0 demo green.  Side discovery: GHC's `-fllvm` is a no-op
   for unregisterised ABI targets — the swap is about which clang
   compiles GHC's C output, not about LLVM IR.
+- 2026-05-10 session 20: stage2 GC bug investigation, round 2.
+  Built PROBE20 + PROBE21 on top of the debug RTS to walk the
+  running TSO's stack post-scavenge and classify every word.
+  Found 184 stack slots that are heap-shaped but non-evac'd —
+  bit-for-bit deterministic across iter1/2/3.  PROBE21's
+  bitmap-aware walker shows **100% of those slots have
+  `is_ptr=0`** (the frame's bitmap claims they're non-pointer).
+  Pointer derefs of the BAD values yield real info-table
+  addresses (e.g. `_ghczmprim_GHCziTuple_Z2T_con_info` for a
+  2-tuple).  GC is doing its job; the bitmap is wrong.
+  Affects 14+ info tables across 6+ modules
+  (Data.Map.Strict.Internal, Control.Monad.Catch,
+  GHC.Iface.Binary, GHC.Base, GHC.List, Data.Map.Internal) —
+  systematic, not per-module.  Why the bitmap is wrong is the
+  session-21 question; likeliest culprit is a host-arm64 →
+  target-PPC32 mismatch in StgToCmm liveness analysis.  Stage2
+  still ships unchanged with the `-A1G` workaround.
 - 2026-05-09→10 session 19: stage2 GC bug investigation, round 1.
   Linked stage2 against `libHSrts-1.0.2_debug.a` and ran M5.hs
   compiles under sanity check (`+RTS -DS`), single-generation
