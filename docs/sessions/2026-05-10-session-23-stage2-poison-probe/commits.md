@@ -1,12 +1,7 @@
 # Session 23 commits
 
-- *(SHA pending)* — Session 23: stage2 GC bug investigation, round 5
-  (PROBE22POISON RTS patch confirms the bug is real; crash at
-  `0xdeadbeef` in `_blk_c7te + 112` of `GHC.Data.FastString` proves
-  at least one stack slot the bitmap classifies as non-pointer is
-  actually a live GC root).
-- *(SHA pending)* — Session 23: state.md + roadmap.md reflect
-  bug-confirmed-real-and-localised.
+- [`6c39edb`](https://github.com/cellularmitosis/ghc-darwin8-ppc/commit/6c39edb) — Session 23: stage2 GC bug investigation, round 5 (PROBE22POISON RTS patch confirms the bug is real; crash at `0xdeadbeef` in `_blk_c7te + 112` of `GHC.Data.FastString` proves at least one stack slot the bitmap classifies as non-pointer is actually a live GC root).
+- [`88b08d6`](https://github.com/cellularmitosis/ghc-darwin8-ppc/commit/88b08d6) — Session 23: state.md + roadmap.md reflect bug-confirmed-real-and-localised.
 
 This session applied a temporary RTS patch (`probe22-poison-stack.patch`)
 to instrument GC, ran the experiment, then reverted the patch and
