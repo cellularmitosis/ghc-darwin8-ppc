@@ -1,0 +1,75 @@
+diff --git a/rts/sm/GC.c b/rts/sm/GC.c
+index d63ca271..129cf396 100644
+--- a/rts/sm/GC.c
++++ b/rts/sm/GC.c
+@@ -907,6 +907,70 @@ GarbageCollect (uint32_t collect_gen,
+       }
+   }
+ 
++  /* PROBE22POISON: replace stranded heap-shaped slot values
++   * (post-scavenge, non-evacuated) on the running TSO's stack
++   * with 0xDEADBEEF.
++   *
++   *   - If a slot is genuinely dead (PROBE21 false positive,
++   *     as session-22's audit suggests for Catch.hs PNP frames),
++   *     no later code reads it and the program completes with
++   *     no observable effect.
++   *   - If a slot is a missed GC root (real bug), the next
++   *     read yields 0xDEADBEEF and segfaults at a recognisable
++   *     address — backtrace pinpoints the read site.
++   *
++   * Runs after all scavenging is done and before resetNurseries().
++   * After resetNurseries() the BF_EVACUATED check is meaningless
++   * (from-space is recycled into nurseries).
++   *
++   * Pulled in for session 23 (stage2 GC bug round 5).
++   */
++  {
++    static unsigned probe22_gc_no = 0;
++    Capability *probe_cap = capabilities[0];
++    StgTSO *probe_tso = probe_cap->run_queue_hd;
++
++    if (probe_tso != NULL && probe_tso != END_TSO_QUEUE
++        && probe_tso->stackobj != NULL) {
++      StgStack *st = probe_tso->stackobj;
++      StgPtr probe_sp = st->sp;
++      StgPtr probe_end = st->stack + st->stack_size;
++      int n_words = 0, n_heap_ptr = 0, n_poisoned = 0;
++
++      for (StgPtr p = probe_sp; p < probe_end; p++) {
++        StgWord w = *p;
++        n_words++;
++        if (HEAP_ALLOCED((void*)w)) {
++          n_heap_ptr++;
++          bdescr *bd = Bdescr((P_)(w & ~(StgWord)3));
++          if (bd && !(bd->flags & BF_EVACUATED)) {
++            fprintf(stderr,
++                    "PROBE22POISON gc_no=%u slot=%ld old=0x%08lx "
++                    "bd_gen=%u bd_flags=0x%lx\n",
++                    probe22_gc_no,
++                    (long)(p - probe_sp),
++                    (unsigned long)w,
++                    (unsigned)bd->gen_no,
++                    (unsigned long)bd->flags);
++            *p = (StgWord)0xDEADBEEF;
++            n_poisoned++;
++          }
++        }
++      }
++
++      fprintf(stderr,
++              "PROBE22 gc_no=%u N=%u major=%d "
++              "tso=%p stk=%p sp=%p end=%p "
++              "words=%d heap_ptr=%d poisoned=%d\n",
++              probe22_gc_no, N, (int)major_gc,
++              (void*)probe_tso, (void*)st,
++              (void*)probe_sp, (void*)probe_end,
++              n_words, n_heap_ptr, n_poisoned);
++    }
++
++    probe22_gc_no++;
++  }
++
+   resize_nursery();
+ 
+   resetNurseries();
