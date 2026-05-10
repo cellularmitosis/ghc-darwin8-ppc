@@ -6,7 +6,16 @@
 #        tar -xJf external/ghc-9.2.8-aarch64-apple-darwin.tar.xz -C ~/.local/
 #        cd ~/.local/ghc-9.2.8-aarch64-apple-darwin
 #        ./configure --prefix=$HOME/.local/ghc-9.2.8 && make install
-#   2. Cross-clang + SDK from the sibling llvm-7-darwin-ppc project:
+#   2. Cross-clang + SDK from the sibling llvm-7-darwin-ppc project.
+#      Currently **clang 7.1.1 r4-equivalent** (host-arm64 cross-build of
+#      LLVM-7 with our BUG-003 fix patched in).
+#
+#      The session 18 attempt to swap to LLVM-8 r5 was **rolled back**
+#      because indium's `build-llvm8/bin/clang-8` predates the BUG-003
+#      fix and indium can't currently rebuild (CommandLineTools missing
+#      C++ headers).  Plan stays in `docs/proposals/llvm8-toolchain-swap.md`;
+#      blocked on upstream binary rebuild.
+#
 #        rsync -a indium:~/tmp/claude/llvm-7-darwin-ppc/build-phase0/bin/clang* \
 #              $HOME/.local/ghc-ppc-xtools/
 #        rsync -a indium:~/tmp/claude/llvm-7-darwin-ppc/build-phase0/lib/clang/7.1.1/ \

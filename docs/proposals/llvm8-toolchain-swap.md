@@ -1,12 +1,34 @@
-# LLVM-7 r4 → LLVM-8 r4 cross-toolchain swap — plan
+# LLVM-7 r4 → LLVM-8 r5 cross-toolchain swap — plan (status: open, blocked)
+
+> **Status (2026-05-09, session 18):** swap **attempted, rolled back**.
+> Indium's host-cross `clang-8` binary predates the BUG-003 fix and
+> indium can't currently rebuild (Xcode/CommandLineTools is in a state
+> where `<new>` isn't found by `clang++`).  See
+> [`docs/sessions/2026-05-09-session-18-llvm8-toolchain-swap/README.md`](../sessions/2026-05-09-session-18-llvm8-toolchain-swap/README.md)
+> for the play-by-play.
+>
+> The plan below is still the right shape; what's needed first is an
+> indium environment fix and a fresh `build-llvm8` that picks up the
+> uncommitted BUG-003 patch in
+> `LLVM-8-Branch/llvm/lib/Target/PowerPC/InstPrinter/PPCInstPrinter.cpp`
+> on indium.  Bumped target version r4 → r5 to match the latest sister
+> release (r5 = r4 binary + freestanding-headers fix).
 
 ## Goal
 
 Move the `-fllvm` codegen path used by our stage1 cross-build from
 the **LLVM-7 r4** (`clang 7.1.1`) toolchain we currently bundle to
-**LLVM-8 r4** (`clang 8.0.1`) from the sister
-[llvm-darwin8-ppc](https://github.com/cellularmitosis/llvm-darwin8-ppc/releases/tag/v8.0.1-r4)
+**LLVM-8 r5** (`clang 8.0.1`) from the sister
+[llvm-darwin8-ppc](https://github.com/cellularmitosis/llvm-darwin8-ppc/releases/tag/v8.0.1-r5)
 project.
+
+> **Side note from session 18:** GHC's `-fllvm` flag is a no-op for
+> our build — the unregisterised target ABI silently routes everything
+> through the C codegen.  So the toolchain swap is really about which
+> clang compiles the C output of `compiler/GHC/CmmToC.hs`, not about
+> the `.ll` IR pipeline.  All the compiled `.o`s (libraries, RTS,
+> stage1 compiler library) go through that one clang.  Fixes/regressions
+> in clang therefore have a lot of leverage.
 
 ## Why
 

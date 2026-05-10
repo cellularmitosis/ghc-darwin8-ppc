@@ -174,27 +174,42 @@ PPC memory-fence in 9.2.8's RTS that 8.6.5 had.
 
 Paused until we're further down the road.
 
-### G. Cross-toolchain: LLVM-7 r4 → LLVM-8 r4 swap
+### G. Cross-toolchain: LLVM-7 r4 → LLVM-8 r5 swap — 🟡 attempted, rolled back
 
 Sister project froze the LLVM-7 line at v7.1.1-r9 and is now
-maintaining v8.0.1-r4 as the primary
+maintaining v8.0.1-r5 as the primary
 ([rationale](../../llvm-7-darwin-ppc/docs/sessions/032-llvm8-primary-and-ghc/rationale-llvm7-freeze.md),
 [outreach to us](../../llvm-7-darwin-ppc/docs/sessions/032-llvm8-primary-and-ghc/outreach-to-ghc.md)).
-LLVM-8 r4 has the cleaner BUG-003 fix and doesn't carry the LLVM-7
-`-Os` miscompile family (BUG-004…008).  Per Iain, LLVM-7 ≡ LLVM-8
-for PPC.
+LLVM-8 r5 has the cleaner BUG-003 fix, doesn't carry the LLVM-7
+`-Os` miscompile family (BUG-004…008), and ships the freestanding
+clang headers (BUG-009 fix).  Per Iain, LLVM-7 ≡ LLVM-8 for PPC.
 
-Quality / forward-compatibility move, not blocking anything.
+**Session 18 attempt (2026-05-09):** rolled back.  The host-cross
+clang-8 binary on `indium` predates the BUG-003 fix; ninja-rebuilds
+on indium fail because its CommandLineTools install can't find
+`<new>`.  Stage1 build with the pre-fix clang-8 tripped on the
+classic `lwz r2, 20(0)` BUG-003 symptom.
+
 Plan: [`docs/proposals/llvm8-toolchain-swap.md`](proposals/llvm8-toolchain-swap.md).
-Natural moment to do it is the next time we touch the cross-build
-(stage2 GC bug fix, or the next stage1 patch).
+Session 18 narrative: [`docs/sessions/2026-05-09-session-18-llvm8-toolchain-swap/README.md`](sessions/2026-05-09-session-18-llvm8-toolchain-swap/README.md).
+Sequence to land:
+
+1. Fix indium's CommandLineTools / Xcode install (host maintenance).
+2. Rebuild clang-8 on indium with the BUG-003 patch picked up.
+3. Re-run session 18's swap procedure; ship as v0.12.0.
+
+Side discovery from session 18: GHC's `-fllvm` is a no-op for
+unregisterised ABI targets — both pre- and post-swap all routes
+through the unreg-C path.  So the swap is about which clang
+compiles GHC's C output, not about LLVM IR.  Same leverage,
+slightly different framing.
 
 ## Sister project touch-points
 
 - **llvm-7-darwin-ppc** (now consolidating on LLVM-8) — source
   of our cross clang + SDK + the underlying PPC backend.  We're
-  currently still on **clang 7.1.1 r4**; LLVM-8 r4 swap is
-  proposal G above.  Our patch 0008 to `compiler/GHC/CmmToC.hs`
-  is pure-Haskell and doesn't affect LLVM; no change to that
-  project needed.
+  currently still on **clang 7.1.1 r4**; LLVM-8 r5 swap is
+  proposal G above (attempted in session 18, rolled back).  Our
+  patch 0008 to `compiler/GHC/CmmToC.hs` is pure-Haskell and
+  doesn't affect LLVM; no change to that project needed.
 - **rogerppc** (private) — unrelated to this project.
