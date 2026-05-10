@@ -1,9 +1,29 @@
-# Session 18 — LLVM-7 r4 → LLVM-8 r5 cross-toolchain swap (two attempts, both rolled back)
+# Session 18 — LLVM-7 r4 → LLVM-8 cross-toolchain swap ✅ landed (third attempt)
 
 **Date:** 2026-05-09.
-**Status:** swap **blocked on a new clang-8 codegen bug**.  Rolled back
-to LLVM-7 r4.  No release cut.  Bug-report draft for the sister project
-at [`llvm8-r5-rts-miscompile-draft.md`](llvm8-r5-rts-miscompile-draft.md).
+**Status:** swap **shipped as v0.12.0** (third attempt).  Final stack:
+LLVM-8.0.1 (`iains/LLVM-8-Branch` + sister-project working-tree
+patches BUG-003 / ABI-001 / ABI-002 / Tiger Mach-O LCs / **BUG-010**)
+host-cross-clang built fresh on uranium.  v0.11.0 demo green
+end-to-end.
+
+**Three attempts:**
+
+1. **Rsync from indium** — pre-fix binary, indium env broken.  Rolled back.
+2. **Build on uranium with all then-known patches** — clang-8 built clean,
+   stage1 rebuilt clean, but every Haskell binary SIGBUSed in
+   `updateNurseriesStats` during first GC.  Wrote up findings as a draft
+   for the sister project.  Rolled back.
+3. **Sister project (their session 036) found the root cause and
+   shipped patch 0013** — restored the PPC32 Darwin "power" alignment
+   field-cap that LLVM-8 dropped from `RecordLayoutBuilder`.  Repointed
+   symlink to the patched clang-8, rebuilt stage1 (16m52s), redeployed
+   stage2, demo green.  Shipped as v0.12.0.
+
+The original "two attempts, both rolled back" framing of this README
+is preserved below for the historical record.
+
+---
 
 ## What we wanted to do
 

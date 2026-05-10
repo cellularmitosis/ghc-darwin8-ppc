@@ -7,19 +7,41 @@
 #        cd ~/.local/ghc-9.2.8-aarch64-apple-darwin
 #        ./configure --prefix=$HOME/.local/ghc-9.2.8 && make install
 #   2. Cross-clang + SDK from the sibling llvm-7-darwin-ppc project.
-#      Currently **clang 7.1.1 r4-equivalent** (host-arm64 cross-build of
-#      LLVM-7 with our BUG-003 fix patched in).
+#      Since v0.12.0 (session 18, attempt 3): **clang 8.0.1** with the
+#      sister project's working-tree patches (BUG-003 + ABI-001 + ABI-002
+#      + Tiger Mach-O LCs + BUG-010 — the last one restoring the PPC32
+#      Darwin "power" struct alignment field-cap that LLVM-8 dropped).
 #
-#      The session 18 attempt to swap to LLVM-8 r5 was **rolled back**
-#      because indium's `build-llvm8/bin/clang-8` predates the BUG-003
-#      fix and indium can't currently rebuild (CommandLineTools missing
-#      C++ headers).  Plan stays in `docs/proposals/llvm8-toolchain-swap.md`;
-#      blocked on upstream binary rebuild.
+#      The cross-clang is built on uranium from the source at
+#      $HOME/claude/llvm-7-darwin-ppc/LLVM-8-Branch/  (1.5 GB; rsync'd
+#      from indium once).  Build dir at
+#      $HOME/claude/llvm-7-darwin-ppc/build-llvm8-uranium/  re-runs
+#      incremental ninja in ~5 sec when their patch tree updates.
 #
-#        rsync -a indium:~/tmp/claude/llvm-7-darwin-ppc/build-phase0/bin/clang* \
-#              $HOME/.local/ghc-ppc-xtools/
-#        rsync -a indium:~/tmp/claude/llvm-7-darwin-ppc/build-phase0/lib/clang/7.1.1/ \
-#              $HOME/.local/lib/clang/7.1.1/   # the resource-dir (has float.h etc)
+#        # One-time: rsync the source.
+#        rsync -a indium:~/tmp/claude/llvm-7-darwin-ppc/LLVM-8-Branch/ \
+#              $HOME/claude/llvm-7-darwin-ppc/LLVM-8-Branch/
+#
+#        # Configure + build clang.
+#        mkdir -p $HOME/claude/llvm-7-darwin-ppc/build-llvm8-uranium
+#        cd $HOME/claude/llvm-7-darwin-ppc/build-llvm8-uranium
+#        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release \
+#              -DLLVM_TARGETS_TO_BUILD="PowerPC;X86" \
+#              -DLLVM_ENABLE_ASSERTIONS=ON \
+#              ../LLVM-8-Branch/llvm
+#        ninja clang
+#
+#        # Install: binary + symlinks + freestanding headers.
+#        cp bin/clang-8 $HOME/.local/ghc-ppc-xtools/clang-8
+#        ln -sf clang-8 $HOME/.local/ghc-ppc-xtools/clang
+#        ln -sf clang-8 $HOME/.local/ghc-ppc-xtools/clang++
+#        # Freestanding headers from the released r5 tarball:
+#        mkdir -p $HOME/.local/lib/clang/8.0.1
+#        tar -C /tmp -xzf /path/to/clang-8.0.1-ppc-darwin8.tar.gz
+#        cp -R /tmp/clang-8.0.1-ppc-darwin8/lib/clang/8.0.1/include \
+#              $HOME/.local/lib/clang/8.0.1/
+#
+#        # SDK: same as before.
 #        rsync -a indium:~/tmp/claude/llvm-7-darwin-ppc/sdks/MacOSX10.4u.sdk/ \
 #              $HOME/.local/ghc-ppc-xtools/MacOSX10.4u.sdk/
 #   3. cctools-port 877.8-ld64-253.9-ppc branch:

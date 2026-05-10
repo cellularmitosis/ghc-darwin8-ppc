@@ -32,14 +32,15 @@ running Tigerbrew's gcc14, because our local cross-ld doesn't speak
 Tiger's crt1.
 
 Latest release:
-[**v0.11.0**](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.11.0)
-— **stage2 native ghc works on Tiger** 🐯.  The PPC `ghc` binary
-runs natively on Tiger and compiles Haskell to PPC Mach-O without
-the host doing any of the work.  Wrapped with `+RTS -A1G -RTS` to
-work around the PPC-Darwin RTS GC bug investigated in
-[session 17](docs/sessions/2026-04-29-session-17-stage2-O0-experiment/GC-BUG-FOUND.md).
-Plus all of v0.10.0's profiling, v0.9.0's HTTPS, v0.8.1's
-sockets, v0.8.0's TH, etc.
+[**v0.12.0**](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.12.0)
+— **cross-toolchain swapped to LLVM-8** 🔧.  The cross-clang we use
+to compile GHC's C output (via the unreg-C path) is now LLVM-8.0.1
+with the sister project's BUG-010 fix (PPC32 Darwin "power"
+alignment field-cap restored).  Functionally identical to v0.11.0
+for end users.  Stage1 build is ~3× faster (16m52s vs 48m46s).
+See [session 18](docs/sessions/2026-05-09-session-18-llvm8-toolchain-swap/).
+Plus all of v0.11.0's stage2 native ghc, v0.10.0's profiling,
+v0.9.0's HTTPS, etc.
 
 ## Implementation status
 
@@ -214,6 +215,7 @@ instead.
 | [v0.9.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.9.0) | 2026-04-29 | **HTTPS works on Tiger** 🔐 (vendored `HsOpenSSL` `runInBoundThread` fallback + `tiger.sh` openssl-1.1.1t). |
 | [v0.10.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.10.0) | 2026-04-29 | **Profiling works on Tiger** 📊 (LLVM-7 r4 BUG-003 fix + Tiger compat shims for `__MAC_OS_X_VERSION_MIN_REQUIRED` + `strnlen`). |
 | [v0.11.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.11.0) | 2026-04-30 | **Stage2 native ghc works on Tiger** 🐯 (GC bug worked around with `+RTS -A1G -RTS`; `scripts/ghc-stage2-wrapper.sh` + `scripts/deploy-stage2.sh`). |
+| [v0.12.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.12.0) | 2026-05-09 | **Cross-toolchain swap LLVM-7 → LLVM-8** 🔧 (sister-project's BUG-010 patch restored the PPC32 Darwin "power" alignment field-cap that LLVM-8 dropped; stage1 builds 3× faster). |
 
 ## Licence
 

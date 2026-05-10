@@ -174,52 +174,47 @@ PPC memory-fence in 9.2.8's RTS that 8.6.5 had.
 
 Paused until we're further down the road.
 
-### G. Cross-toolchain: LLVM-7 r4 → LLVM-8 r5 swap — 🟡 attempted, rolled back
+### ~~G. Cross-toolchain: LLVM-7 r4 → LLVM-8 swap~~ ✅ done (v0.12.0)
 
-Sister project froze the LLVM-7 line at v7.1.1-r9 and is now
-maintaining v8.0.1-r5 as the primary
-([rationale](../../llvm-7-darwin-ppc/docs/sessions/032-llvm8-primary-and-ghc/rationale-llvm7-freeze.md),
-[outreach to us](../../llvm-7-darwin-ppc/docs/sessions/032-llvm8-primary-and-ghc/outreach-to-ghc.md)).
-LLVM-8 r5 has the cleaner BUG-003 fix, doesn't carry the LLVM-7
-`-Os` miscompile family (BUG-004…008), and ships the freestanding
-clang headers (BUG-009 fix).  Per Iain, LLVM-7 ≡ LLVM-8 for PPC.
+Sister project froze the LLVM-7 line at v7.1.1-r9 and consolidated
+on LLVM-8 ([rationale](../../llvm-7-darwin-ppc/docs/sessions/032-llvm8-primary-and-ghc/rationale-llvm7-freeze.md)).
+Per Iain, LLVM-7 ≡ LLVM-8 for PPC.
 
-**Session 18 (2026-05-09):** two attempts, both rolled back.
+**Session 18 (2026-05-09):** three attempts.
 
-- *Attempt 1* (rsync clang-8 from indium): blocked on indium's
-  CommandLineTools env (Xcode uninstalled, `<new>` not found by
-  `/usr/bin/clang++`) — couldn't rebuild a fresh clang-8 there.
-- *Attempt 2* (build clang-8 on uranium): builds in 8 min, all
-  expected patches verified working (BUG-003, ABI-001, ABI-002),
-  stage1 rebuilds clean in 17 min.  But the resulting GHC RTS
-  crashes at first GC with `EXC_BAD_ACCESS at 0x0000000c` in
-  `updateNurseriesStats` (`rts/sm/Storage.c:1584`).  Same source
-  compiles correctly under clang-7 r4.  New miscompile, drafted
-  for the sister project as [`llvm8-r5-rts-miscompile-draft.md`](sessions/2026-05-09-session-18-llvm8-toolchain-swap/llvm8-r5-rts-miscompile-draft.md).
+- *Attempt 1* (rsync clang-8 from indium): blocked on indium env.
+- *Attempt 2* (build clang-8 on uranium with then-known patches):
+  builds + rebuilds clean, but every Haskell binary SIGBUSes in
+  `updateNurseriesStats` during first GC.  Drafted the bug for the
+  sister project; rolled back.
+- *Attempt 3* (post-sister-fix): sister project's session 036 traced
+  the crash to LLVM-8 dropping the PPC32 Darwin "power" alignment
+  field-cap (`__alignof__(StgRegTable)` went 4→8, shifting
+  `offsetof(Capability, r)` 12→16, disagreeing with GHC's prebaked
+  Cmm offsets).  Their patch 0013 restored the cap.  Repointed
+  symlink, rebuilt stage1 (16m52s, ~3× faster than LLVM-7's 48m46s),
+  redeployed stage2, demo green.  **Shipped as v0.12.0.**
 
-Plan: [`docs/proposals/llvm8-toolchain-swap.md`](proposals/llvm8-toolchain-swap.md).
-Session 18 narrative: [`docs/sessions/2026-05-09-session-18-llvm8-toolchain-swap/README.md`](sessions/2026-05-09-session-18-llvm8-toolchain-swap/README.md).
+Side discovery (still relevant): GHC's `-fllvm` is a no-op for
+unregisterised ABI targets.  The swap is about which clang
+compiles GHC's C output, not about LLVM IR.
 
-Sequence to land:
-
-1. Sister project investigates the `updateNurseriesStats`
-   miscompile and ships a fix in clang-8 r6+.
-2. Re-run session 18 attempt 2's procedure on uranium (~30 min
-   start-to-finish).
-3. Ship as v0.12.0.
-
-Side discovery from session 18: GHC's `-fllvm` is a no-op for
-unregisterised ABI targets — both pre- and post-swap all routes
-through the unreg-C path.  So the swap is about which clang
-compiles GHC's C output, not about LLVM IR.  Same leverage,
-slightly different framing.
+See [`docs/sessions/2026-05-09-session-18-llvm8-toolchain-swap/README.md`](sessions/2026-05-09-session-18-llvm8-toolchain-swap/README.md)
+and [proposal G](proposals/llvm8-toolchain-swap.md) for the
+narrative.
 
 ## Sister project touch-points
 
 - **llvm-7-darwin-ppc** (now consolidating on LLVM-8) — source
-  of our cross clang + SDK + the underlying PPC backend.  We're
-  currently still on **clang 7.1.1 r4**; LLVM-8 r5 swap is
-  proposal G above (attempted in session 18, rolled back).  Our
-  patch 0008 to `compiler/GHC/CmmToC.hs` is pure-Haskell and
-  doesn't affect LLVM; no change to that project needed.
+  of our cross clang + SDK + the underlying PPC backend.  As of
+  v0.12.0 we're on **clang 8.0.1 with sister-project patches
+  BUG-003 / ABI-001 / ABI-002 / Tiger Mach-O LCs / BUG-010**
+  (the BUG-010 fix was their session 036, restoring PPC32 Darwin
+  "power" struct alignment).  Our patch 0008 to
+  `compiler/GHC/CmmToC.hs` is pure-Haskell and doesn't affect
+  LLVM; no change to that project needed.  Cross-clang is built
+  on uranium from the source tree at
+  `/Users/cell/claude/llvm-7-darwin-ppc/LLVM-8-Branch/` (1.5 GB,
+  rsync'd from indium once); incremental ninja rebuilds in
+  ~5 sec when their patch tree updates.
 - **rogerppc** (private) — unrelated to this project.

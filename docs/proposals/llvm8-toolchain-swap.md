@@ -1,24 +1,26 @@
-# LLVM-7 r4 → LLVM-8 r5 cross-toolchain swap — plan (status: open, blocked)
+# LLVM-7 r4 → LLVM-8 cross-toolchain swap — plan (status: ✅ DONE, v0.12.0)
 
-> **Status (2026-05-09, session 18, attempt 2):** swap **attempted twice,
-> rolled back twice.**
+> **Status (2026-05-09, session 18, attempt 3):** ✅ **landed in v0.12.0.**
 >
 > - **Attempt 1** (rsync from indium): blocked on indium's CommandLineTools
->   missing `<new>` and a stale Xcode reference in CMakeCache.  Pre-r4
->   binary on disk, can't rebuild there.
-> - **Attempt 2** (build on uranium): clang-8 r5 builds clean in 8 min on
->   uranium.  All patches verified: BUG-003 (no `lwz r0, 20(0)` errors),
->   ABI-001 (struct-vararg test passes on Tiger), ABI-002 (objc default
->   runtime).  But the resulting GHC RTS **crashes at first GC** with
->   `EXC_BAD_ACCESS at 0x0000000c` in `updateNurseriesStats`
->   (`rts/sm/Storage.c:1584`).  Same source compiles correctly under
->   clang-7 r4.  New miscompile, not yet known to the sister project.
->   Bug-report draft:
->   [`sessions/2026-05-09-session-18-llvm8-toolchain-swap/llvm8-r5-rts-miscompile-draft.md`](../sessions/2026-05-09-session-18-llvm8-toolchain-swap/llvm8-r5-rts-miscompile-draft.md).
+>   missing `<new>` and a stale Xcode reference in CMakeCache.  Rolled back.
+> - **Attempt 2** (build on uranium): clang-8 r5-equivalent built clean
+>   in 8 min, stage1 rebuilt clean, but every Haskell binary SIGBUSed in
+>   `updateNurseriesStats` during first GC.  Drafted the bug for the
+>   sister project, rolled back.
+> - **Attempt 3** (post-sister-fix): sister project's session 036 found
+>   the root cause (LLVM-8 dropped the PPC32 Darwin "power" alignment
+>   field-cap that capped non-first 8-byte fields at 4-byte alignment in
+>   non-packed structs — Apple GCC 4.0.1's "power" mode), shipped
+>   patch 0013 restoring the cap.  Repointed our `clang` symlink at the
+>   patched clang-8, rebuilt stage1 in 16m52s, redeployed stage2,
+>   v0.11.0 demo green end-to-end.  Cut as v0.12.0.
 >
-> Now blocked on the sister project investigating + fixing the new
-> RTS miscompile.  Uranium build infra is fully wired; once a fixed
-> clang-8 lands (r6+?) we re-do step 4 onward in 30 min.
+> See [`docs/sessions/2026-05-09-session-18-llvm8-toolchain-swap/README.md`](../sessions/2026-05-09-session-18-llvm8-toolchain-swap/README.md)
+> for the full play-by-play.  The plan body below is preserved for the
+> record; what actually landed differed in details (clang-8 binary built
+> on uranium not rsync'd; freestanding headers from r5 tarball; BUG-010
+> patch from the sister project's `docs/patches-llvm8/0013-...`).
 
 ## Goal
 

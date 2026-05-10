@@ -1,6 +1,6 @@
 # state.md — where are we right now
 
-*Updated: 2026-04-30 session 17 (post-v0.11.0, stage2 native ghc works on Tiger).*
+*Updated: 2026-05-09 session 18 (post-v0.12.0, cross-toolchain swapped to LLVM-8).*
 
 ## Headline
 
@@ -217,3 +217,14 @@ About 16 minutes on M-series Mac, with ~200 SSH link round-trips to pmacg5.
   compiles `Hello` and a `Data.Map.Strict` word-count program on a
   PowerMac G5 and runs both end-to-end.  Underlying GC bug not yet
   fixed (likely missing PPC memory fences in 9.2.8's RTS).
+- 2026-05-09 session 18: cross-toolchain swapped from LLVM-7 r4 to
+  LLVM-8 (v0.12.0).  Three attempts.  First two rolled back on
+  indium env breakage and a `updateNurseriesStats` SIGBUS in
+  every Haskell binary the new toolchain produced.  Sister project's
+  session 036 traced the SIGBUS to LLVM-8 dropping the PPC32 Darwin
+  "power" struct alignment field-cap; their patch 0013 restored it.
+  Repointed our cross-clang at the patched binary, rebuilt stage1
+  in 16m52s (~3× faster than LLVM-7's 48m46s), redeployed stage2,
+  v0.11.0 demo green.  Side discovery: GHC's `-fllvm` is a no-op
+  for unregisterised ABI targets — the swap is about which clang
+  compiles GHC's C output, not about LLVM IR.
