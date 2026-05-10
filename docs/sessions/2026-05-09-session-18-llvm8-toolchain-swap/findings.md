@@ -89,3 +89,49 @@ backup again, swap, fail, roll back, no harm done.
   stay even with LLVM-7 active.
 
 Both are <120 MB combined, fine to leave for next time.
+
+## Attempt 2 finding (uranium build): RTS miscompile
+
+clang-8 r5 (built on uranium with all known patches) miscompiles
+GHC's RTS.  Specifically `updateNurseriesStats` in
+`rts/sm/Storage.c:1584` crashes at first call with
+`EXC_BAD_ACCESS at 0x0000000c`.
+
+Bug shape:
+
+- ABI-001 (struct-vararg) test program passes on Tiger.  So the
+  ABI-001 fix is in our binary.
+- BUG-003 (asm-printer ZERO/r0 syntax) doesn't trigger during
+  stage1 build.  So the BUG-003 fix is in our binary.
+- Yet the same C code that compiles correctly under clang-7 r4
+  produces a NULL-deref crash under clang-8 r5.
+
+A new miscompile, distinct from the three known ones above.
+Probably in `array_of_ptr_to_struct[i]->embedded_struct.field`
+codegen for PPC32 Darwin.  Not yet reduced to a non-GHC test case.
+
+Drafted as a bug report for the sister project.
+
+## Build-host lesson
+
+Uranium is a much faster LLVM build host than indium:
+
+| host | clang ninja-build wall | cores |
+|---|---|---|
+| indium | 30+ min (when working) | dual-core |
+| uranium | 8 min | M-series many-core |
+
+For future LLVM swaps, build on uranium directly — fewer moving
+parts, faster turnaround.  Source rsynced once is 1.5 GB.
+
+## Recovery cost
+
+Rolling back from a bad clang-8 swap costs us ~50 min of hadrian
+rebuild because stage1's `_build/lib/` had to be wiped clean to
+remove half-baked clang-8 outputs.  Worth scripting / tracking
+better next time:
+
+- Snapshot `_build/stage1/lib/` before swapping.
+- Or use a side-by-side `_build/` per toolchain.
+
+Not urgent unless we attempt the swap many more times.

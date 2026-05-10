@@ -1,18 +1,24 @@
 # LLVM-7 r4 → LLVM-8 r5 cross-toolchain swap — plan (status: open, blocked)
 
-> **Status (2026-05-09, session 18):** swap **attempted, rolled back**.
-> Indium's host-cross `clang-8` binary predates the BUG-003 fix and
-> indium can't currently rebuild (Xcode/CommandLineTools is in a state
-> where `<new>` isn't found by `clang++`).  See
-> [`docs/sessions/2026-05-09-session-18-llvm8-toolchain-swap/README.md`](../sessions/2026-05-09-session-18-llvm8-toolchain-swap/README.md)
-> for the play-by-play.
+> **Status (2026-05-09, session 18, attempt 2):** swap **attempted twice,
+> rolled back twice.**
 >
-> The plan below is still the right shape; what's needed first is an
-> indium environment fix and a fresh `build-llvm8` that picks up the
-> uncommitted BUG-003 patch in
-> `LLVM-8-Branch/llvm/lib/Target/PowerPC/InstPrinter/PPCInstPrinter.cpp`
-> on indium.  Bumped target version r4 → r5 to match the latest sister
-> release (r5 = r4 binary + freestanding-headers fix).
+> - **Attempt 1** (rsync from indium): blocked on indium's CommandLineTools
+>   missing `<new>` and a stale Xcode reference in CMakeCache.  Pre-r4
+>   binary on disk, can't rebuild there.
+> - **Attempt 2** (build on uranium): clang-8 r5 builds clean in 8 min on
+>   uranium.  All patches verified: BUG-003 (no `lwz r0, 20(0)` errors),
+>   ABI-001 (struct-vararg test passes on Tiger), ABI-002 (objc default
+>   runtime).  But the resulting GHC RTS **crashes at first GC** with
+>   `EXC_BAD_ACCESS at 0x0000000c` in `updateNurseriesStats`
+>   (`rts/sm/Storage.c:1584`).  Same source compiles correctly under
+>   clang-7 r4.  New miscompile, not yet known to the sister project.
+>   Bug-report draft:
+>   [`sessions/2026-05-09-session-18-llvm8-toolchain-swap/llvm8-r5-rts-miscompile-draft.md`](../sessions/2026-05-09-session-18-llvm8-toolchain-swap/llvm8-r5-rts-miscompile-draft.md).
+>
+> Now blocked on the sister project investigating + fixing the new
+> RTS miscompile.  Uranium build infra is fully wired; once a fixed
+> clang-8 lands (r6+?) we re-do step 4 onward in 30 min.
 
 ## Goal
 

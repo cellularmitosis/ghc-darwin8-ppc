@@ -184,19 +184,29 @@ LLVM-8 r5 has the cleaner BUG-003 fix, doesn't carry the LLVM-7
 `-Os` miscompile family (BUG-004…008), and ships the freestanding
 clang headers (BUG-009 fix).  Per Iain, LLVM-7 ≡ LLVM-8 for PPC.
 
-**Session 18 attempt (2026-05-09):** rolled back.  The host-cross
-clang-8 binary on `indium` predates the BUG-003 fix; ninja-rebuilds
-on indium fail because its CommandLineTools install can't find
-`<new>`.  Stage1 build with the pre-fix clang-8 tripped on the
-classic `lwz r2, 20(0)` BUG-003 symptom.
+**Session 18 (2026-05-09):** two attempts, both rolled back.
+
+- *Attempt 1* (rsync clang-8 from indium): blocked on indium's
+  CommandLineTools env (Xcode uninstalled, `<new>` not found by
+  `/usr/bin/clang++`) — couldn't rebuild a fresh clang-8 there.
+- *Attempt 2* (build clang-8 on uranium): builds in 8 min, all
+  expected patches verified working (BUG-003, ABI-001, ABI-002),
+  stage1 rebuilds clean in 17 min.  But the resulting GHC RTS
+  crashes at first GC with `EXC_BAD_ACCESS at 0x0000000c` in
+  `updateNurseriesStats` (`rts/sm/Storage.c:1584`).  Same source
+  compiles correctly under clang-7 r4.  New miscompile, drafted
+  for the sister project as [`llvm8-r5-rts-miscompile-draft.md`](sessions/2026-05-09-session-18-llvm8-toolchain-swap/llvm8-r5-rts-miscompile-draft.md).
 
 Plan: [`docs/proposals/llvm8-toolchain-swap.md`](proposals/llvm8-toolchain-swap.md).
 Session 18 narrative: [`docs/sessions/2026-05-09-session-18-llvm8-toolchain-swap/README.md`](sessions/2026-05-09-session-18-llvm8-toolchain-swap/README.md).
+
 Sequence to land:
 
-1. Fix indium's CommandLineTools / Xcode install (host maintenance).
-2. Rebuild clang-8 on indium with the BUG-003 patch picked up.
-3. Re-run session 18's swap procedure; ship as v0.12.0.
+1. Sister project investigates the `updateNurseriesStats`
+   miscompile and ships a fix in clang-8 r6+.
+2. Re-run session 18 attempt 2's procedure on uranium (~30 min
+   start-to-finish).
+3. Ship as v0.12.0.
 
 Side discovery from session 18: GHC's `-fllvm` is a no-op for
 unregisterised ABI targets — both pre- and post-swap all routes
