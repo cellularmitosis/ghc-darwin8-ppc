@@ -1,0 +1,234 @@
+diff --git a/rts/sm/GC.c b/rts/sm/GC.c
+index d63ca271..0c807e2a 100644
+--- a/rts/sm/GC.c
++++ b/rts/sm/GC.c
+@@ -907,6 +907,229 @@ GarbageCollect (uint32_t collect_gen,
+       }
+   }
+ 
++  /* PROBE20: post-scavenge inspection of the running TSO's stack.
++   * Goal: find a "missed root" — a stack slot that holds a heap
++   * pointer the GC didn't update.  Runs after scavenging is fully
++   * done and before resetNurseries() recycles from-space.
++   */
++  {
++    static unsigned probe20_gc_no = 0;
++    Capability *probe_cap = capabilities[0];
++    StgTSO *probe_tso = probe_cap->run_queue_hd;
++    StgPtr probe_sp_tso_stack_end = NULL;
++    StgPtr probe_sp = NULL;
++    int probe_n_frames = 0;
++    int probe_n_words = 0;
++    int probe_n_heap_ptr = 0;
++    int probe_n_to_g0 = 0;
++    int probe_n_to_g1 = 0;
++    int probe_n_to_other = 0;
++    int probe_n_evacd = 0;
++    void *probe_tso_addr = (void*)probe_tso;
++    void *probe_stack_addr = NULL;
++
++    if (probe_tso != NULL && probe_tso != END_TSO_QUEUE
++        && probe_tso->stackobj != NULL) {
++      StgStack *st = probe_tso->stackobj;
++      probe_stack_addr = (void*)st;
++      probe_sp = st->sp;
++      probe_sp_tso_stack_end = st->stack + st->stack_size;
++      for (StgPtr p = probe_sp; p < probe_sp_tso_stack_end; p++) {
++        StgWord w = *p;
++        probe_n_words++;
++        if (HEAP_ALLOCED((void*)w)) {
++          probe_n_heap_ptr++;
++          bdescr *bd = Bdescr((P_)(w & ~(StgWord)3));
++          if (bd != NULL) {
++            int evac = (bd->flags & BF_EVACUATED) ? 1 : 0;
++            if (evac) probe_n_evacd++;
++            if (bd->gen_no == 0)        probe_n_to_g0++;
++            else if (bd->gen_no == 1)   probe_n_to_g1++;
++            else                        probe_n_to_other++;
++            /* PROBE20.B: dump non-evac'd heap-shaped pointers for
++             * offline analysis of whether they are at "real pointer
++             * slot" positions (per stack-frame bitmaps). */
++            if (!evac) {
++              fprintf(stderr,
++                      "PROBE20BAD gc_no=%u slot=%ld val=0x%08lx "
++                      "bd_gen=%u bd_flags=0x%lx\n",
++                      probe20_gc_no, (long)(p - probe_sp),
++                      (unsigned long)w,
++                      (unsigned)bd->gen_no,
++                      (unsigned long)bd->flags);
++            }
++          }
++        }
++      }
++    }
++
++    fprintf(stderr,
++            "PROBE20 gc_no=%u N=%u major=%d "
++            "tso=%p stk=%p sp=%p end=%p "
++            "words=%d heap_ptr=%d evacd=%d g0=%d g1=%d other=%d "
++            "rCurNurs=%p rCurAlloc=%p rCurTSO=%p\n",
++            probe20_gc_no, N, (int)major_gc,
++            probe_tso_addr, probe_stack_addr,
++            (void*)probe_sp, (void*)probe_sp_tso_stack_end,
++            probe_n_words, probe_n_heap_ptr, probe_n_evacd,
++            probe_n_to_g0, probe_n_to_g1, probe_n_to_other,
++            (void*)probe_cap->r.rCurrentNursery,
++            (void*)probe_cap->r.rCurrentAlloc,
++            (void*)probe_cap->r.rCurrentTSO);
++
++    /* PROBE21: bitmap-aware stack walker.  For each frame, identify
++     * pointer slots per the frame's bitmap and check whether each
++     * pointer-slot HEAP_ALLOCED value points to a BF_EVACUATED
++     * block.  Annotates each PROBE20BAD-equivalent finding with
++     * is_ptr_slot=0/1 so we can distinguish:
++     *   - real missed roots (is_ptr_slot=1, GC's bitmap walk should
++     *     have evacuated this but didn't)
++     *   - non-pointer slots holding heap-shaped values (is_ptr_slot=0,
++     *     either a benign Int#/Word# or a Stg→Cmm codegen bug
++     *     where pointer was stored in a slot the bitmap claims is
++     *     non-pointer).
++     */
++    if (probe_sp != NULL && probe_sp_tso_stack_end != NULL) {
++      StgPtr p = probe_sp;
++      int frame_idx = 0;
++      while (p < probe_sp_tso_stack_end) {
++        const StgRetInfoTable* info = get_ret_itbl((StgClosure *)p);
++        StgWord type = info->i.type;
++        StgPtr payload = p + 1;
++        StgWord size = 0;
++        int is_large = 0;
++        StgWord small_bits = 0;
++        StgLargeBitmap *lbmp = NULL;
++        int frame_words = 1; /* including info ptr */
++
++        switch (type) {
++        case UPDATE_FRAME:
++          /* StgUpdateFrame is { info; updatee; }, with updatee a ptr. */
++          frame_words = sizeofW(StgUpdateFrame);
++          {
++            StgUpdateFrame *frame = (StgUpdateFrame *)p;
++            StgWord w = (StgWord)frame->updatee;
++            if (HEAP_ALLOCED((void*)w)) {
++              bdescr *bd = Bdescr((P_)(w & ~(StgWord)3));
++              int evac = (bd && (bd->flags & BF_EVACUATED)) ? 1 : 0;
++              if (!evac) {
++                fprintf(stderr,
++                        "PROBE21BAD gc=%u f=%d type=%lu slot=%ld pay=0 "
++                        "val=0x%08lx is_ptr=1 bd_gen=%u bd_flags=0x%lx\n",
++                        probe20_gc_no, frame_idx, (unsigned long)type,
++                        (long)((StgPtr)&frame->updatee - probe_sp),
++                        (unsigned long)w,
++                        bd ? (unsigned)bd->gen_no : 99u,
++                        bd ? (unsigned long)bd->flags : 0ul);
++              }
++            }
++          }
++          break;
++        case ATOMICALLY_FRAME: case CATCH_RETRY_FRAME:
++        case CATCH_STM_FRAME: case CATCH_FRAME:
++        case UNDERFLOW_FRAME: case STOP_FRAME: case RET_SMALL:
++          small_bits = BITMAP_BITS(info->i.layout.bitmap);
++          size = BITMAP_SIZE(info->i.layout.bitmap);
++          frame_words = 1 + size;
++          /* PROBE21FRAME: per-frame metadata so we can identify which
++           * info table is producing missed-root slots. */
++          fprintf(stderr,
++                  "PROBE21FRAME gc=%u f=%d type=%lu slot=%ld "
++                  "info=%p bitmap_raw=0x%08lx size=%lu bits=0x%08lx\n",
++                  probe20_gc_no, frame_idx, (unsigned long)type,
++                  (long)(p - probe_sp),
++                  (void*)info,
++                  (unsigned long)info->i.layout.bitmap,
++                  (unsigned long)size,
++                  (unsigned long)small_bits);
++          break;
++        case RET_BIG:
++          lbmp = GET_LARGE_BITMAP(&info->i);
++          size = lbmp->size;
++          is_large = 1;
++          frame_words = 1 + size;
++          break;
++        case RET_BCO: case RET_FUN:
++          /* skip — has separate bitmap layout we won't decode here.
++           * Just advance: we can't know frame size without more
++           * decoding, so bail out of stack walk. */
++          fprintf(stderr,
++                  "PROBE21SKIP gc=%u f=%d type=%lu reason=BCO/FUN_skip "
++                  "slot=%ld\n",
++                  probe20_gc_no, frame_idx, (unsigned long)type,
++                  (long)(p - probe_sp));
++          goto probe21_done;
++        default:
++          fprintf(stderr,
++                  "PROBE21SKIP gc=%u f=%d type=%lu reason=unknown_type "
++                  "slot=%ld\n",
++                  probe20_gc_no, frame_idx, (unsigned long)type,
++                  (long)(p - probe_sp));
++          goto probe21_done;
++        }
++
++        /* Check each slot in the frame's bitmap. */
++        if (type != UPDATE_FRAME) {
++          for (StgWord i = 0; i < size; i++) {
++            int is_ptr;
++            if (is_large) {
++              StgWord bword = lbmp->bitmap[i / (sizeof(StgWord)*8)];
++              is_ptr = ((bword >> (i % (sizeof(StgWord)*8))) & 1) == 0;
++            } else {
++              is_ptr = ((small_bits >> i) & 1) == 0;
++            }
++            StgWord w = payload[i];
++            if (HEAP_ALLOCED((void*)w)) {
++              bdescr *bd = Bdescr((P_)(w & ~(StgWord)3));
++              int evac = (bd && (bd->flags & BF_EVACUATED)) ? 1 : 0;
++              if (!evac) {
++                /* Deref the closure pointer (untagged) and read its
++                 * first word — the info-table pointer.  If the deref
++                 * yields a HEAP_ALLOCED-false value pointing into
++                 * static text (info-tables live there), this is a
++                 * real closure and our "bitmap is wrong" hypothesis
++                 * is confirmed.  If it yields garbage, the value is
++                 * just a Word#/Int# coincidentally in the heap
++                 * range. */
++                StgWord *closure = (StgWord *)(w & ~(StgWord)3);
++                StgWord first_word = 0xDEADBEEF;
++                int deref_ok = 0;
++                /* Verify the closure address is at least within the
++                 * bdescr's start..(start + blocks*BLOCK_SIZE_W) span
++                 * before dereferencing. */
++                if (bd) {
++                  StgPtr blk_start = bd->start;
++                  StgPtr blk_end = bd->start + bd->blocks * BLOCK_SIZE_W;
++                  if ((StgPtr)closure >= blk_start
++                      && (StgPtr)closure < blk_end) {
++                    first_word = *closure;
++                    deref_ok = 1;
++                  }
++                }
++                fprintf(stderr,
++                        "PROBE21BAD gc=%u f=%d type=%lu slot=%ld pay=%lu "
++                        "val=0x%08lx is_ptr=%d bd_gen=%u bd_flags=0x%lx "
++                        "deref_ok=%d info=0x%08lx\n",
++                        probe20_gc_no, frame_idx, (unsigned long)type,
++                        (long)(payload + i - probe_sp),
++                        (unsigned long)i, (unsigned long)w, is_ptr,
++                        bd ? (unsigned)bd->gen_no : 99u,
++                        bd ? (unsigned long)bd->flags : 0ul,
++                        deref_ok, (unsigned long)first_word);
++              }
++            }
++          }
++        }
++
++        p += frame_words;
++        frame_idx++;
++      }
++      probe21_done: ;
++    }
++
++    probe20_gc_no++;
++  }
++
+   resize_nursery();
+ 
+   resetNurseries();
