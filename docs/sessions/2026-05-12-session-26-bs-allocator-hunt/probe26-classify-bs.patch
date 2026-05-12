@@ -1,0 +1,66 @@
+diff --git a/compiler/GHC/Data/FastString.hs b/compiler/GHC/Data/FastString.hs
+index 9ba933f3..29e13096 100644
+--- a/compiler/GHC/Data/FastString.hs
++++ b/compiler/GHC/Data/FastString.hs
+@@ -126,6 +126,12 @@ import Control.Concurrent.MVar
+ import Control.DeepSeq
+ import Control.Monad
+ import Data.ByteString (ByteString)
++-- PROBE26 (session 26, 2026-05-12): instrument mkFastStringByteString
++-- to classify the ForeignPtrContents of every BS that flows in.  The
++-- aim is to find the BS-allocator pinning-invariant violator that the
++-- stage2 GC bug investigation (sessions 19–25) traced the crash to.
++import qualified Data.ByteString.Internal as BSI
++import qualified GHC.ForeignPtr as GFP
+ import Data.ByteString.Short (ShortByteString)
+ import qualified Data.ByteString          as BS
+ import qualified Data.ByteString.Char8    as BSC
+@@ -518,12 +524,44 @@ newSBSFromPtr (Ptr src#) (I# len#) =
+     case unsafeFreezeByteArray# dst# s of { (# s, ba# #) ->
+     (# s, SBS.SBS ba# #) }}}
+ 
++-- PROBE26 (session 26, 2026-05-12): classify the ForeignPtrContents
++-- of every BS that flows into mkFastStringByteString.
++{-# NOINLINE probe26Counter #-}
++probe26Counter :: IORef Int
++probe26Counter = unsafePerformIO (newIORef 0)
++
++probe26Classify :: BSI.ByteString -> String
++probe26Classify (BSI.BS (GFP.ForeignPtr _ contents) _) = case contents of
++  GFP.PlainForeignPtr _ -> "PlainForeignPtr"
++  GFP.FinalPtr          -> "FinalPtr"
++  GFP.MallocPtr mba _   ->
++    if isTrue# (isMutableByteArrayPinned# mba)
++      then "MallocPtr+pinned" else "MallocPtr+UNPINNED"
++  GFP.PlainPtr mba      ->
++    if isTrue# (isMutableByteArrayPinned# mba)
++      then "PlainPtr+pinned"  else "PlainPtr+UNPINNED"
++
++probe26Trace :: BSI.ByteString -> IO ()
++probe26Trace bs = do
++  let !tag = probe26Classify bs
++  let !len = BS.length bs
++  n <- atomicModifyIORef' probe26Counter (\x -> (x+1, x))
++  let isUnpinned = case tag of
++        "MallocPtr+UNPINNED" -> True
++        "PlainPtr+UNPINNED"  -> True
++        _                    -> False
++  -- Print every call up to 50, then only the UNPINNED cases.  Flush
++  -- after each line so we don't lose output to the SIGSEGV.
++  when (n < 50 || isUnpinned) $ do
++    hPutStrLn stderr ("PROBE26 #" ++ show n ++ " " ++ tag ++ " len=" ++ show len)
++    hFlush stderr
++
+ -- | Create a 'FastString' by copying an existing 'ByteString'
+ mkFastStringByteString :: ByteString -> FastString
+-mkFastStringByteString bs =
+-  let sbs = SBS.toShort bs in
+-  inlinePerformIO $
+-      mkFastStringWith (mkNewFastStringShortByteString sbs) sbs
++mkFastStringByteString bs = inlinePerformIO $ do
++  probe26Trace bs
++  let sbs = SBS.toShort bs
++  mkFastStringWith (mkNewFastStringShortByteString sbs) sbs
+ 
+ -- | Create a 'FastString' from an existing 'ShortByteString' without
+ -- copying.

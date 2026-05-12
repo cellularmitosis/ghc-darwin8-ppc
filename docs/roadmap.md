@@ -257,24 +257,39 @@ much smaller than session 17 left it.  See:
   Decisive test: PROBE23 = PROBE22POISON + `&& !(bd->flags &
   BF_PINNED)` to the poison filter.  See session 25 below.
 - [`docs/sessions/2026-05-11-session-25-pin-aware-poison/`](sessions/2026-05-11-session-25-pin-aware-poison/)
-  — round 7.  **PROBE23 settled it.**  PROBE23 = PROBE22POISON +
-  `BF_PINNED` filter + a no-poison `PROBE23PINNED` log of stack
-  slots pointing into pinned blocks.  Result on M5.hs `+RTS -A1m`:
-  5/5 SIGSEGV byte-identical to session 23 (same `_blk_c7te + 112`,
-  same `r4=0xdeadbeef`, same `r5=0x10`), AND `pinned_skip = 0`
-  across every GC of every iteration — no stack-resident value
-  pointed into a pinned block during M5.hs's compile.  Rules out
-  hypothesis (b2) "PROBE22 was wrongly stomping pinned-Addr#s" in
-  its strong form: there were no pinned-backed addresses on the
-  stack at all.  Confirms hypothesis (a): the BS reaching
-  `mkFastStringByteString` really is non-pinned-backed.  Sessions
-  19–25 collectively rule out: bitmap codegen, `mkLivenessBits`,
-  `stackMapToLiveness`, `LayoutStack`, the StackRep itself.  The
-  bug is upstream of all of them, in the bytestring/FastString
-  allocation boundary.  Next: find the BS allocator that omits
-  pinning.  Session-25
-  [`HANDOFF.md`](sessions/2026-05-11-session-25-pin-aware-poison/HANDOFF.md)
-  scopes the BS-allocator hunt.
+  — round 7.  PROBE23 = PROBE22POISON + `BF_PINNED` filter + a
+  no-poison `PROBE23PINNED` log of stack slots pointing into pinned
+  blocks.  Result on M5.hs `+RTS -A1m`: 5/5 SIGSEGV byte-identical
+  to session 23 (same `_blk_c7te + 112`, same `r4=0xdeadbeef`, same
+  `r5=0x10`), AND `pinned_skip = 0` across every GC.  Session 25
+  read this as confirming hypothesis (a) "the BS reaching
+  `mkFastStringByteString` is non-pinned-backed."  But session 26
+  showed both pieces of that conclusion are flawed (see below).
+- [`docs/sessions/2026-05-12-session-26-bs-allocator-hunt/`](sessions/2026-05-12-session-26-bs-allocator-hunt/)
+  — round 8.  **Hypothesis (a) is REJECTED.**  PROBE26 (Haskell-side
+  patch to `mkFastStringByteString`) classifies the
+  `ForeignPtrContents` of every BS that flows in, plus tests the
+  underlying `MutableByteArray#`'s pinning via `isMutableByteArrayPinned#`.
+  Result on M5.hs `+RTS -A1m`: 150 visible BSes across 3 runs, **all
+  `PlainPtr+pinned`, zero UNPINNED.**  Stress-test on M5plus.hs and
+  Big.hs: 1/16 panic, 25+/25+ OK — bug rate dramatically reduced
+  but not zero.  The instrumentation perturbs `mkFastStringByteString`'s
+  Cmm enough to hide the SIGSEGV on M5.hs entirely.  Plus
+  clarifications: (i) PROBE23's `pinned_skip = 0` is a phantom of
+  the `BF_EVACUATED`-checked-first filter ordering — pinned blocks
+  carry `BF_EVACUATED` too, so they're counted as `evac_skip`;
+  (ii) the "5/5 SIGSEGV at `_blk_c7te+112`" signature is a
+  PROBE22POISON / PROBE23 specific artefact (the probes themselves
+  filled stack slots with `0xDEADBEEF`).  Without any probe, the
+  bug surfaces as the panics that session 17 first cataloged
+  (`depSortStgBinds`, `refineFromInScope`, "variable not found").
+  Sessions 19–26 collectively rule out: bitmap codegen,
+  `mkLivenessBits`, `stackMapToLiveness`, `LayoutStack`, StackRep,
+  AND the BS-pinning-invariant theory.  We do not currently have a
+  confirmed proximate cause.  Session-26
+  [`HANDOFF.md`](sessions/2026-05-12-session-26-bs-allocator-hunt/HANDOFF.md)
+  scopes re-establishing a non-perturbing repro (currently 4/5 panic
+  on clean stage2 + M5.hs `-A1m`) and pivoting investigation upstream.
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.
