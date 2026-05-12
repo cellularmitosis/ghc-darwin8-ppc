@@ -10,7 +10,7 @@ The patch itself is preserved at
 (SHA backfilled after the commit lands; the commit itself comes
 after the session-end ritual completes.)
 
-- `(SHA TBD)` — Session 29: stage2 GC bug investigation, round 11
+- `bf58a63` — Session 29: stage2 GC bug investigation, round 11
   (PROBE29 per-closure-type histogram in scavenge_block + evacuate;
   histogram diff identifies workload-disproportionate types but
   bisect-by-filename reveals the bug is HEAP-LAYOUT-DEPENDENT —
