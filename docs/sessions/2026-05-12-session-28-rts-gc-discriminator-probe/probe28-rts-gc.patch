@@ -1,0 +1,95 @@
+diff --git a/rts/sm/GC.c b/rts/sm/GC.c
+index d63ca271..2461796a 100644
+--- a/rts/sm/GC.c
++++ b/rts/sm/GC.c
+@@ -122,6 +122,22 @@ static W_ g0_pcnt_kept = 30; // percentage of g0 live at last minor GC
+ 
+ static int consec_idle_gcs = 0;
+ 
++/* PROBE28-BEGIN — session-28 discriminator probe state.
++ *
++ * Goal: distinguish "one bug, two victim data structures" vs "two
++ * separate bugs" for the stage2 GC corruption (cf. session 27's
++ * findings.md).  RTS-side only — does not touch Haskell allocation
++ * paths, so it should not perturb the M5.hs / Big2.hs panic rates
++ * the way session-26's PROBE26 did.
++ *
++ * Snapshots taken pre-GC and combined with end-of-GC stats are
++ * printed once per call to GarbageCollect() via debugBelch().
++ */
++#define PROBE28_MAX_GENS 8
++static StgWord64 probe28_gc_no = 0;
++static W_ probe28_pre_mut[PROBE28_MAX_GENS];
++/* PROBE28-END */
++
+ /* Mut-list stats */
+ #if defined(DEBUG)
+ // For lack of a better option we protect mutlist_scav_stats with oldest_gen->sync
+@@ -456,6 +472,29 @@ GarbageCollect (uint32_t collect_gen,
+   // and put them on the g0->large_object list.
+   collect_pinned_object_blocks();
+ 
++  /* PROBE28-BEGIN — snapshot pre-GC mut_list occupancy per gen, summed
++   * across capabilities.  Must run BEFORE prepare_collected_gen() (which
++   * throws away mut_lists for collected gens) and BEFORE
++   * prepare_uncollected_gen() / stash_mut_list() (which moves the list
++   * to saved_mut_lists and installs a fresh empty block).
++   */
++  probe28_gc_no++;
++  {
++      uint32_t pg_ng = RtsFlags.GcFlags.generations;
++      if (pg_ng > PROBE28_MAX_GENS) pg_ng = PROBE28_MAX_GENS;
++      for (uint32_t gg = 0; gg < PROBE28_MAX_GENS; gg++) {
++          probe28_pre_mut[gg] = 0;
++      }
++      for (uint32_t gg = 0; gg < pg_ng; gg++) {
++          W_ s = 0;
++          for (uint32_t c = 0; c < getNumCapabilities(); c++) {
++              s += countOccupied(capabilities[c]->mut_lists[gg]);
++          }
++          probe28_pre_mut[gg] = s;
++      }
++  }
++  /* PROBE28-END */
++
+   // Initialise all the generations that we're collecting.
+   for (g = 0; g <= N; g++) {
+       prepare_collected_gen(&generations[g]);
+@@ -1073,6 +1112,37 @@ GarbageCollect (uint32_t collect_gen,
+   memInventory(DEBUG_gc);
+ #endif
+ 
++  /* PROBE28-BEGIN — emit per-GC summary line.  Pre-GC mut_list sizes
++   * were captured at the top of GarbageCollect into probe28_pre_mut.
++   * Walk gct->scavenged_static_objects (via STATIC_LINK) to get the
++   * static-objects chain length scavenged this GC.  Safety cap at 1M
++   * iterations.
++   */
++  {
++      uint32_t pg_ng = RtsFlags.GcFlags.generations;
++      if (pg_ng > PROBE28_MAX_GENS) pg_ng = PROBE28_MAX_GENS;
++      W_ static_chain = 0;
++      StgClosure *sp = gct->scavenged_static_objects;
++      while (sp != END_OF_STATIC_OBJECT_LIST && static_chain < 1000000) {
++          StgClosure *up = UNTAG_STATIC_LIST_PTR(sp);
++          const StgInfoTable *info = get_itbl(up);
++          StgClosure **link = STATIC_LINK(info, up);
++          sp = (StgClosure *)RELAXED_LOAD(link);
++          static_chain++;
++      }
++      debugBelch("PROBE28 gc=%llu N=%u maj=%d ng=%u",
++                 (unsigned long long)probe28_gc_no, N, (int)major_gc, pg_ng);
++      for (uint32_t gg = 0; gg < pg_ng; gg++) {
++          debugBelch(" preMut%u=%lu", gg, (unsigned long)probe28_pre_mut[gg]);
++      }
++      debugBelch(" staticChain=%lu copiedW=%lu liveW=%lu liveB=%lu\n",
++                 (unsigned long)static_chain,
++                 (unsigned long)copied,
++                 (unsigned long)live_words,
++                 (unsigned long)live_blocks);
++  }
++  /* PROBE28-END */
++
+   // ok, GC over: tell the stats department what happened.
+   stat_endGCWorker(cap, gct);
+   stat_endGC(cap, gct, live_words, copied,

@@ -1,6 +1,6 @@
 # state.md — where are we right now
 
-*Updated: 2026-05-12 session 27 (stage2 GC bug round 9 — non-perturbing deterministic repro nailed; bug has two distinct corruption modes; `-G1` is a partial workaround).  **`M5.hs +RTS -A1m -RTS` panics 10/10** on clean stage2 with the STG-time panic family (depSortStgBinds, refineFromInScope, "variable not found").  **`+RTS -A1m -G1` (single-generation) fully suppresses the M5.hs panic family** (10/10 OK) and M5plus.hs (5/5 OK).  But **`-G1` does NOT suppress all variants** — Big2.hs (~30-LOC clean module using Data.Map.Strict + `where`-bound local) fails 10/10 at `-A1m -G1` with a **new corruption signature first observed this session: `* GHC internal error: 'swap' is not in scope during type checking, but it passed the renamer`**.  So sessions 17–26's catalogue (STG-time panics) was incomplete: there's also a typecheck-time corruption that escapes the gen-2 mut_list path entirely.  Sessions 19–26 dead-end theories (BS-pinning invariant, mkLivenessBits, StackRep, poison-on-stale-slot) all stand as ruled out.  v0.12.0 ships unchanged; source tree clean.  Next session: write a slim RTS-side probe (per-GC mut_list / static-object counter, no Haskell-side perturbation) to discriminate "one bug, two victim data structures" vs "two distinct bugs.")*
+*Updated: 2026-05-12 session 28 (stage2 GC bug round 10 — RTS-side discriminator probe; session-27's "two distinct corruption modes" downgraded to **one bug, two victim data structures**).  PROBE28 (slim RTS-side per-GC printf in `rts/sm/GC.c`) shows Big2.hs `-A1m -G1` switches from session 27's TC-time "swap not in scope" signature to the STG-time `refineFromInScope` signature 5/5 — the probe's tiny timing perturbation shifts which downstream IntMap-backed VarEnv catches the corruption.  Same root corruption, different downstream victim.  PROBE28 also ruled out two of session 27's audit targets: (i) `scavenge_capability_mut_lists` / mut_list write-barrier path (under `-G1` the mut_list is empty, yet Big2 `-G1` still panics 5/5); (ii) `scavenge_static` / `scavenge_thunk_srt` / `scavenge_fun_srt` (under `-G1` every GC walks the same ~175k-entry static_objects chain in both M5 (PASS) and Big2 (FAIL)).  Remaining suspects: `rts/sm/Evac.c` (evacuate / copy_tag / copy), `rts/sm/Scav.c::scavenge_block` dispatch by closure type, forwarding-pointer / info-table machinery on PPC32 (32-bit big-endian).  v0.12.0 ships unchanged; source tree clean; probe applied for measurement and reverted before session end; stage2 on pmacg5 rebuilt+redeployed clean.  Next session: extend PROBE28 with a per-closure-type histogram, then audit Evac.c / Scav.c.*
 
 ## Headline
 
@@ -320,6 +320,31 @@ About 16 minutes on M-series Mac, with ~200 SSH link round-trips to pmacg5.
   v0.11.0 demo green.  Side discovery: GHC's `-fllvm` is a no-op
   for unregisterised ABI targets — the swap is about which clang
   compiles GHC's C output, not about LLVM IR.
+- 2026-05-12 session 28: stage2 GC bug investigation, round 10.
+  Wrote **PROBE28** — a slim RTS-side per-GC printf in `rts/sm/GC.c`
+  (file-static counter + pre-GC mut_list snapshot via `countOccupied`
+  + post-GC summary line walking `gct->scavenged_static_objects`)
+  — to discriminate session 27's "one bug, two victims" vs "two
+  bugs" framings.  With the probe enabled, **Big2.hs `-A1m -G1`
+  flips from session 27's TC-time "swap not in scope" signature
+  (10/10) to the STG-time `refineFromInScope` signature 5/5** —
+  the probe's tiny per-GC timing delay shifts which downstream
+  IntMap-backed VarEnv catches the corruption.  Strong evidence
+  for **one bug, two victim data structures**.  PROBE28 also rules
+  out (i) the mut_list / write-barrier audit (Big2 `-G1` fails 5/5
+  with zero mut_list activity — under `-G1` mut_lists are empty),
+  and (ii) the static_objects scavenge audit (under `-G1` every GC
+  walks the same ~175k-entry static chain in both M5 (PASS) and Big2
+  (FAIL)).  Remaining suspects: `rts/sm/Evac.c` (evacuate, copy_tag,
+  copy) and `rts/sm/Scav.c::scavenge_block` dispatch — these run on
+  every GC regardless of `-G` and would fire identically across
+  M5/Big2 except that Big2 has more closures of whatever type
+  triggers the bug.  v0.12.0 ships unchanged; probe applied for
+  measurement, then reverted; clean stage2 redeployed at session end.
+  Session
+  [`HANDOFF.md`](sessions/2026-05-12-session-28-rts-gc-discriminator-probe/HANDOFF.md)
+  scopes the closure-type histogram extension + Evac.c / Scav.c
+  audit.
 - 2026-05-12 session 27: stage2 GC bug investigation, round 9.
   Re-established a **deterministic non-perturbing repro** after
   session 26 showed PROBE26 was hiding the M5.hs SIGSEGV: clean

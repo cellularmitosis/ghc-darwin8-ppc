@@ -302,16 +302,36 @@ much smaller than session 17 left it.  See:
   a `where`-bound local function — `-A1m -G1` fails 10/10 with a
   **new, previously-undocumented signature**: `* GHC internal
   error: 'swap' is not in scope during type checking, but it
-  passed the renamer`.  So the bug has at least two distinct
-  corruption modes: STG-time (suppressed by `-G1`) and typecheck-
-  time (not suppressed).  Either two separate bugs or one bug with
-  two victim data structures.  v0.12.0 ships unchanged; source
-  tree clean; no commits to external/ghc-modern this session.
-  Session-27
-  [`HANDOFF.md`](sessions/2026-05-12-session-27-non-perturbing-repro/HANDOFF.md)
-  scopes a slim RTS-side probe (per-GC mut_list / static-object
-  counter, no Haskell-side perturbation) to discriminate one-bug
-  vs two-bug.
+  passed the renamer`.  Session-27 framed this as "the bug has at
+  least two distinct corruption modes" — **downgraded by session
+  28 to one bug, two victim data structures** (see next entry).
+  v0.12.0 ships unchanged; source tree clean; no commits to
+  external/ghc-modern this session.
+- [`docs/sessions/2026-05-12-session-28-rts-gc-discriminator-probe/`](sessions/2026-05-12-session-28-rts-gc-discriminator-probe/)
+  — round 10.  Wrote **PROBE28** — a slim RTS-side per-GC printf in
+  `rts/sm/GC.c` (file-static counter + pre-GC mut_list snapshot via
+  `countOccupied` + post-GC summary line walking
+  `gct->scavenged_static_objects` via `STATIC_LINK`).  With the
+  probe enabled, **Big2.hs `-A1m -G1` flips from session 27's
+  TC-time "swap not in scope" signature (10/10) to the STG-time
+  `refineFromInScope` signature 5/5** — the probe's tiny per-GC
+  timing delay shifts which downstream IntMap-backed VarEnv catches
+  the corruption.  Strong evidence for **one bug, two victim data
+  structures**.  PROBE28 also rules out two of session 27's audit
+  targets: (i) `scavenge_capability_mut_lists` / mut_list write-
+  barrier path (Big2 `-G1` fails 5/5 with zero mut_list activity —
+  under `-G1` mut_lists are empty); (ii) `scavenge_static` /
+  `scavenge_thunk_srt` / `scavenge_fun_srt` (under `-G1` every GC
+  walks the same ~175k-entry static_objects chain in both M5 (PASS)
+  and Big2 (FAIL)).  Remaining suspects: `rts/sm/Evac.c`
+  (`evacuate`, `copy_tag`, `copy`), `rts/sm/Scav.c::scavenge_block`
+  dispatch by closure type, forwarding-pointer / info-table
+  machinery on PPC32 (32-bit big-endian).  v0.12.0 ships unchanged;
+  probe applied for measurement and reverted at session end; stage2
+  on pmacg5 rebuilt+redeployed clean.  Session-28
+  [`HANDOFF.md`](sessions/2026-05-12-session-28-rts-gc-discriminator-probe/HANDOFF.md)
+  scopes a per-closure-type histogram extension to PROBE28, then a
+  PPC32-eyes audit of Evac.c / Scav.c.
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.
