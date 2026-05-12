@@ -1,6 +1,6 @@
 # Session 28 commits
 
-- `XXXXXXX` Session 28: stage2 GC bug investigation, round 10
+- `4f1fcb6` Session 28: stage2 GC bug investigation, round 10
   (PROBE28 RTS-side per-GC discriminator probe; session-27's "two
   distinct corruption modes" framing downgraded to "one bug, two
   victim data structures"; mut_list and static_objects scavenge
