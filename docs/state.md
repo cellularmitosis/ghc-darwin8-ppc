@@ -1,6 +1,6 @@
 # state.md — where are we right now
 
-*Updated: 2026-05-10 session 23 (stage2 GC bug round 5 — bug confirmed REAL via PROBE22POISON; pinned to a frame in `GHC.Data.FastString`'s Cmm; not in the Catch.hs PNP/PN frames session 22 audited).*
+*Updated: 2026-05-11 session 24 (stage2 GC bug round 6 — the FastString frame's StackRep `[False, True, True]` is the **correct** answer given the Cmm IR; slot Sp+12 holds an `Addr#` (raw word), not a misclassified pointer.  Sessions 19–23's "bitmap codegen is broken" narrative is wrong.  Real bug is either an upstream invariant violation (some BS reaches `mkFastStringByteString` with a non-pinned underlying byte array) or PROBE22POISON itself was a false positive on pinned-memory Addr#s — decisive test is session 25's `BF_PINNED`-aware PROBE23).*
 
 ## Headline
 
@@ -96,8 +96,26 @@ legitimately stranded in dead slots that GC correctly skips).
 The actual GC crash is real but somewhere else: another
 module's frames, a non-RET_SMALL frame type PROBE21 skipped,
 the RTS scavenger itself, or CAF/SRT scanning.
+And [`docs/sessions/2026-05-11-session-24-faststring-stackrep/`](sessions/2026-05-11-session-24-faststring-stackrep/)
+for round 6 — **session 23's attribution was wrong**.  Cross-built
+FastString.hs's `_blk_c7te` info-table's StackRep is `[False, True,
+True]`, which is the **correct** bitmap for what the Cmm IR
+specifies: slot Sp+12 holds the `Addr#` field of an unboxed
+`Data.ByteString.Internal.Type.BS` constructor (the
+`byteArrayContents#` of the underlying `ForeignPtrContents`), typed
+`I32` (non-pointer) in Cmm.  LayoutStack faithfully encodes this;
+`mkLivenessBits` faithfully encodes that.  The actual stale-Addr#
+read-after-poison is upstream of LayoutStack — either an invariant
+violation by some caller of `mkFastStringByteString` (the BS is
+backed by a non-pinned `MutableByteArray#`, so the `Addr#` is stale
+across the `stg_newByteArray#` GC point) or PROBE22POISON itself
+false-positiveing on pinned-memory `Addr#`s in blocks whose
+`bd_flags` happen to be `0x0` at the moment PROBE22 runs.  Decisive
+test: PROBE23, a `BF_PINNED`-aware variant of PROBE22POISON.  Session
+[`HANDOFF.md`](sessions/2026-05-11-session-24-faststring-stackrep/HANDOFF.md)
+scopes it.
 And [`docs/sessions/2026-05-10-session-23-stage2-poison-probe/`](sessions/2026-05-10-session-23-stage2-poison-probe/)
-for round 5 — **bug confirmed real and localised**.  PROBE22POISON
+for round 5 — **PROBE22POISON found a real read-after-poison.**  PROBE22POISON
 (replace every non-evac heap-shape on the running TSO's stack with
 `0xDEADBEEF` post-scavenge) caused stage2 ghc compiling M5.hs under
 `+RTS -A1m -RTS` to crash deterministically (5/5 iterations) at

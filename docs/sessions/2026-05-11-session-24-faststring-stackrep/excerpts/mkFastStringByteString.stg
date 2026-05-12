@@ -1,0 +1,53 @@
+        };
+
+GHC.Data.FastString.mkFastStringByteString
+  :: Data.ByteString.Internal.Type.ByteString
+     -> GHC.Data.FastString.FastString
+[GblId, Arity=1, Str=<LP(L,L,L)>, Unf=OtherCon []] =
+    {} \r [bs_s77i]
+        let {
+          sat_s77C [Occ=Once1] :: GHC.Types.IO GHC.Data.FastString.FastString
+          [LclId] =
+              {bs_s77i} \r [void_0E]
+                  case bs_s77i of {
+                  Data.ByteString.Internal.Type.BS ipv_s77l [Occ=Once1]
+                                                   ipv1_s77m [Occ=Once1]
+                                                   ipv2_s77n ->
+                  case newByteArray# [ipv2_s77n GHC.Prim.realWorld#] of {
+                  Solo# ipv4_s77q ->
+                  case
+                      copyAddrToByteArray# [ipv_s77l
+                                            ipv4_s77q
+                                            0#
+                                            ipv2_s77n
+                                            GHC.Prim.void#]
+                  of
+                  s'_s77r [Occ=Once1]
+                  {
+                  (##) ->
+                  case touch# [ipv1_s77m GHC.Prim.void#] of s'1_s77s [Occ=Once1] {
+                  (##) ->
+                  case unsafeFreezeByteArray# [ipv4_s77q GHC.Prim.void#] of {
+                  Solo# ipv6_s77v [Occ=Once1] ->
+                  case Data.ByteString.Short.Internal.SBS [ipv6_s77v] of {
+                  Data.ByteString.Short.Internal.SBS ww1_s77x ->
+                  let {
+                    sat_s77B [Occ=Once1]
+                      :: GHC.Types.Int
+                         -> GHC.Data.FastMutInt.FastMutInt
+                         -> GHC.Types.IO GHC.Data.FastString.FastString
+                    [LclId] =
+                        {ww1_s77x} \r [w1_s77y w2_s77z void_XF]
+                            GHC.Data.FastString.$wmkNewFastStringShortByteString
+                                ww1_s77x w1_s77y w2_s77z GHC.Prim.void#;
+                  } in 
+                    GHC.Data.FastString.$wmkFastStringWith
+                        sat_s77B ww1_s77x GHC.Prim.void#;
+                  };
+                  };
+                  };
+                  };
+                  };
+                  };
+        } in  GHC.Utils.IO.Unsafe.inlinePerformIO sat_s77C;
+

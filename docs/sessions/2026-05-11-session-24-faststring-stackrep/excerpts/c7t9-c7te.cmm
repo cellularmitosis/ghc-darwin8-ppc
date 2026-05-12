@@ -1,0 +1,81 @@
+2026-05-11 23:50:34.659062 UTC
+
+_blk_c7t9() { //  [R1]
+        { info_tbls: [(c7t9,
+                       label: block_c7t9_info
+                       rep: StackRep []
+                       srt: Nothing)]
+          stack_info: arg_space: 0
+        }
+    {offset
+      c7t9: // global
+          I32[Sp - 12] = block_c7te_info;
+          _s77k::P32 = R1;
+          _s77n::I32 = I32[_s77k::P32 + 11];
+          R1 = _s77n::I32;
+          P32[Sp - 8] = P32[_s77k::P32 + 3];
+          I32[Sp - 4] = _s77n::I32;
+          I32[Sp] = I32[_s77k::P32 + 7];
+          Sp = Sp - 12;
+          call stg_newByteArray#(R1) args: 4, res: 4, upd: 4;
+    }
+}
+
+
+==================== after setInfoTableStackMap ====================
+2026-05-11 23:50:34.65919 UTC
+
+_blk_c7te() { //  [R1]
+        { info_tbls: [(c7te,
+                       label: block_c7te_info
+                       rep: StackRep [False, True, True]
+                       srt: Nothing)]
+          stack_info: arg_space: 0
+        }
+    {offset
+      c7te: // global
+          Hp = Hp + 8;
+          _s77q::P32 = R1;
+          if (Hp <= HpLim) (likely: True) goto c7tg; else goto c7tH;
+      c7tg: // global
+          _s77m::P32 = P32[Sp + 4];
+          call MO_Memcpy 1(_s77q::P32 + 8, I32[Sp + 12], I32[Sp + 8]);
+          call MO_Touch(_s77m::P32);
+          I32[Hp - 4] = Data.ByteString.Short.Internal.SBS_con_info;
+          P32[Hp] = _s77q::P32;
+          goto u7tL;
+      u7tL: // global
+          P32[Sp + 12] = Hp - 3;
+          Sp = Sp + 12;
+          goto u7tN;
+      u7tN: // global
+          call _blk_c7tr() args: 0, res: 0, upd: 0;
+      c7tH: // global
+          HpAlloc = 8;
+          R1 = _s77q::P32;
+          call stg_gc_unpt_r1(R1) args: 4, res: 4, upd: 4;
+    }
+}
+
+
+==================== after setInfoTableStackMap ====================
+2026-05-11 23:50:34.659407 UTC
+
+_blk_c7tr() { //  []
+        { info_tbls: []
+          stack_info: arg_space: 0
+        }
+    {offset
+      c7tr: // global
+          Hp = Hp + 8;
+          _s77w::P32 = P32[Sp];
+          if (Hp > HpLim) (likely: False) goto c7tK; else goto c7tJ;
+      c7tK: // global
+          HpAlloc = 8;
+          I32[Sp] = block_c7tq_info;
+          R1 = _s77w::P32;
+          call stg_gc_unpt_r1(R1) args: 4, res: 4, upd: 4;
+      c7tJ: // global
+          _s77x::P32 = P32[_s77w::P32 + 3];
+          I32[Hp - 4] = sat_s77B_info;
+          P32[Hp] = _s77x::P32;

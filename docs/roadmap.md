@@ -217,28 +217,47 @@ much smaller than session 17 left it.  See:
   scavenge — decisive test of "real bug vs PROBE21 false
   positive" in one short cycle).
 - [`docs/sessions/2026-05-10-session-23-stage2-poison-probe/`](sessions/2026-05-10-session-23-stage2-poison-probe/)
-  — round 5.  **PROBE22POISON ran the experiment.  Bug confirmed
-  REAL and pinned to `GHC.Data.FastString`.**  Stage2 ghc compiling
-  M5.hs under `+RTS -A1m` crashed deterministically (5/5 iterations)
-  at `_blk_c7te + 112` with `EXC_BAD_ACCESS at 0xdeadbeef`, in
-  `__memcpy(_, src=0xdeadbeef, len=16)`.  The src came from
-  `MEM[Sp+12]` of the topmost frame at crash time, which corresponds
-  to **slot 6** in PROBE22's coordinates from the most recent
-  (gc_no=2) GC — pre-poison value `0x0bf5f38a`, a tagged heap
-  pointer in a non-evacuated nursery block.  Per `nm` on stage2's
-  text section, `_blk_c7te` lives between `_s77C_entry` and
-  `_ghc_GHCziDataziFastString_mkFastStringByteString_entry` — so
-  the misclassifying StackRep is in some local closure /
-  continuation Cmm block within `GHC.Data.FastString`'s
-  compilation unit.  Of the 9 slots PROBE22POISON stomped per
-  run, only 1 caused a read-after-poison crash; the other 8 were
-  benign (consistent with session 22's audit-says-most-are-dead
-  result).  Session-23
-  [`HANDOFF.md`](sessions/2026-05-10-session-23-stage2-poison-probe/HANDOFF.md)
-  scopes the next experiment: re-cross-compile FastString.hs with
-  `-ddump-cmm-final`, find the offending info table's StackRep,
-  and trace back to the StgToCmm/LayoutStack code that produced
-  it.
+  — round 5.  **PROBE22POISON ran the experiment.**  Stage2 ghc
+  compiling M5.hs under `+RTS -A1m` crashed deterministically (5/5
+  iterations) at `_blk_c7te + 112` with `EXC_BAD_ACCESS at
+  0xdeadbeef`, in `__memcpy(_, src=0xdeadbeef, len=16)`.  The src
+  came from `MEM[Sp+12]` of the topmost frame at crash time,
+  which corresponds to **slot 6** in PROBE22's coordinates from
+  the most recent (gc_no=2) GC — pre-poison value `0x0bf5f38a`
+  in a block with `bd_gen=0 bd_flags=0x0`.  `_blk_c7te` lives in
+  `GHC.Data.FastString` per `nm` on stage2's text.  Session-23
+  attributed the crash to "a Cmm block whose StackRep misclassifies
+  a pointer slot as non-pointer" — but session 24 (below) showed
+  that attribution is wrong.
+- [`docs/sessions/2026-05-11-session-24-faststring-stackrep/`](sessions/2026-05-11-session-24-faststring-stackrep/)
+  — round 6.  **Session 23's attribution was wrong.**  Re-cross-
+  compiled FastString.hs with `-ddump-cmm-sp -ddump-cmm-info`;
+  found `_blk_c7te`'s info table directly (uniques are stable
+  across rebuilds).  Its StackRep is `[False, True, True]` — and
+  reading the Cmm IR, that is the **correct** answer: slot Sp+12
+  is `_s77l`, the `Addr#` field of an unboxed `BS` constructor
+  (`BS !(ForeignPtr Word8) !Int` ⇒ 3 unboxed fields: ptr
+  `ForeignPtrContents`, raw `Addr#`, raw `Int`).  An `Addr#` is
+  typed `I32` in Cmm — non-pointer — and the bitmap faithfully
+  reflects that.  `mkLivenessBits`, `stackMapToLiveness`, and
+  `LayoutStack` are all correct.  The PROBE22POISON read-after-
+  poison crash is therefore **not** a bitmap bug.  Two open
+  hypotheses for what it really is:
+    (a) Invariant violation upstream — some BS reaching
+        `mkFastStringByteString` has a non-pinned `MutableByteArray#`
+        backing its `ForeignPtrContents`, so the `Addr#` becomes
+        stale when GC moves the byte array.  Real bug, but not in
+        LayoutStack.
+    (b) PROBE22POISON false positive — pinned blocks may transiently
+        present `bd_flags=0x0` (no `BF_PINNED`) at the moment
+        PROBE22 runs, causing the probe to wrongly stomp stable
+        `Addr#`s.  In that case, the production GC crash under
+        `-A1m` has a different mechanism (CAFs, SRTs, info-tables,
+        non-stack RTS state).
+  Decisive test: PROBE23 = PROBE22POISON + `&& !(bd->flags &
+  BF_PINNED)` to the poison filter.  Session-24
+  [`HANDOFF.md`](sessions/2026-05-11-session-24-faststring-stackrep/HANDOFF.md)
+  scopes it.
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.
