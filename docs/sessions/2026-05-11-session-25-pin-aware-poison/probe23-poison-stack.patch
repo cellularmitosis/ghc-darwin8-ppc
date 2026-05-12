@@ -1,0 +1,101 @@
+diff --git a/rts/sm/GC.c b/rts/sm/GC.c
+index d63ca271..af11afaf 100644
+--- a/rts/sm/GC.c
++++ b/rts/sm/GC.c
+@@ -907,6 +907,87 @@ GarbageCollect (uint32_t collect_gen,
+       }
+   }
+
++  /* PROBE23POISON: like PROBE22POISON (session 23) but also exempts
++   * BF_PINNED blocks.  Session 24 settled that the only confirmed
++   * read-after-poison from PROBE22 reads MEM[Sp+12] of _blk_c7te in
++   * GHC.Data.FastString, where Sp+12 is the Addr# field of an unboxed
++   * Data.ByteString.Internal.Type.BS — i.e., a raw pointer that is
++   * supposed to be stable across GC because the underlying
++   * MutableByteArray# is pinned.  The PROBE22 log reported bd_flags=0
++   * (no BF_PINNED, no BF_EVACUATED) for the stomped block, leaving
++   * two open hypotheses:
++   *
++   *   (a) Real bug: some BS reaching mkFastStringByteString is backed
++   *       by a non-pinned MutableByteArray#, so its Addr# IS stale
++   *       post-GC.
++   *   (b) Probe artefact: pinned blocks transiently lose BF_PINNED
++   *       (or never had it during GC), and PROBE22POISON has been
++   *       wrongly stomping stable Addr#s into pinned memory.
++   *
++   * PROBE23 adds `!(bd->flags & BF_PINNED)` to the poison filter.
++   * If the 5/5 SIGSEGV pattern goes away, (b) was right and the
++   * production -A1m crash is a different mechanism entirely.  If it
++   * stays, (a) was right and we need to find the BS invariant
++   * violator.
++   *
++   * It also runs a no-poison pass that just LOGS pinned-block-backed
++   * stack slots (PROBE23PINNED), so we can quantify "how many of
++   * PROBE22POISON's stomps were actually into pinned memory."  That's
++   * the false-positive denominator under hypothesis (b).
++   *
++   * Insertion point: same as PROBE22POISON, just before resize_nursery().
++   */
++  {
++    static unsigned probe23_gc_no = 0;
++    Capability *probe_cap = capabilities[0];
++    StgTSO *probe_tso = probe_cap->run_queue_hd;
++
++    if (probe_tso != NULL && probe_tso != END_TSO_QUEUE
++        && probe_tso->stackobj != NULL) {
++      StgStack *st = probe_tso->stackobj;
++      StgPtr probe_sp = st->sp;
++      StgPtr probe_end = st->stack + st->stack_size;
++      int n_words = 0, n_heap_ptr = 0, n_poisoned = 0;
++      int n_pinned_skip = 0, n_evac_skip = 0;
++
++      for (StgPtr p = probe_sp; p < probe_end; p++) {
++        StgWord w = *p;
++        n_words++;
++        if (HEAP_ALLOCED((void*)w)) {
++          n_heap_ptr++;
++          bdescr *bd = Bdescr((P_)(w & ~(StgWord)3));
++          if (bd) {
++            if (bd->flags & BF_EVACUATED) { n_evac_skip++; continue; }
++            if (bd->flags & BF_PINNED) {
++              n_pinned_skip++;
++              fprintf(stderr,
++                      "PROBE23PINNED gc_no=%u slot=%ld val=0x%08lx "
++                      "bd_gen=%u bd_flags=0x%lx\n",
++                      probe23_gc_no,
++                      (long)(p - probe_sp),
++                      (unsigned long)w,
++                      (unsigned)bd->gen_no,
++                      (unsigned long)bd->flags);
++              continue;
++            }
++            fprintf(stderr,
++                    "PROBE23POISON gc_no=%u slot=%ld old=0x%08lx "
++                    "bd_gen=%u bd_flags=0x%lx\n",
++                    probe23_gc_no,
++                    (long)(p - probe_sp),
++                    (unsigned long)w,
++                    (unsigned)bd->gen_no,
++                    (unsigned long)bd->flags);
++            *p = (StgWord)0xDEADBEEF;
++            n_poisoned++;
++          }
++        }
++      }
++
++      fprintf(stderr,
++              "PROBE23 gc_no=%u N=%u major=%d "
++              "tso=%p stk=%p sp=%p end=%p "
++              "words=%d heap_ptr=%d pinned_skip=%d evac_skip=%d poisoned=%d\n",
++              probe23_gc_no, N, (int)major_gc,
++              (void*)probe_tso, (void*)st,
++              (void*)probe_sp, (void*)probe_end,
++              n_words, n_heap_ptr, n_pinned_skip, n_evac_skip, n_poisoned);
++    }
++
++    probe23_gc_no++;
++  }
++
+   resize_nursery();
+
+   resetNurseries();

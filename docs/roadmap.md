@@ -255,9 +255,26 @@ much smaller than session 17 left it.  See:
         `-A1m` has a different mechanism (CAFs, SRTs, info-tables,
         non-stack RTS state).
   Decisive test: PROBE23 = PROBE22POISON + `&& !(bd->flags &
-  BF_PINNED)` to the poison filter.  Session-24
-  [`HANDOFF.md`](sessions/2026-05-11-session-24-faststring-stackrep/HANDOFF.md)
-  scopes it.
+  BF_PINNED)` to the poison filter.  See session 25 below.
+- [`docs/sessions/2026-05-11-session-25-pin-aware-poison/`](sessions/2026-05-11-session-25-pin-aware-poison/)
+  — round 7.  **PROBE23 settled it.**  PROBE23 = PROBE22POISON +
+  `BF_PINNED` filter + a no-poison `PROBE23PINNED` log of stack
+  slots pointing into pinned blocks.  Result on M5.hs `+RTS -A1m`:
+  5/5 SIGSEGV byte-identical to session 23 (same `_blk_c7te + 112`,
+  same `r4=0xdeadbeef`, same `r5=0x10`), AND `pinned_skip = 0`
+  across every GC of every iteration — no stack-resident value
+  pointed into a pinned block during M5.hs's compile.  Rules out
+  hypothesis (b2) "PROBE22 was wrongly stomping pinned-Addr#s" in
+  its strong form: there were no pinned-backed addresses on the
+  stack at all.  Confirms hypothesis (a): the BS reaching
+  `mkFastStringByteString` really is non-pinned-backed.  Sessions
+  19–25 collectively rule out: bitmap codegen, `mkLivenessBits`,
+  `stackMapToLiveness`, `LayoutStack`, the StackRep itself.  The
+  bug is upstream of all of them, in the bytestring/FastString
+  allocation boundary.  Next: find the BS allocator that omits
+  pinning.  Session-25
+  [`HANDOFF.md`](sessions/2026-05-11-session-25-pin-aware-poison/HANDOFF.md)
+  scopes the BS-allocator hunt.
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.

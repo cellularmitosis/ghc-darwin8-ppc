@@ -1,6 +1,6 @@
 # state.md — where are we right now
 
-*Updated: 2026-05-11 session 24 (stage2 GC bug round 6 — the FastString frame's StackRep `[False, True, True]` is the **correct** answer given the Cmm IR; slot Sp+12 holds an `Addr#` (raw word), not a misclassified pointer.  Sessions 19–23's "bitmap codegen is broken" narrative is wrong.  Real bug is either an upstream invariant violation (some BS reaches `mkFastStringByteString` with a non-pinned underlying byte array) or PROBE22POISON itself was a false positive on pinned-memory Addr#s — decisive test is session 25's `BF_PINNED`-aware PROBE23).*
+*Updated: 2026-05-11 session 25 (stage2 GC bug round 7 — PROBE23 = PROBE22POISON + `BF_PINNED` filter + no-poison `PROBE23PINNED` log of pinned-block stack slots.  Result: 5/5 SIGSEGV byte-identical to PROBE22, **with `pinned_skip = 0`** across every GC.  Rules out the false-positive theory in its strong form: no stack-resident value pointed into a pinned block during M5.hs's compile, so the bug isn't "PROBE22 was wrongly stomping pinned-Addr#s."  Hypothesis (a) from session-24 confirmed: some BS reaching `mkFastStringByteString` is backed by a non-pinned `MutableByteArray#`, violating the pinning invariant at `libraries/base/GHC/ForeignPtr.hs:145`.  Sessions 19–25 cumulatively rule out: bitmap codegen, `mkLivenessBits`, `stackMapToLiveness`, `LayoutStack`, and the StackRep itself — all correct.  Bug is upstream of all of them, in the bytestring/FastString allocation boundary.  Next: find the BS allocator that omits pinning.)*
 
 ## Headline
 
@@ -110,9 +110,28 @@ violation by some caller of `mkFastStringByteString` (the BS is
 backed by a non-pinned `MutableByteArray#`, so the `Addr#` is stale
 across the `stg_newByteArray#` GC point) or PROBE22POISON itself
 false-positiveing on pinned-memory `Addr#`s in blocks whose
-`bd_flags` happen to be `0x0` at the moment PROBE22 runs.  Decisive
-test: PROBE23, a `BF_PINNED`-aware variant of PROBE22POISON.  Session
-[`HANDOFF.md`](sessions/2026-05-11-session-24-faststring-stackrep/HANDOFF.md)
+`bd_flags` happen to be `0x0` at the moment PROBE22 runs.
+And [`docs/sessions/2026-05-11-session-25-pin-aware-poison/`](sessions/2026-05-11-session-25-pin-aware-poison/)
+for round 7 — **PROBE23 (pin-aware poison) settled it.**  PROBE23 =
+PROBE22POISON + `&& !(bd->flags & BF_PINNED)` to the poison filter,
+plus a no-poison `PROBE23PINNED` log of stack slots pointing into
+`BF_PINNED` blocks.  Result on M5.hs `+RTS -A1m`: 5/5 SIGSEGV
+byte-identical to session 23's PROBE22 (same crash slot
+`gc_no=2 slot=6 old=0x0bf5f38a` at `_blk_c7te + 112`), AND
+`pinned_skip = 0` across every GC of every iteration.  No stack
+slot held a value pointing into a pinned block during M5.hs's
+compile.  Rules out the strong form of the b-hypothesis "PROBE22
+was wrongly stomping pinned-memory Addr#s" — there were no pinned-
+backed addresses on the stack to stomp.  Confirms hypothesis (a):
+the BS reaching `mkFastStringByteString` really is non-pinned-backed.
+Sessions 19–25 collectively rule out all of: bitmap codegen,
+`mkLivenessBits`, `stackMapToLiveness`, `LayoutStack`, the StackRep
+itself.  The actual bug is upstream of all of them, in the
+bytestring/FastString allocation boundary.  Next session: instrument
+`mkFastStringByteString` to print whether each incoming BS's
+`ForeignPtrContents` is `PlainPtr` (unpinned) vs one of the pinned
+variants, find the violator, fix the BS producer.  Session
+[`HANDOFF.md`](sessions/2026-05-11-session-25-pin-aware-poison/HANDOFF.md)
 scopes it.
 And [`docs/sessions/2026-05-10-session-23-stage2-poison-probe/`](sessions/2026-05-10-session-23-stage2-poison-probe/)
 for round 5 — **PROBE22POISON found a real read-after-poison.**  PROBE22POISON
@@ -301,6 +320,29 @@ About 16 minutes on M-series Mac, with ~200 SSH link round-trips to pmacg5.
   v0.11.0 demo green.  Side discovery: GHC's `-fllvm` is a no-op
   for unregisterised ABI targets — the swap is about which clang
   compiles GHC's C output, not about LLVM IR.
+- 2026-05-11 session 25: stage2 GC bug investigation, round 7.
+  PROBE23 (PROBE22POISON + `&& !(bd->flags & BF_PINNED)` to the
+  poison filter, plus a no-poison `PROBE23PINNED` log of stack
+  slots pointing into pinned blocks) ran against M5.hs under
+  `+RTS -A1m`.  Result: 5/5 SIGSEGV byte-identical to session
+  23's PROBE22 (same crash slot `gc_no=2 slot=6 old=0x0bf5f38a`
+  at `_blk_c7te + 112`, same `r4=0xdeadbeef`, same `r5=0x10`),
+  AND `pinned_skip = 0` across every GC of every iteration.
+  No stack-resident value pointed into a `BF_PINNED` block during
+  M5.hs's compile.  Rules out the false-positive theory in its
+  strong form: PROBE22 was NOT wrongly stomping pinned-Addr#s
+  (there weren't any).  Confirms hypothesis (a) from session-24
+  HANDOFF: the BS reaching `mkFastStringByteString` is backed by
+  a non-pinned `MutableByteArray#`, violating the pinning
+  invariant at `libraries/base/GHC/ForeignPtr.hs:145`.  Sessions
+  19–25 collectively rule out all of: bitmap codegen,
+  `mkLivenessBits`, `stackMapToLiveness`, `LayoutStack`, the
+  StackRep itself.  The bug is upstream of all of them, in the
+  bytestring/FastString allocation boundary.  v0.12.0 ships
+  unchanged; stage2 on pmacg5 reverted to clean RTS at session-25
+  end.  Next session: instrument `mkFastStringByteString` (or
+  audit the BS producer surface) to find the BS allocator that
+  omits pinning.
 - 2026-05-10 session 23: stage2 GC bug investigation, round 5.
   Built PROBE22POISON (RTS patch — replace every non-evac heap-
   shape on the running TSO's stack with `0xDEADBEEF` post-
