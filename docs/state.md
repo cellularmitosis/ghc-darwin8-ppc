@@ -1,6 +1,6 @@
 # state.md — where are we right now
 
-*Updated: 2026-05-11 session 25 (stage2 GC bug round 7 — PROBE23 = PROBE22POISON + `BF_PINNED` filter + no-poison `PROBE23PINNED` log of pinned-block stack slots.  Result: 5/5 SIGSEGV byte-identical to PROBE22, **with `pinned_skip = 0`** across every GC.  Rules out the false-positive theory in its strong form: no stack-resident value pointed into a pinned block during M5.hs's compile, so the bug isn't "PROBE22 was wrongly stomping pinned-Addr#s."  Hypothesis (a) from session-24 confirmed: some BS reaching `mkFastStringByteString` is backed by a non-pinned `MutableByteArray#`, violating the pinning invariant at `libraries/base/GHC/ForeignPtr.hs:145`.  Sessions 19–25 cumulatively rule out: bitmap codegen, `mkLivenessBits`, `stackMapToLiveness`, `LayoutStack`, and the StackRep itself — all correct.  Bug is upstream of all of them, in the bytestring/FastString allocation boundary.  Next: find the BS allocator that omits pinning.)*
+*Updated: 2026-05-12 session 27 (stage2 GC bug round 9 — non-perturbing deterministic repro nailed; bug has two distinct corruption modes; `-G1` is a partial workaround).  **`M5.hs +RTS -A1m -RTS` panics 10/10** on clean stage2 with the STG-time panic family (depSortStgBinds, refineFromInScope, "variable not found").  **`+RTS -A1m -G1` (single-generation) fully suppresses the M5.hs panic family** (10/10 OK) and M5plus.hs (5/5 OK).  But **`-G1` does NOT suppress all variants** — Big2.hs (~30-LOC clean module using Data.Map.Strict + `where`-bound local) fails 10/10 at `-A1m -G1` with a **new corruption signature first observed this session: `* GHC internal error: 'swap' is not in scope during type checking, but it passed the renamer`**.  So sessions 17–26's catalogue (STG-time panics) was incomplete: there's also a typecheck-time corruption that escapes the gen-2 mut_list path entirely.  Sessions 19–26 dead-end theories (BS-pinning invariant, mkLivenessBits, StackRep, poison-on-stale-slot) all stand as ruled out.  v0.12.0 ships unchanged; source tree clean.  Next session: write a slim RTS-side probe (per-GC mut_list / static-object counter, no Haskell-side perturbation) to discriminate "one bug, two victim data structures" vs "two distinct bugs.")*
 
 ## Headline
 
@@ -320,6 +320,47 @@ About 16 minutes on M-series Mac, with ~200 SSH link round-trips to pmacg5.
   v0.11.0 demo green.  Side discovery: GHC's `-fllvm` is a no-op
   for unregisterised ABI targets — the swap is about which clang
   compiles GHC's C output, not about LLVM IR.
+- 2026-05-12 session 27: stage2 GC bug investigation, round 9.
+  Re-established a **deterministic non-perturbing repro** after
+  session 26 showed PROBE26 was hiding the M5.hs SIGSEGV: clean
+  stage2 + `M5.hs +RTS -A1m -RTS` panics **10/10** with the
+  STG-time panic family (depSortStgBinds, refineFromInScope, etc.).
+  Tried a matrix of RTS flag profiles on M5.hs: `-A1G` 10/0,
+  `-A1m` 0/10, `-A1m -G1` **10/0** (single-generation fully
+  suppresses!), `-A512k` 9/1, `-A4m` 10/0.  `-G1` empties the
+  older-gen mut_list scavenge loop in `scavenge_capability_mut_lists`,
+  so the bug looked consistent with a missed-mut_list-entry / write-
+  barrier bug.  Then on slightly larger inputs the picture broke:
+  M5plus.hs `-A1m -G1` 5/0 (still suppressed), but a syntactically
+  clean Big2.hs `-A1m -G1` fails **10/10** with a previously-
+  undocumented signature — `* GHC internal error: 'swap' is not in
+  scope during type checking, but it passed the renamer`.  So the
+  bug has at least two distinct corruption modes: STG-time
+  (suppressed by `-G1`) and typecheck-time (not suppressed).  Either
+  two separate bugs or one bug with two victim data structures.
+  v0.12.0 ships unchanged; source tree clean; no commits to
+  external/ghc-modern this session.  Session
+  [`HANDOFF.md`](sessions/2026-05-12-session-27-non-perturbing-repro/HANDOFF.md)
+  scopes a slim RTS-side probe to discriminate one-bug vs two-bug.
+- 2026-05-12 session 26: stage2 GC bug investigation, round 8.
+  PROBE26 = Haskell-side ForeignPtrContents classifier in
+  `mkFastStringByteString`.  Result on M5.hs `+RTS -A1m`: 150
+  visible BSes across 3 runs, all **`PlainPtr+pinned`, zero
+  UNPINNED**.  Hypothesis (a) from session 25 ("BS reaches
+  `mkFastStringByteString` with non-pinned MBA") is **rejected
+  by direct observation**.  Additionally, PROBE26 prevents the
+  SIGSEGV on M5.hs entirely (0/3 vs. session 23's 5/5) — the
+  instrumentation perturbs `mkFastStringByteString`'s Cmm enough
+  to hide the bug.  Stress-test on M5plus.hs and Big.hs: bug
+  rate dramatically reduced but not zero (1/16 panic on a cold
+  M5plus.hs first run).  Sessions 23–25's `_blk_c7te + 112 /
+  0xdeadbeef` signature was a PROBE22POISON / PROBE23 probe
+  artefact — without any probe, the bug surfaces as the panics
+  that session 17 first cataloged.  Sessions 19–26 collectively
+  rule out: bitmap codegen, mkLivenessBits, stackMapToLiveness,
+  LayoutStack, StackRep, AND the BS-pinning-invariant theory.
+  v0.12.0 ships unchanged; stage2 on pmacg5 redeployed clean.
+  See [`HANDOFF.md`](sessions/2026-05-12-session-26-bs-allocator-hunt/HANDOFF.md).
 - 2026-05-11 session 25: stage2 GC bug investigation, round 7.
   PROBE23 (PROBE22POISON + `&& !(bd->flags & BF_PINNED)` to the
   poison filter, plus a no-poison `PROBE23PINNED` log of stack

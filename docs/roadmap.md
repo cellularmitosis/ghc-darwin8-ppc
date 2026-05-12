@@ -290,6 +290,28 @@ much smaller than session 17 left it.  See:
   [`HANDOFF.md`](sessions/2026-05-12-session-26-bs-allocator-hunt/HANDOFF.md)
   scopes re-establishing a non-perturbing repro (currently 4/5 panic
   on clean stage2 + M5.hs `-A1m`) and pivoting investigation upstream.
+- [`docs/sessions/2026-05-12-session-27-non-perturbing-repro/`](sessions/2026-05-12-session-27-non-perturbing-repro/)
+  — round 9.  **Deterministic non-perturbing repro nailed.**
+  `M5.hs +RTS -A1m -RTS` on clean stage2 panics **10/10** with the
+  STG-time panic family (depSortStgBinds, refineFromInScope, "variable
+  not found").  **`+RTS -A1m -G1` (single-generation) fully
+  suppresses the M5.hs panic family** (10/10 OK), and likewise on
+  M5plus.hs (5/5 OK).  Goldilocks: `-A1G`, `-A4m`, and even `-A512k`
+  are too large/small to reproduce M5.hs's failure.  But on a
+  larger clean input — Big2.hs, ~30-LOC, uses Data.Map.Strict and
+  a `where`-bound local function — `-A1m -G1` fails 10/10 with a
+  **new, previously-undocumented signature**: `* GHC internal
+  error: 'swap' is not in scope during type checking, but it
+  passed the renamer`.  So the bug has at least two distinct
+  corruption modes: STG-time (suppressed by `-G1`) and typecheck-
+  time (not suppressed).  Either two separate bugs or one bug with
+  two victim data structures.  v0.12.0 ships unchanged; source
+  tree clean; no commits to external/ghc-modern this session.
+  Session-27
+  [`HANDOFF.md`](sessions/2026-05-12-session-27-non-perturbing-repro/HANDOFF.md)
+  scopes a slim RTS-side probe (per-GC mut_list / static-object
+  counter, no Haskell-side perturbation) to discriminate one-bug
+  vs two-bug.
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.
