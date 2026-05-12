@@ -332,6 +332,35 @@ much smaller than session 17 left it.  See:
   [`HANDOFF.md`](sessions/2026-05-12-session-28-rts-gc-discriminator-probe/HANDOFF.md)
   scopes a per-closure-type histogram extension to PROBE28, then a
   PPC32-eyes audit of Evac.c / Scav.c.
+- [`docs/sessions/2026-05-12-session-29-closure-type-histogram/`](sessions/2026-05-12-session-29-closure-type-histogram/)
+  — round 11.  Extended PROBE28 to **PROBE29** — per-closure-type
+  histogram in `rts/sm/Scav.c::scavenge_block` and
+  `rts/sm/Evac.c::evacuate`, plus a forwarding-pointer hit count.
+  **All 5 Big2 `-A1m -G1` failing GCs produce byte-identical
+  histograms** (full determinism confirmed).  Diff M5 GC 13 (PASS)
+  vs Big2 GC 17 (FAIL): largest workload-relative anomalies are
+  **ARR_WORDS at 1.66× scav**, THUNK_2_0 at 1.42×, BLACKHOLE evac
+  at 4.81× — but **no closure type is unique to Big2's failing GC**
+  (every type at GC 17 also appears in earlier Big2 GCs and in
+  M5's GCs).  Then a Big2.hs bisect produced the headline finding:
+  **the bug is filename-sensitive**.  Byte-identical Big2.hs source
+  compiled under filename `Big2.hs` panics 5/5 at GC 17; under
+  `B0.hs` (or `BB.hs`, `X.hs`, `A.hs`) it PASSES at GC 18.  `md5`
+  confirmed identical bytes.  Length sweep: `A.hs` passes, `AA.hs`
+  fails; `BB.hs` passes, `BBB.hs` fails.  Different RTS flags
+  shift which filenames trigger.  **This rules out a per-closure-
+  type scavenge / evacuate bug**: such a bug would fire whenever
+  type X is processed.  The trigger is **heap-layout-dependent**.
+  Audit direction pivots to: heap-block geometry, allocator state
+  (`alloc_in_moving_heap` / `todo_block_full`), block-boundary
+  crossings, info-pointer / forwarding-pointer alignment, ROUNDUP /
+  sizeofW arithmetic at variable-size closures on PPC32.  v0.12.0
+  ships unchanged; probe applied for measurement and reverted at
+  session end; stage2 on pmacg5 rebuilt+redeployed clean.  Session-29
+  [`HANDOFF.md`](sessions/2026-05-12-session-29-closure-type-histogram/HANDOFF.md)
+  scopes a DEBUG/sanity-check RTS rebuild (`+RTS -DS`) to catch
+  corruption inside `GarbageCollect()`, then an allocator + block-
+  boundary audit.
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.

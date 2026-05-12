@@ -1,0 +1,229 @@
+diff --git a/rts/sm/Evac.c b/rts/sm/Evac.c
+index 64018f4c..010f00e4 100644
+--- a/rts/sm/Evac.c
++++ b/rts/sm/Evac.c
+@@ -30,6 +30,16 @@
+ #include "NonMoving.h"
+ #include "CheckUnload.h" // n_unloaded_objects and markObjectCode
+ 
++/* PROBE29-BEGIN — see rts/sm/GC.c for the definitions.
++ *   probe29_evac_fresh[type]: closures freshly copied to to-space
++ *     this GC, indexed by source-closure type.
++ *   probe29_evac_fwd_hits: count of evacuate() calls that short-
++ *     circuited on a forwarding pointer (already evacuated).
++ */
++extern W_ probe29_evac_fresh[64];
++extern W_ probe29_evac_fwd_hits;
++/* PROBE29-END */
++
+ #if defined(THREADED_RTS) && !defined(PARALLEL_GC)
+ #define evacuate(p) evacuate1(p)
+ #define evacuate_BLACKHOLE(p) evacuate_BLACKHOLE1(p)
+@@ -809,6 +819,7 @@ loop:
+   info = ACQUIRE_LOAD(&q->header.info);
+   if (IS_FORWARDING_PTR(info))
+   {
++    probe29_evac_fwd_hits++;  /* PROBE29 */
+     /* Already evacuated, just return the forwarding address.
+      * HOWEVER: if the requested destination generation (gct->evac_gen) is
+      * older than the actual generation (because the object was
+@@ -839,6 +850,16 @@ loop:
+       return;
+   }
+ 
++  /* PROBE29 — bump per-source-type counter for fresh-evacuate dispatch.
++   * Placed before the switch so it sees every type, including paths
++   * that goto loop (WHITEHOLE) — those will retry and re-bump, but
++   * that's a rare path and the over-count is bounded.
++   */
++  {
++      uint32_t pt = (uint32_t)INFO_PTR_TO_STRUCT(info)->type;
++      if (pt < 64) probe29_evac_fresh[pt]++;
++  }
++
+   switch (INFO_PTR_TO_STRUCT(info)->type) {
+ 
+   case WHITEHOLE:
+diff --git a/rts/sm/GC.c b/rts/sm/GC.c
+index d63ca271..96724f80 100644
+--- a/rts/sm/GC.c
++++ b/rts/sm/GC.c
+@@ -122,6 +122,42 @@ static W_ g0_pcnt_kept = 30; // percentage of g0 live at last minor GC
+ 
+ static int consec_idle_gcs = 0;
+ 
++/* PROBE28-BEGIN — session-28 discriminator probe state.
++ *
++ * Goal: distinguish "one bug, two victim data structures" vs "two
++ * separate bugs" for the stage2 GC corruption (cf. session 27's
++ * findings.md).  RTS-side only — does not touch Haskell allocation
++ * paths, so it should not perturb the M5.hs / Big2.hs panic rates
++ * the way session-26's PROBE26 did.
++ *
++ * Snapshots taken pre-GC and combined with end-of-GC stats are
++ * printed once per call to GarbageCollect() via debugBelch().
++ */
++#define PROBE28_MAX_GENS 8
++static StgWord64 probe28_gc_no = 0;
++static W_ probe28_pre_mut[PROBE28_MAX_GENS];
++/* PROBE28-END */
++
++/* PROBE29-BEGIN — session-29 per-closure-type histogram.
++ *
++ * The probe28 data showed mut_list / static_objects scavenge paths
++ * are not at fault — same load both ways, only Big2 crashes.
++ * Remaining suspect: scavenge_block / evacuate dispatch by closure
++ * type.  This histogram bumps a counter per closure scavenged in
++ * rts/sm/Scav.c::scavenge_block, plus per-closure-type fresh-
++ * evacuate and forwarding-pointer-hit counters from rts/sm/Evac.c.
++ *
++ * Counters are reset at the start of each GarbageCollect() call and
++ * emitted as part of the post-GC summary debugBelch line.
++ *
++ * Indexed by info->type (which is 0..N_CLOSURE_TYPES-1 == 0..63).
++ * Non-static so Scav.c and Evac.c can see them via `extern`.
++ */
++W_ probe29_type_hist[64];
++W_ probe29_evac_fresh[64];
++W_ probe29_evac_fwd_hits;
++/* PROBE29-END */
++
+ /* Mut-list stats */
+ #if defined(DEBUG)
+ // For lack of a better option we protect mutlist_scav_stats with oldest_gen->sync
+@@ -456,6 +492,40 @@ GarbageCollect (uint32_t collect_gen,
+   // and put them on the g0->large_object list.
+   collect_pinned_object_blocks();
+ 
++  /* PROBE28-BEGIN — snapshot pre-GC mut_list occupancy per gen, summed
++   * across capabilities.  Must run BEFORE prepare_collected_gen() (which
++   * throws away mut_lists for collected gens) and BEFORE
++   * prepare_uncollected_gen() / stash_mut_list() (which moves the list
++   * to saved_mut_lists and installs a fresh empty block).
++   */
++  probe28_gc_no++;
++  {
++      uint32_t pg_ng = RtsFlags.GcFlags.generations;
++      if (pg_ng > PROBE28_MAX_GENS) pg_ng = PROBE28_MAX_GENS;
++      for (uint32_t gg = 0; gg < PROBE28_MAX_GENS; gg++) {
++          probe28_pre_mut[gg] = 0;
++      }
++      for (uint32_t gg = 0; gg < pg_ng; gg++) {
++          W_ s = 0;
++          for (uint32_t c = 0; c < getNumCapabilities(); c++) {
++              s += countOccupied(capabilities[c]->mut_lists[gg]);
++          }
++          probe28_pre_mut[gg] = s;
++      }
++  }
++  /* PROBE28-END */
++
++  /* PROBE29-BEGIN — reset the per-closure-type histograms at the
++   * start of every GC so each emitted summary line reflects this
++   * GC only.
++   */
++  for (uint32_t tt = 0; tt < 64; tt++) {
++      probe29_type_hist[tt] = 0;
++      probe29_evac_fresh[tt] = 0;
++  }
++  probe29_evac_fwd_hits = 0;
++  /* PROBE29-END */
++
+   // Initialise all the generations that we're collecting.
+   for (g = 0; g <= N; g++) {
+       prepare_collected_gen(&generations[g]);
+@@ -1073,6 +1143,66 @@ GarbageCollect (uint32_t collect_gen,
+   memInventory(DEBUG_gc);
+ #endif
+ 
++  /* PROBE28-BEGIN — emit per-GC summary line.  Pre-GC mut_list sizes
++   * were captured at the top of GarbageCollect into probe28_pre_mut.
++   * Walk gct->scavenged_static_objects (via STATIC_LINK) to get the
++   * static-objects chain length scavenged this GC.  Safety cap at 1M
++   * iterations.
++   */
++  {
++      uint32_t pg_ng = RtsFlags.GcFlags.generations;
++      if (pg_ng > PROBE28_MAX_GENS) pg_ng = PROBE28_MAX_GENS;
++      W_ static_chain = 0;
++      StgClosure *sp = gct->scavenged_static_objects;
++      while (sp != END_OF_STATIC_OBJECT_LIST && static_chain < 1000000) {
++          StgClosure *up = UNTAG_STATIC_LIST_PTR(sp);
++          const StgInfoTable *info = get_itbl(up);
++          StgClosure **link = STATIC_LINK(info, up);
++          sp = (StgClosure *)RELAXED_LOAD(link);
++          static_chain++;
++      }
++      debugBelch("PROBE28 gc=%llu N=%u maj=%d ng=%u",
++                 (unsigned long long)probe28_gc_no, N, (int)major_gc, pg_ng);
++      for (uint32_t gg = 0; gg < pg_ng; gg++) {
++          debugBelch(" preMut%u=%lu", gg, (unsigned long)probe28_pre_mut[gg]);
++      }
++      debugBelch(" staticChain=%lu copiedW=%lu liveW=%lu liveB=%lu\n",
++                 (unsigned long)static_chain,
++                 (unsigned long)copied,
++                 (unsigned long)live_words,
++                 (unsigned long)live_blocks);
++  }
++  /* PROBE28-END */
++
++  /* PROBE29-BEGIN — emit per-closure-type histograms.  One line each
++   * for the scavenge_block dispatch histogram and the evacuate
++   * fresh-copy histogram, plus the forwarding-pointer hit count.
++   * Both lines are tagged with the same gc=<n> so they can be
++   * grouped post-hoc.  Skip zero buckets to keep the line short.
++   */
++  {
++      debugBelch("PROBE29 gc=%llu scav fwdHits=%lu",
++                 (unsigned long long)probe28_gc_no,
++                 (unsigned long)probe29_evac_fwd_hits);
++      for (uint32_t tt = 0; tt < 64; tt++) {
++          if (probe29_type_hist[tt] != 0) {
++              debugBelch(" t%u=%lu",
++                         tt, (unsigned long)probe29_type_hist[tt]);
++          }
++      }
++      debugBelch("\n");
++      debugBelch("PROBE29 gc=%llu evac",
++                 (unsigned long long)probe28_gc_no);
++      for (uint32_t tt = 0; tt < 64; tt++) {
++          if (probe29_evac_fresh[tt] != 0) {
++              debugBelch(" e%u=%lu",
++                         tt, (unsigned long)probe29_evac_fresh[tt]);
++          }
++      }
++      debugBelch("\n");
++  }
++  /* PROBE29-END */
++
+   // ok, GC over: tell the stats department what happened.
+   stat_endGCWorker(cap, gct);
+   stat_endGC(cap, gct, live_words, copied,
+diff --git a/rts/sm/Scav.c b/rts/sm/Scav.c
+index 414f468e..1a052e4e 100644
+--- a/rts/sm/Scav.c
++++ b/rts/sm/Scav.c
+@@ -67,6 +67,13 @@
+ 
+ #include <string.h> /* for memset */
+ 
++/* PROBE29-BEGIN — see rts/sm/GC.c for the definition.  Bumped per
++ * closure scavenged in scavenge_block to identify which closure
++ * type appears in Big2's failing GC but not in M5 -G1's passing GCs.
++ */
++extern W_ probe29_type_hist[64];
++/* PROBE29-END */
++
+ static void scavenge_large_bitmap (StgPtr p,
+                                    StgLargeBitmap *large_bitmap,
+                                    StgWord size );
+@@ -457,6 +464,9 @@ scavenge_block (bdescr *bd)
+     ASSERT(LOOKS_LIKE_CLOSURE_PTR(p));
+     info = get_itbl((StgClosure *)p);
+ 
++    /* PROBE29 — bump histogram per closure scavenged */
++    if ((uint32_t)info->type < 64) probe29_type_hist[info->type]++;
++
+     ASSERT(gct->thunk_selector_depth == 0);
+ 
+     q = p;
