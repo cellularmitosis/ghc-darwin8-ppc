@@ -1,6 +1,6 @@
 # Session 27 commits
 
-- _(SHA pending)_ Session 27: stage2 GC bug investigation, round 9
+- `059bfd7` Session 27: stage2 GC bug investigation, round 9
   (non-perturbing deterministic repro nailed; `-G1` is partial
   workaround on small inputs; bug has two distinct corruption
   modes — STG-time and typecheck-time — only the STG-time variant
