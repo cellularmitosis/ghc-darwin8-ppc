@@ -1,0 +1,66 @@
+=== len=650 ===
+ghc-real: panic! (the 'impossible' happened)
+  (GHC version 9.2.8:
+PROBE35-BEFORE @0xbe15cdc [0x8c63a7c 0x95e2009 0xdb3f55c 0x92588e4]
+	refineFromInScope PROBE35-AFTER @0xbe18744 [0x8c63a8c 0x95e201a 0xdb3f55c 0x92588e4]
+  InScope {wild_00 v_B1 n_aXk freqMap shift}
+  $dNum_a1kb
+  Call stack:
+      CallStack (from HasCallStack):
+        callStackDoc, called at compiler/GHC/Utils/Panic.hs:181:37 in ghc:GHC.Utils.Panic
+        pprPanic, called at compiler/GHC/Core/Opt/Simplify/Env.hs:754:30 in ghc:GHC.Core.Opt.Simplify.Env
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+RC=1
+
+=== len=850 ===
+ghc-real: panic! (the 'impossible' happened)
+  (GHC version 9.2.8:
+PROBE35-BEFORE @0xcce88e4 [0x8c63a7c 0x33 0xccae07c 0x92588e4]
+	refineFromInScope PROBE35-AFTER @0xcceb0a0 [0x8c63a8c 0x7 0xccae07c 0x92588e4]
+  InScope {wild_00 v_B1 n_aXk shift $trModule $trModule_s1lO
+           $trModule_s1lP $trModule_s1lQ $trModule_s1lR}
+  $dNum_a1ko
+  Call stack:
+      CallStack (from HasCallStack):
+        callStackDoc, called at compiler/GHC/Utils/Panic.hs:181:37 in ghc:GHC.Utils.Panic
+        pprPanic, called at compiler/GHC/Core/Opt/Simplify/Env.hs:754:30 in ghc:GHC.Core.Opt.Simplify.Env
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+RC=1
+
+=== len=900 ===
+ghc-real: panic! (the 'impossible' happened)
+  (GHC version 9.2.8:
+PROBE35-BEFORE @0xcce88e4 [0x8c63a7c 0x33 0xccae07c 0x92588e4]
+	refineFromInScope PROBE35-AFTER @0xcceb0a0 [0x8c63a8c 0x7 0xccae07c 0x92588e4]
+  InScope {wild_00 v_B1 n_aXk shift $trModule $trModule_s1lO
+           $trModule_s1lP $trModule_s1lQ $trModule_s1lR}
+  $dNum_a1ko
+  Call stack:
+      CallStack (from HasCallStack):
+        callStackDoc, called at compiler/GHC/Utils/Panic.hs:181:37 in ghc:GHC.Utils.Panic
+        pprPanic, called at compiler/GHC/Core/Opt/Simplify/Env.hs:754:30 in ghc:GHC.Core.Opt.Simplify.Env
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+RC=1
+
+=== len=1700 ===
+ghc-real: panic! (the 'impossible' happened)
+  (GHC version 9.2.8:
+PROBE35-BEFORE @0xc922278 [0x8c63a7c 0xc9222be 0xdbcb03c 0x92588e4]
+	refineFromInScope PROBE35-AFTER @0xc912cc0 [0x8c63a8c 0x925929c 0xdbcb03c 0x92588e4]
+  InScope {wild_00 v_B1 allPositive}
+  $dOrd_a1k0
+  Call stack:
+      CallStack (from HasCallStack):
+        callStackDoc, called at compiler/GHC/Utils/Panic.hs:181:37 in ghc:GHC.Utils.Panic
+        pprPanic, called at compiler/GHC/Core/Opt/Simplify/Env.hs:754:30 in ghc:GHC.Core.Opt.Simplify.Env
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+RC=1
+

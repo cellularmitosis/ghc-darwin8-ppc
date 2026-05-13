@@ -1,0 +1,183 @@
+=== Source: _build/stage1/compiler/build/compiler/GHC/CmmToAsm/AArch64/CodeGen.dump-stg-final
+=== Generated 2026-05-13 by adding -ddump-stg-final -ddump-cmm-from-stg
+=== -ddump-simpl -ddump-to-file -dppr-debug to OPTIONS_GHC pragma
+=== of compiler/GHC/CmmToAsm/AArch64/CodeGen.hs.  Pragma reverted afterwards.
+
+=== All six ncgPlatform STG sites in CodeGen.dump-stg-final ===
+(sat_<unique> binder name + dump line + surrounding context line range)
+
+----- @ STG-dump line 3292 -----
+3280:               CCCS {(expr{v s6rj} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.Cmm.Expr.CmmExpr{tc rdl})} \u []
+3281:                   let {
+3282:                     sat_s6rm{v} [Occ=Once1]
+3283:                       :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro}
+3284:                          -> ghc:GHC.CmmToAsm.Monad.NatM{tc rl}
+3285:                               ghc:GHC.CmmToAsm.AArch64.CodeGen.Register{tc rf}
+3286:                     [LclId] =
+3287:                         CCCS {(expr{v s6rj} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.Cmm.Expr.CmmExpr{tc rdl})} \r [(config{v s6rk} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro})]
+3288:                             let {
+3289:                               sat_s6rl{v} [Occ=Once1] :: ghc:GHC.Platform.Platform{tc r47}
+3290:                               [LclId] =
+3291:                                   CCCS {(config{v s6rk} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro})} \u []
+3292:                                       (ghc:GHC.CmmToAsm.Config.ncgPlatform{v rgo} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[[RecSel]]] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro}
+3293:                                                                                                                                               -> ghc:GHC.Platform.Platform{tc r47})
+3294:                                           (config{v s6rk} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro});
+3295:                             } in 
+
+----- @ STG-dump line 4944 -----
+4932:                                                           ($dIP31{v s6tN} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: base:GHC.Stack.Types.CallStack{tc 36a})} \r [(config{v s6ud} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro})]
+4933:                                                         let {
+4934:                                                           sat_s6ug{v} [Occ=Once1]
+4935:                                                             :: ghc:GHC.Utils.Outputable.SDoc{tc r8F}
+4936:                                                           [LclId] =
+4937:                                                               CCCS {(expr{v s6tY} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.Cmm.Expr.CmmExpr{tc rdl}),
+4938:                                                                     (config{v s6ud} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro})} \u []
+4939:                                                                   let {
+4940:                                                                     sat_s6uf{v} [Occ=Once1]
+4941:                                                                       :: ghc:GHC.Platform.Platform{tc r47}
+4942:                                                                     [LclId] =
+4943:                                                                         CCCS {(config{v s6ud} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro})} \u []
+4944:                                                                             (ghc:GHC.CmmToAsm.Config.ncgPlatform{v rgo} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[[RecSel]]] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro}
+4945:                                                                                                                                                                                     -> ghc:GHC.Platform.Platform{tc r47})
+4946:                                                                                 (config{v s6ud} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro});
+4947:                                                                   } in 
+
+----- @ STG-dump line 5292 -----
+5280:                         CCCS {(expr{v s6tY} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.Cmm.Expr.CmmExpr{tc rdl})} \u []
+5281:                             let {
+5282:                               sat_s6u1{v} [Occ=Once1]
+5283:                                 :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro}
+5284:                                    -> ghc:GHC.CmmToAsm.Monad.NatM{tc rl}
+5285:                                         ghc:GHC.CmmToAsm.AArch64.CodeGen.Register{tc rf}
+5286:                               [LclId] =
+5287:                                   CCCS {(expr{v s6tY} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.Cmm.Expr.CmmExpr{tc rdl})} \r [(config{v s6tZ} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro})]
+5288:                                       let {
+5289:                                         sat_s6u0{v} [Occ=Once1] :: ghc:GHC.Platform.Platform{tc r47}
+5290:                                         [LclId] =
+5291:                                             CCCS {(config{v s6tZ} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro})} \u []
+5292:                                                 (ghc:GHC.CmmToAsm.Config.ncgPlatform{v rgo} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[[RecSel]]] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro}
+5293:                                                                                                                                                         -> ghc:GHC.Platform.Platform{tc r47})
+5294:                                                     (config{v s6tZ} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro});
+5295:                                       } in 
+
+----- @ STG-dump line 27066 -----
+27054:                                                                   let {
+27055:                                                                     sat_s71M{v} [Occ=Once1]
+27056:                                                                       :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro}
+27057:                                                                          -> ghc:GHC.CmmToAsm.Monad.NatM{tc rl}
+27058:                                                                               ghc:GHC.CmmToAsm.AArch64.CodeGen.Register{tc rf}
+27059:                                                                     [LclId] =
+27060:                                                                         CCCS {(e{v s6Zs} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.Cmm.Expr.CmmExpr{tc rdl})} \r [(config1{v s71K} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro})]
+27061:                                                                             let {
+27062:                                                                               sat_s71L{v} [Occ=Once1]
+27063:                                                                                 :: ghc:GHC.Platform.Platform{tc r47}
+27064:                                                                               [LclId] =
+27065:                                                                                   CCCS {(config1{v s71K} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro})} \u []
+27066:                                                                                       (ghc:GHC.CmmToAsm.Config.ncgPlatform{v rgo} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[[RecSel]]] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro}
+27067:                                                                                                                                                                                               -> ghc:GHC.Platform.Platform{tc r47})
+27068:                                                                                           (config1{v s71K} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro});
+27069:                                                                             } in 
+
+----- @ STG-dump line 37890 -----
+37878:                                                               let {
+37879:                                                                 sat_s7eD{v} [Occ=Once1]
+37880:                                                                   :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro}
+37881:                                                                      -> ghc:GHC.CmmToAsm.Monad.NatM{tc rl}
+37882:                                                                           ghc:GHC.CmmToAsm.AArch64.CodeGen.Register{tc rf}
+37883:                                                                 [LclId] =
+37884:                                                                     CCCS {(ds1{v s7ew} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.Cmm.Expr.CmmExpr{tc rdl})} \r [(config{v s7eB} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro})]
+37885:                                                                         let {
+37886:                                                                           sat_s7eC{v} [Occ=Once1]
+37887:                                                                             :: ghc:GHC.Platform.Platform{tc r47}
+37888:                                                                           [LclId] =
+37889:                                                                               CCCS {(config{v s7eB} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro})} \u []
+37890:                                                                                   (ghc:GHC.CmmToAsm.Config.ncgPlatform{v rgo} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[[RecSel]]] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro}
+37891:                                                                                                                                                                                           -> ghc:GHC.Platform.Platform{tc r47})
+37892:                                                                                       (config{v s7eB} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro});
+37893:                                                                         } in 
+
+----- @ STG-dump line 42792 -----
+42780:                                           :: ghc:GHC.Utils.Outputable.SDoc{tc r8F}
+42781:                                         [LclId] =
+42782:                                             CCCS {(block{v s7lP} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.Cmm.Dataflow.Block.Block{tc rvl}
+42783:                                                                                                                      ghc:GHC.Cmm.Node.CmmNode{tc rto}
+42784:                                                                                                                      ghc:GHC.Cmm.Dataflow.Block.C{tc rvm}
+42785:                                                                                                                      ghc:GHC.Cmm.Dataflow.Block.C{tc rvm}),
+42786:                                                   (config{v s7lQ} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro})} \u []
+42787:                                                 let {
+42788:                                                   sat_s7lU{v} [Occ=Once1]
+42789:                                                     :: ghc:GHC.Platform.Platform{tc r47}
+42790:                                                   [LclId] =
+42791:                                                       CCCS {(config{v s7lQ} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro})} \u []
+42792:                                                           (ghc:GHC.CmmToAsm.Config.ncgPlatform{v rgo} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[[RecSel]]] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro}
+42793:                                                                                                                                                                   -> ghc:GHC.Platform.Platform{tc r47})
+42794:                                                               (config{v s7lQ} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro});
+42795:                                                 } in 
+
+=== Full sat_s71L binding context (lines 27040-27105) ===
+27040:                                                               (sat_s71k{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.AArch64.CodeGen.Register{tc rf}
+27041:                                                                                                                              -> ghc:GHC.CmmToAsm.Monad.NatM{tc rl}
+27042:                                                                                                                                   ghc:GHC.CmmToAsm.AArch64.CodeGen.Register{tc rf})
+27043:                                                               (sat_s71y{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.AArch64.CodeGen.Register{tc rf});
+27044:                                                     ghc:GHC.Cmm.MachOp.MO_XX_Conv{d rtk} (_from{v s71z} [Occ=Dead]
+27045:                                                                                             :: ghc:GHC.Cmm.Type.Width{tc r8J})
+27046:                                                                                          (to{v s71A} [Occ=Once1]
+27047:                                                                                             :: ghc:GHC.Cmm.Type.Width{tc r8J}) ->
+27048:                                                         let {
+27049:                                                           sat_s71N{v} [Occ=Once1]
+27050:                                                             :: ghc:GHC.CmmToAsm.Monad.NatM{tc rl}
+27051:                                                                  ghc:GHC.CmmToAsm.AArch64.CodeGen.Register{tc rf}
+27052:                                                           [LclId] =
+27053:                                                               CCCS {(e{v s6Zs} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.Cmm.Expr.CmmExpr{tc rdl})} \u []
+27054:                                                                   let {
+27055:                                                                     sat_s71M{v} [Occ=Once1]
+27056:                                                                       :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro}
+27057:                                                                          -> ghc:GHC.CmmToAsm.Monad.NatM{tc rl}
+27058:                                                                               ghc:GHC.CmmToAsm.AArch64.CodeGen.Register{tc rf}
+27059:                                                                     [LclId] =
+27060:                                                                         CCCS {(e{v s6Zs} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.Cmm.Expr.CmmExpr{tc rdl})} \r [(config1{v s71K} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro})]
+27061:                                                                             let {
+27062:                                                                               sat_s71L{v} [Occ=Once1]
+27063:                                                                                 :: ghc:GHC.Platform.Platform{tc r47}
+27064:                                                                               [LclId] =
+27065:                                                                                   CCCS {(config1{v s71K} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro})} \u []
+27066:                                                                                       (ghc:GHC.CmmToAsm.Config.ncgPlatform{v rgo} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[[RecSel]]] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro}
+27067:                                                                                                                                                                                               -> ghc:GHC.Platform.Platform{tc r47})
+27068:                                                                                           (config1{v s71K} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro});
+27069:                                                                             } in 
+27070:                                                                               (getRegister'{v r1W3} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro}
+27071:                                                                                                                                                       -> ghc:GHC.Platform.Platform{tc r47}
+27072:                                                                                                                                                          -> ghc:GHC.Cmm.Expr.CmmExpr{tc rdl}
+27073:                                                                                                                                                             -> ghc:GHC.CmmToAsm.Monad.NatM{tc rl}
+27074:                                                                                                                                                                  ghc:GHC.CmmToAsm.AArch64.CodeGen.Register{tc rf})
+27075:                                                                                   (config1{v s71K} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro})
+27076:                                                                                   (sat_s71L{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.Platform.Platform{tc r47})
+27077:                                                                                   (e{v s6Zs} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.Cmm.Expr.CmmExpr{tc rdl});
+27078:                                                                   } in 
+27079:                                                                     (base:GHC.Base.>>={v 02L} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (m{tv a3Mp} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+27080:                                                                                                                                                                                             -> ghc-prim:GHC.Types.Type{(w) tc 32O}).
+27081:                                                                                                                                                          base:GHC.Base.Monad{tc 28}
+27082:                                                                                                                                                            (m{tv a3Mp} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+27083:                                                                                                                                                                                        -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+27084:                                                                                                                                                          => forall (a{tv a3Nx} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+27085:                                                                                                                                                                    (b{tv a3Ny} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+27086:                                                                                                                                                             (m{tv a3Mp} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+27087:                                                                                                                                                                                         -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+27088:                                                                                                                                                               (a{tv a3Nx} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+27089:                                                                                                                                                             -> ((a{tv a3Nx} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+27090:                                                                                                                                                                 -> (m{tv a3Mp} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+27091:                                                                                                                                                                                                -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+27092:                                                                                                                                                                      (b{tv a3Ny} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+27093:                                                                                                                                                                -> (m{tv a3Mp} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+27094:                                                                                                                                                                                               -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+27095:                                                                                                                                                                     (b{tv a3Ny} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+27096:                                                                         (ghc:GHC.CmmToAsm.Monad.$fMonadNatM{v ret} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Base.Monad{tc 28}
+27097:                                                                                                                                                                                ghc:GHC.CmmToAsm.Monad.NatM{tc rl})
+27098:                                                                         (ghc:GHC.CmmToAsm.Monad.getConfig{v rdE} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc:GHC.CmmToAsm.Monad.NatM{tc rl}
+27099:                                                                                                                                                                      ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro})
+27100:                                                                         (sat_s71M{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc:GHC.CmmToAsm.Config.NCGConfig{tc ro}
+27101:                                                                                                                                        -> ghc:GHC.CmmToAsm.Monad.NatM{tc rl}
+27102:                                                                                                                                             ghc:GHC.CmmToAsm.AArch64.CodeGen.Register{tc rf}); } in
+27103:                                                         let {
+27104:                                                           format{v s71B} [Occ=OnceL2]
+27105:                                                             :: ghc:GHC.CmmToAsm.Format.Format{tc rh}

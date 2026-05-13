@@ -1,0 +1,44 @@
+=== Source: _build/stage1/compiler/build/compiler/GHC/CmmToAsm/AArch64/CodeGen.dump-cmm-from-stg
+=== Excerpt: sat_s71L{v}_entry block (lines 46370-46410)
+
+46370:            P32[(old + 24)] = ghc:GHC.CmmToAsm.Monad.$fMonadNatM{v ret}_closure;
+46371:            call base:GHC.Base.return{v 02O}_entry() args: 24, res: 0, upd: 20;
+46372:      }
+46373:  },
+46374:  sat_s71L{v}_entry() { //  [R1]
+46375:          { info_tbls: [(caKZ,
+46376:                         label: sat_s71L{v}_info
+46377:                         rep: HeapRep 1 ptrs { Thunk }
+46378:                         type: [80,108,97,116,102,111,114,109]
+46379:                         desc: [60,71,72,67,46,67,109,109,84,111,65,115,109,46,65,65,114,99,104,54,52,46,67,111,100,101,71,101,110,46,115,97,116,95,115,55,49,76,123,118,125,62]
+46380:                         srt: Nothing)]
+46381:            stack_info: arg_space: 4
+46382:          }
+46383:      {offset
+46384:        caKZ: // global
+46385:            _s71L::P32 = R1;
+46386:            if (%MO_UU_Conv_W32_W32(I32[era]) > 0) goto caKV; else goto caKW;
+46387:        caKV: // global
+46388:            I32[_s71L::P32 + 8] = I32[_s71L::P32 + 8] & 1073709056 | %MO_UU_Conv_W32_W32(I32[era]) | 1073741824;
+46389:            goto caKU;
+46390:        caKW: // global
+46391:            goto caKU;
+46392:        caKU: // global
+46393:            goto caKX;
+46394:        caKX: // global
+46395:            if ((old + 0) - <highSp> < SpLim) (likely: False) goto caL0; else goto caL1;
+46396:        caL0: // global
+46397:            R1 = _s71L::P32;
+46398:            call (stg_gc_enter_1)(R1) args: 4, res: 0, upd: 4;
+46399:        caL1: // global
+46400:            I32[(old + 20)] = stg_upd_frame_info;
+46401:            P32[(old + 8)] = _s71L::P32;
+46402:            I32[(old + 16)] = CCCS;
+46403:            CCCS = I32[R1 + 4];
+46404:            _s71K::P32 = P32[_s71L::P32 + 16];
+46405:            R1 = ghc:GHC.CmmToAsm.Config.ncgPlatform{v rgo}_closure;
+46406:            P32[(old + 24)] = _s71K::P32;
+46407:            call stg_ap_p_fast(R1) args: 24, res: 0, upd: 20;
+46408:      }
+46409:  },
+46410:  sat_s71M{v}_entry() { //  [R1]

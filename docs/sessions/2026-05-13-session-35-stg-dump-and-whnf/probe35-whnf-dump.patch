@@ -1,0 +1,76 @@
+diff --git a/compiler/GHC/Core/Opt/Simplify/Env.hs b/compiler/GHC/Core/Opt/Simplify/Env.hs
+index d1b33b02..723278fc 100644
+--- a/compiler/GHC/Core/Opt/Simplify/Env.hs
++++ b/compiler/GHC/Core/Opt/Simplify/Env.hs
+@@ -5,6 +5,10 @@
+ -}
+ 
+ {-# LANGUAGE CPP #-}
++{-# LANGUAGE MagicHash #-}
++{-# LANGUAGE BangPatterns #-}
++{-# LANGUAGE GHCForeignImportPrim #-}
++{-# LANGUAGE UnliftedFFITypes #-}
+ 
+ module GHC.Core.Opt.Simplify.Env (
+         -- * The simplifier mode
+@@ -76,6 +80,50 @@ import GHC.Types.Unique.FM      ( pprUniqFM )
+ 
+ import Data.List (mapAccumL)
+ 
++-- PROBE35: WHNF-verifying probe for refineFromInScope panic.
++-- Reads 4-word closure header @v BEFORE seq, then forces v with seq,
++-- then reads 4-word closure header @v AFTER seq.  Prints BEFORE to
++-- stderr eagerly so we still see the captured state if seq segfaults
++-- (which would happen if v's info-pointer is bogus and its entry-code
++-- reads bad payload memory).  Returns AFTER as a String for inclusion
++-- in pprPanic's message header.
++import GHC.Exts (Any, Word#)
++import GHC.Word (Word(..))
++import Foreign.Ptr (Ptr, wordPtrToPtr, plusPtr)
++import Foreign.Storable (peek)
++import System.IO (stderr, hFlush, hPutStrLn)
++import System.IO.Unsafe (unsafePerformIO)
++import qualified Numeric (showHex)
++import Unsafe.Coerce (unsafeCoerce)
++import Data.Bits ((.&.), complement)
++
++foreign import prim "aToWordzh" probe35_aToWord# :: Any -> Word#
++
++probe35Hex :: Word -> String
++probe35Hex w = "0x" ++ Numeric.showHex w ""
++
++probe35Read :: Word -> Int -> IO Word
++probe35Read addr i =
++    peek (wordPtrToPtr (fromIntegral addr) `plusPtr` (i * 4) :: Ptr Word)
++
++probe35WhnfDump :: a -> String
++probe35WhnfDump x = unsafePerformIO $ do
++    let !addr1 = (W# (probe35_aToWord# (unsafeCoerce x :: Any)))
++                   .&. complement 3   -- PPC32 TAG_MASK = 3
++    ws1 <- mapM (probe35Read addr1) [0 .. 3]
++    let beforeStr = "PROBE35-BEFORE @" ++ probe35Hex addr1 ++ " ["
++                 ++ unwords (map probe35Hex ws1) ++ "]"
++    hPutStrLn stderr beforeStr
++    hFlush stderr
++    -- If x's info-pointer is bogus and entry-code segfaults reading bad
++    -- payload, we die here -- but BEFORE is already flushed to stderr.
++    x `seq` return ()
++    let !addr2 = (W# (probe35_aToWord# (unsafeCoerce x :: Any)))
++                   .&. complement 3
++    ws2 <- mapM (probe35Read addr2) [0 .. 3]
++    return $ "PROBE35-AFTER @" ++ probe35Hex addr2 ++ " ["
++          ++ unwords (map probe35Hex ws2) ++ "]"
++
+ {-
+ ************************************************************************
+ *                                                                      *
+@@ -703,7 +751,8 @@ refineFromInScope :: InScopeSet -> Var -> Var
+ refineFromInScope in_scope v
+   | isLocalId v = case lookupInScope in_scope v of
+                   Just v' -> v'
+-                  Nothing -> pprPanic "refineFromInScope" (ppr in_scope $$ ppr v)
++                  Nothing -> pprPanic ("refineFromInScope " ++ probe35WhnfDump v)
++                                       (ppr in_scope $$ ppr v)
+                              -- c.f #19074 for a subtle place where this went wrong
+   | otherwise = v
+ 
