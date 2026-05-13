@@ -1,0 +1,15 @@
+len=650   addlost=0   shrink=0   panic=ghc-real: panic! (the 'impossible' happened)
+  PROBE39-PANIC panic_call=1 v=$dNum(0x610013d8) size=4 sentinel=none total_drift_events=0 total_checks=0
+len=675   addlost=0   shrink=0   panic=ghc-real: panic! (the 'impossible' happened)
+  PROBE39-PANIC panic_call=1 v=$dNum(0x610013d8) size=4 sentinel=none total_drift_events=0 total_checks=0
+len=700   addlost=0   shrink=0   panic=ghc-real: panic! (the 'impossible' happened)
+  PROBE39-PANIC panic_call=1 v=$dNum(0x610013d8) size=4 sentinel=none total_drift_events=0 total_checks=0
+len=725   addlost=0   shrink=0   panic=ghc-real: panic! (the 'impossible' happened)
+  PROBE39-PANIC panic_call=1 v=$dNum(0x610013d8) size=4 sentinel=none total_drift_events=0 total_checks=0
+len=1650  addlost=0   shrink=0   panic=ghc-real: panic! (the 'impossible' happened)
+  PROBE39-PANIC panic_call=1 v=$dOrd(0x610013dc) size=3 sentinel=none total_drift_events=0 total_checks=0
+len=1675  addlost=0   shrink=0   panic=ghc-real: panic! (the 'impossible' happened)
+  PROBE39-PANIC panic_call=1 v=$dOrd(0x610013dc) size=3 sentinel=none total_drift_events=0 total_checks=0
+len=1700  addlost=0   shrink=0   panic=ghc-real: panic! (the 'impossible' happened)
+  PROBE39-PANIC panic_call=1 v=$dOrd(0x610013dc) size=3 sentinel=none total_drift_events=0 total_checks=0
+SWEEP_EXIT=0

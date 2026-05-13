@@ -1,0 +1,25 @@
+len=650   shape=refine     missing=$dNum_a1jW           inscope=InScope {wild_00 v_B1 n_aXk shift}
+len=700   shape=refine     missing=$dNum_a1jW           inscope=InScope {wild_00 v_B1 n_aXk shift}
+len=750   shape=swap-tc    missing=?                    inscope=?
+len=800   shape=swap-tc    missing=?                    inscope=?
+len=1050  shape=swap-tc    missing=?                    inscope=?
+len=1100  shape=swap-tc    missing=?                    inscope=?
+len=1150  shape=swap-tc    missing=?                    inscope=?
+len=1200  shape=swap-tc    missing=?                    inscope=?
+len=1250  shape=swap-tc    missing=?                    inscope=?
+len=1300  shape=swap-tc    missing=?                    inscope=?
+len=1350  shape=swap-tc    missing=?                    inscope=?
+len=1400  shape=swap-tc    missing=?                    inscope=?
+len=1450  shape=swap-tc    missing=?                    inscope=?
+len=1500  shape=swap-tc    missing=?                    inscope=?
+len=1550  shape=swap-tc    missing=?                    inscope=?
+len=1600  shape=swap-tc    missing=?                    inscope=?
+len=1650  shape=refine     missing=$dOrd_a1k0           inscope=InScope {wild_00 v_B1 allPositive}
+len=1700  shape=refine     missing=$dOrd_a1k0           inscope=InScope {wild_00 v_B1 allPositive}
+len=1750  shape=swap-tc    missing=?                    inscope=?
+len=1800  shape=swap-tc    missing=?                    inscope=?
+len=1850  shape=swap-tc    missing=?                    inscope=?
+len=1900  shape=swap-tc    missing=?                    inscope=?
+len=1950  shape=swap-tc    missing=?                    inscope=?
+len=2000  shape=swap-tc    missing=?                    inscope=?
+SHAPE_EXIT=0

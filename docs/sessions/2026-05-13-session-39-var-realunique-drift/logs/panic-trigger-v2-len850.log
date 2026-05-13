@@ -1,0 +1,6 @@
+PROBE39-INIT name=$dOrd realUnique=0x610013f7 addr=0xcccc4eb
+PROBE39-DRIFT site=refineFromInScope drift_evt=1 checks=1 was@0xcccc4eb was_u=0x610013f7 now@0xcccc4eb u_via_haskell=0x610013f7 u_raw_w2=0xce214ed
+PROBE39-DRIFT site=refineFromInScope drift_evt=2 checks=2 was@0xcccc4eb was_u=0x610013f7 now@0xcccc4eb u_via_haskell=0x610013f7 u_raw_w2=0xce214ed
+PROBE39-DRIFT site=refineFromInScope drift_evt=3 checks=3 was@0xcccc4eb was_u=0x610013f7 now@0xcccc4eb u_via_haskell=0x610013f7 u_raw_w2=0xce214ed
+PROBE39-DRIFT site=refineFromInScope drift_evt=4 checks=4 was@0xcccc4eb was_u=0x610013f7 now@0xcccc4eb u_via_haskell=0x610013f7 u_raw_w2=0xce214ed
+RC=0

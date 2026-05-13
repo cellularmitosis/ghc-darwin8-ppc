@@ -1,0 +1,210 @@
+diff --git a/compiler/GHC/Core/Opt/Simplify/Env.hs b/compiler/GHC/Core/Opt/Simplify/Env.hs
+index d1b33b02..9d3f1dcd 100644
+--- a/compiler/GHC/Core/Opt/Simplify/Env.hs
++++ b/compiler/GHC/Core/Opt/Simplify/Env.hs
+@@ -5,6 +5,9 @@
+ -}
+ 
+ {-# LANGUAGE CPP #-}
++{-# LANGUAGE BangPatterns #-}
++{-# LANGUAGE MagicHash #-}
++{-# LANGUAGE UnboxedTuples #-}
+ 
+ module GHC.Core.Opt.Simplify.Env (
+         -- * The simplifier mode
+@@ -73,8 +76,165 @@ import GHC.Utils.Panic
+ import GHC.Utils.Misc
+ import GHC.Utils.Logger
+ import GHC.Types.Unique.FM      ( pprUniqFM )
++import GHC.Types.Unique         ( getKey )
++import GHC.Types.Name           ( getOccString )
+ 
+ import Data.List (mapAccumL)
++import Data.IORef        (IORef, newIORef, atomicModifyIORef',
++                          readIORef, writeIORef)
++import qualified Numeric (showHex)
++import System.IO         (hPutStrLn, stderr, hFlush)
++import System.IO.Unsafe  (unsafePerformIO)
++import Foreign.Ptr       (Ptr, wordPtrToPtr, plusPtr)
++import Foreign.Storable  (peek)
++import Data.Bits         ((.&.), complement)
++import Data.Word         (Word)
++import GHC.Exts          (anyToAddr#, addr2Int#, int2Word#)
++import GHC.Word          (Word(..))
++import GHC.IO            (IO(..))
++
++-- PROBE39: directly test the session-38 hypothesis that GC corrupts
++-- the realUnique :: FastInt# field of Var heap closures on PPC32
++-- unreg.
++--
++-- Approach: pick a sentinel Var (the first $dOrd_a1k0 we see in
++-- addNewInScopeIds) and stash it in an IORef along with its
++-- realUnique at registration time.  At every refineFromInScope call
++-- (regardless of which Var is looked up), re-read the sentinel's
++-- realUnique via varUnique and compare to the stored initial value.
++-- If they differ, GC has rewritten the field — emit PROBE39-DRIFT.
++--
++-- Holding the Var in an IORef keeps it alive across GC.  GC may
++-- relocate it (that's normal); what we're testing is whether the
++-- realUnique payload value stays put or is rewritten.
++--
++-- Also dumps PROBE39-PANIC at the refineFromInScope panic site (like
++-- probe38) with sentinel state, so the drift can be cross-correlated
++-- with the panic Var.
++
++probe39Hex :: Word -> String
++probe39Hex w = "0x" ++ Numeric.showHex w ""
++
++probe39AddressOf :: a -> IO Word
++probe39AddressOf x = IO $ \s ->
++    case anyToAddr# x s of
++      (# s', addr #) -> (# s', W# (int2Word# (addr2Int# addr)) #)
++
++probe39DescribeVar :: Var -> String
++probe39DescribeVar v =
++    getOccString v ++ "(0x" ++ Numeric.showHex (getKey (varUnique v)) "" ++ ")"
++
++-- The sentinel slot: (Var, initial realUnique as Word, initial address
++-- as Word, number of checks performed).
++{-# NOINLINE probe39Slot #-}
++probe39Slot :: IORef (Maybe (Var, Word, Word, Int))
++probe39Slot = unsafePerformIO (newIORef Nothing)
++
++{-# NOINLINE probe39DriftCount #-}
++probe39DriftCount :: IORef Int
++probe39DriftCount = unsafePerformIO (newIORef 0)
++
++{-# NOINLINE probe39CheckCount #-}
++probe39CheckCount :: IORef Int
++probe39CheckCount = unsafePerformIO (newIORef 0)
++
++-- Sentinel target: pick the first Var (single arg variant) or the
++-- first Var in a list (list variant) whose OccName starts with "$d"
++-- (typeclass dictionaries — the family from which session 38's
++-- victims were drawn).  Registers only once; subsequent calls are
++-- no-ops.
++probe39Register :: [Var] -> ()
++probe39Register vs = unsafePerformIO $ probe39RegisterIO vs
++
++probe39RegisterOne :: Var -> ()
++probe39RegisterOne v = unsafePerformIO $ probe39RegisterIO [v]
++
++probe39RegisterIO :: [Var] -> IO ()
++probe39RegisterIO vs = do
++    m <- readIORef probe39Slot
++    case m of
++      Just _  -> return ()  -- Already tracking
++      Nothing ->
++        case [ v | v <- vs, probe39IsTarget v ] of
++          []    -> return ()
++          (v:_) -> do
++            addr0 <- probe39AddressOf v
++            let u0 = fromIntegral (getKey (varUnique v)) :: Word
++            writeIORef probe39Slot (Just (v, u0, addr0, 0))
++            hPutStrLn stderr $ unwords
++              [ "PROBE39-INIT"
++              , "name=" ++ getOccString v
++              , "realUnique=" ++ probe39Hex u0
++              , "addr=" ++ probe39Hex addr0
++              ]
++            hFlush stderr
++
++probe39IsTarget :: Var -> Bool
++probe39IsTarget v =
++    let nm = getOccString v
++    in  case nm of
++          ('$':'d':_) -> True   -- any typeclass dictionary
++          _           -> False
++
++-- Read the sentinel's current realUnique via Haskell, plus a raw read
++-- of word[2] at the current heap address (since session 37 confirmed
++-- realUnique lives at word[2] on PPC32 unreg).  If either differs
++-- from the stored initial, emit PROBE39-DRIFT.
++-- v2: only check `varUnique v` (Haskell-level read).  The raw word[2]
++-- peek from probe39-v1 was reading from the wrong memory (anyToAddr#
++-- often gives a wrapping-thunk address, not the Id closure — same
++-- lesson sessions 33-35 learned).  Only the Haskell-level read is
++-- authoritative for "did this Var's realUnique field change?"
++probe39CheckAt :: String -> ()
++probe39CheckAt site = unsafePerformIO $ do
++    m <- readIORef probe39Slot
++    case m of
++      Nothing -> return ()
++      Just (v, u0, _addr0, _) -> do
++        _n <- atomicModifyIORef' probe39CheckCount (\k -> (k+1, k+1))
++        let u_haskell = fromIntegral (getKey (varUnique v)) :: Word
++        if u_haskell == u0
++          then return ()  -- No drift in Haskell-level Unique
++          else do
++            d <- atomicModifyIORef' probe39DriftCount (\k -> (k+1, k+1))
++            hPutStrLn stderr $ unwords
++              [ "PROBE39-DRIFT"
++              , "site=" ++ site
++              , "drift_evt=" ++ show d
++              , "was_u=" ++ probe39Hex u0
++              , "now_u=" ++ probe39Hex u_haskell
++              ]
++            hFlush stderr
++
++-- Panic-site dump (similar to probe38's, but reports sentinel state
++-- alongside the panic data).
++{-# NOINLINE probe39PanicCounter #-}
++probe39PanicCounter :: IORef Int
++probe39PanicCounter = unsafePerformIO (newIORef 0)
++
++probe39PanicDump :: InScopeSet -> Var -> String
++probe39PanicDump in_scope v = unsafePerformIO $ do
++    n <- atomicModifyIORef' probe39PanicCounter (\k -> (k+1, k+1))
++    sentinel <- readIORef probe39Slot
++    drift_n <- readIORef probe39DriftCount
++    check_n <- readIORef probe39CheckCount
++    let sentDesc = case sentinel of
++                     Nothing -> "none"
++                     Just (sv, u0, addr0, _) ->
++                       getOccString sv ++ " was_u=" ++ probe39Hex u0
++                       ++ " was@" ++ probe39Hex addr0
++        msg = unwords
++                [ "PROBE39-PANIC"
++                , "panic_call=" ++ show n
++                , "v=" ++ probe39DescribeVar v
++                , "size=" ++ show (sizeVarSet (getInScopeVars in_scope))
++                , "sentinel=" ++ sentDesc
++                , "total_drift_events=" ++ show drift_n
++                , "total_checks=" ++ show check_n
++                ]
++    hPutStrLn stderr msg
++    hFlush stderr
++    return msg
+ 
+ {-
+ ************************************************************************
+@@ -369,6 +529,7 @@ addNewInScopeIds env@(SimplEnv { seInScope = in_scope, seIdSubst = id_subst }) v
+ -- See Note [Bangs in the Simplifier]
+   = let !in_scope1 = in_scope `extendInScopeSetList` vs
+         !id_subst1 = id_subst `delVarEnvList` vs
++        !_register = probe39Register vs
+     in
+     env { seInScope = in_scope1,
+           seIdSubst = id_subst1 }
+@@ -701,9 +862,11 @@ substId (SimplEnv { seInScope = in_scope, seIdSubst = ids }) v
+ 
+ refineFromInScope :: InScopeSet -> Var -> Var
+ refineFromInScope in_scope v
+-  | isLocalId v = case lookupInScope in_scope v of
++  | isLocalId v = probe39CheckAt "refineFromInScope" `seq`
++                  case lookupInScope in_scope v of
+                   Just v' -> v'
+-                  Nothing -> pprPanic "refineFromInScope" (ppr in_scope $$ ppr v)
++                  Nothing -> pprPanic ("refineFromInScope " ++ probe39PanicDump in_scope v)
++                                       (ppr in_scope $$ ppr v)
+                              -- c.f #19074 for a subtle place where this went wrong
+   | otherwise = v
+ 
+@@ -833,6 +996,7 @@ subst_id_bndr :: SimplEnv
+ subst_id_bndr env@(SimplEnv { seInScope = in_scope, seIdSubst = id_subst })
+               old_id adjust_type
+   = ASSERT2( not (isCoVar old_id), ppr old_id )
++    probe39RegisterOne new_id `seq`
+     (env { seInScope = new_in_scope,
+            seIdSubst = new_subst }, new_id)
+     -- It's important that both seInScope and seIdSubst are updated with

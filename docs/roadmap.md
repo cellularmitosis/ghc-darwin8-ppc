@@ -466,6 +466,39 @@ much smaller than session 17 left it.  See:
   scopes probe39: tracking a specific Var's realUnique field
   across the pipeline via `anyToAddr#` + IORef drift detector to
   directly confirm or rule out GC-of-Var.realUnique corruption.
+- [`docs/sessions/2026-05-13-session-39-var-realunique-drift/`](sessions/2026-05-13-session-39-var-realunique-drift/)
+  — round 21.  **Session 38's "GC corrupts Var.realUnique"
+  hypothesis is DISPROVEN.**  Probe39 (a sentinel-Var IORef
+  tracker in `Simplify/Env.hs` that registers the first
+  `$d*`-named Var seen in `subst_id_bndr`, pins it in an IORef
+  to keep it live across GC, and at every `refineFromInScope`
+  re-reads its `varUnique v`) directly tests the hypothesis
+  across three iterations.  v1 (hardcoded OccName filter)
+  registered nothing — wrong target names.  v2 (broadened to
+  any `$d`-prefixed OccName, also hooked `subst_id_bndr` in
+  addition to `addNewInScopeIds`) at len=850 registered
+  `$dOrd_a1k0(0x610013f7)` and showed `u_via_haskell` STABLE
+  across 4 `refineFromInScope` checks; the raw word[2] peek
+  differed because `anyToAddr#` returns a wrapping-thunk
+  address (session-37 lesson resurfaced).  v3 dropped the
+  misleading raw-peek check.  Fine sweep showed `sentinel=none`
+  on every failing run — the panic fires before any `$d*` Var
+  enters scope via `subst_id_bndr`.  **Conclusion:** when the
+  sentinel registers, `varUnique v` returns the same value at
+  registration AND at every subsequent check.  GC may relocate
+  the Var closure but does NOT rewrite its realUnique field.
+  Refined framing: the bug is **two distinct Var heap closures
+  existing with the same `OccName` "$dOrd_a1k0" but different
+  Uniques** — neither drifts; they're genuinely two separate
+  objects.  Duplicate is created upstream of the simplifier
+  (typechecker, desugarer, specializer, or interface
+  deserializer).  v0.12.0 ships unchanged; probe applied and
+  reverted; stage2 rebuilt+redeployed clean + smoke-test PASS
+  + baseline tests 30 PASS / 4 FAIL_OUTPUT unchanged.
+  Session-39
+  [`HANDOFF.md`](sessions/2026-05-13-session-39-var-realunique-drift/HANDOFF.md)
+  scopes probe40: trace where the duplicate Var is
+  constructed in the typechecker/desugarer/specializer pipeline.
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.

@@ -1,0 +1,15 @@
+ghc-real: panic! (the 'impossible' happened)
+  (GHC version 9.2.8:
+PROBE39-PANIC panic_call=1 v=$dNum(0x610013f4) size=9 sentinel=none total_drift_events=0 total_checks=0
+	refineFromInScope PROBE39-PANIC panic_call=1 v=$dNum(0x610013f4) size=9 sentinel=none total_drift_events=0 total_checks=0
+  InScope {wild_00 v_B1 n_aXk shift $trModule $trModule_s1lO
+           $trModule_s1lP $trModule_s1lQ $trModule_s1lR}
+  $dNum_a1ko
+  Call stack:
+      CallStack (from HasCallStack):
+        callStackDoc, called at compiler/GHC/Utils/Panic.hs:181:37 in ghc:GHC.Utils.Panic
+        pprPanic, called at compiler/GHC/Core/Opt/Simplify/Env.hs:863:30 in ghc:GHC.Core.Opt.Simplify.Env
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+RC=1
