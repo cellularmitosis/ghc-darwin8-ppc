@@ -1,6 +1,6 @@
 # Session 39 commits
 
-- _TBD: backfill SHA after `git commit`._  Session 39: probe39
+- e695771 Session 39: probe39
   (a sentinel-Var IORef tracker in
   `compiler/GHC/Core/Opt/Simplify/Env.hs`) directly tests
   session 38's hypothesis that GC corrupts the
