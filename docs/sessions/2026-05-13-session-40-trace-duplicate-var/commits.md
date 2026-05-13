@@ -1,6 +1,6 @@
 # Session 40 commits
 
-- _TBD: backfill SHA after `git commit`._  Session 40: probe40
+- 2316013 Session 40: probe40
   extends probe38's panic-site dump to also report seIdSubst's
   size and keys at every `substId env v` call where v's
   lookup-in-scope fails (the path that fires
