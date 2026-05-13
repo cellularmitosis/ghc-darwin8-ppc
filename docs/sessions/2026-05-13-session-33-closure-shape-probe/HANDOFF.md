@@ -61,16 +61,25 @@ info table for `W#`.  Since THUNK_1_0 is only 2 words, w3 is
 past the closure; the adjacent heap closure consistently has a
 W# pointer at its offset+4.
 
+**Raw data** for the four captured samples (env-len, tagged
+addr, w0..w3) lives in [`logs/probe33-zones.log`](logs/probe33-zones.log) — that is the canonical evidence
+for the finding above.  The v2 partial sweep (no REFINE samples
+in tested range) is in [`logs/probe33-v2-zones.log`](logs/probe33-v2-zones.log).
+
 ## Read in order
 
 1. **This file.**
 2. [`README.md`](README.md) — narrative.
 3. [`findings.md`](findings.md) — full data + analysis.
 4. [`log.md`](log.md) — real-time work log.
-5. [`probe33-closure-dump.patch`](probe33-closure-dump.patch) —
+5. [`logs/probe33-zones.log`](logs/probe33-zones.log) — v1 sweep
+   results (the canonical 4-REFINE-sample table).
+6. [`logs/probe33-v2-zones.log`](logs/probe33-v2-zones.log) —
+   v2 partial sweep (no REFINEs in tested range).
+7. [`probe33-closure-dump.patch`](probe33-closure-dump.patch) —
    the v2 (8-word dump) patch.  Already applied to source tree
    (don't re-apply — `git diff` shows it).
-6. (Reference) Session 32 [`HANDOFF.md`](../2026-05-12-session-32-env-var-bisect/HANDOFF.md) — its top priority is what session 33 pursued.
+8. (Reference) Session 32 [`HANDOFF.md`](../2026-05-12-session-32-env-var-bisect/HANDOFF.md) — its top priority is what session 33 pursued.
 
 ## What to try next, in priority order
 
