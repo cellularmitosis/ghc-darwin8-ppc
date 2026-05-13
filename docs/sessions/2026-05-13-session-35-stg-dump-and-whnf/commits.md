@@ -2,7 +2,7 @@
 
 (SHA to be backfilled after commit lands.)
 
-- `<sha>`  Session 35: `s71L` source-line pinned, plus the
+- `5304c89c8f86a16dfb389a10dcac90b9fe17e439`  Session 35: `s71L` source-line pinned, plus the
   revelation that probe33/probe35 have been reading wrapping-thunk
   memory.  `-ddump-stg-final` on `AArch64/CodeGen.hs` shows `s71L`
   is the `ncgPlatform config1` thunk in `getRegister` (line 406
