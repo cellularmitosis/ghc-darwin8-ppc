@@ -1,0 +1,6 @@
+len=600   PROBE41-FAIL v=$dNum(0x610013d0) fail_scope=5 fail_subst=0 pinned=none|ghc-real: panic! (the 'impossible' happened)|RC=1|
+len=650   PROBE41-FAIL v=$dOrd(0x61001414) fail_scope=5 fail_subst=0 pinned=none|ghc-real: panic! (the 'impossible' happened)|RC=1|
+len=700   PROBE41-FAIL v=$dOrd(0x61001414) fail_scope=5 fail_subst=0 pinned=none|ghc-real: panic! (the 'impossible' happened)|RC=1|
+len=950   PROBE41-PIN scope_size=6 subst_size=0|ghc-real: panic! (the 'impossible' happened)|RC=1|
+len=1000  PROBE41-PIN scope_size=6 subst_size=0|ghc-real: panic! (the 'impossible' happened)|RC=1|
+SWEEP_EXIT=0

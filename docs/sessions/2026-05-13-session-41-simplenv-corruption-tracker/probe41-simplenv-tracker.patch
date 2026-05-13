@@ -1,0 +1,162 @@
+diff --git a/compiler/GHC/Core/Opt/Simplify/Env.hs b/compiler/GHC/Core/Opt/Simplify/Env.hs
+index d1b33b02..3e6db497 100644
+--- a/compiler/GHC/Core/Opt/Simplify/Env.hs
++++ b/compiler/GHC/Core/Opt/Simplify/Env.hs
+@@ -5,6 +5,7 @@
+ -}
+ 
+ {-# LANGUAGE CPP #-}
++{-# LANGUAGE BangPatterns #-}
+ 
+ module GHC.Core.Opt.Simplify.Env (
+         -- * The simplifier mode
+@@ -72,9 +73,123 @@ import GHC.Utils.Outputable
+ import GHC.Utils.Panic
+ import GHC.Utils.Misc
+ import GHC.Utils.Logger
+-import GHC.Types.Unique.FM      ( pprUniqFM )
++import GHC.Types.Unique.FM      ( pprUniqFM, sizeUFM )
++import GHC.Types.Name           ( getOccString )
++import GHC.Types.Unique         ( getKey )
+ 
+ import Data.List (mapAccumL)
++import Data.IORef        (IORef, newIORef, atomicModifyIORef',
++                          readIORef, writeIORef)
++import qualified Numeric (showHex)
++import System.IO         (hPutStrLn, stderr, hFlush)
++import System.IO.Unsafe  (unsafePerformIO)
++
++-- PROBE41: pin a SimplEnv reference (the one produced by the FIRST
++-- simplRecBndrs call, expected to be simplTopBinds' env1 with all
++-- top-level binders in scope) in an IORef.  At every substId
++-- failure (the path that fires refineFromInScope), report the
++-- pinned env's current seInScope + seIdSubst sizes.  If the size
++-- at the failure is smaller than at registration, GC has corrupted
++-- the SimplEnv data structure.
++
++probe41Hex :: Int -> String
++probe41Hex i
++  | i < 0     = "-0x" ++ Numeric.showHex (negate i) ""
++  | otherwise = "0x" ++ Numeric.showHex i ""
++
++probe41DescribeVar :: Var -> String
++probe41DescribeVar v =
++    getOccString v ++ "(" ++ probe41Hex (getKey (varUnique v)) ++ ")"
++
++-- Pinned env: (env, scope_size_at_registration, subst_size_at_registration)
++{-# NOINLINE probe41PinnedEnv #-}
++probe41PinnedEnv :: IORef (Maybe (SimplEnv, Int, Int))
++probe41PinnedEnv = unsafePerformIO (newIORef Nothing)
++
++{-# NOINLINE probe41CheckCounter #-}
++probe41CheckCounter :: IORef Int
++probe41CheckCounter = unsafePerformIO (newIORef 0)
++
++-- v2: log EVERY simplRecBndrs call's env size, and update the pin
++-- to the LARGEST env seen so far.  This avoids the "wrong env got
++-- pinned" issue from v1 where a small simplRecBndrs call (e.g., a
++-- non-rec binder) registered before the big top-level call.
++{-# NOINLINE probe41CallCounter #-}
++probe41CallCounter :: IORef Int
++probe41CallCounter = unsafePerformIO (newIORef 0)
++
++probe41Pin :: SimplEnv -> ()
++probe41Pin env = unsafePerformIO $ do
++    n <- atomicModifyIORef' probe41CallCounter (\k -> (k+1, k+1))
++    m <- readIORef probe41PinnedEnv
++    let sz_scope = sizeVarSet (getInScopeVars (seInScope env))
++        sz_subst = sizeUFM (seIdSubst env)
++        update = case m of
++          Nothing                  -> True
++          Just (_, sz_old, _)
++            | sz_scope > sz_old    -> True
++            | otherwise            -> False
++    hPutStrLn stderr $ unwords
++      [ "PROBE41-RECBNDRS"
++      , "call=" ++ show n
++      , "scope=" ++ show sz_scope
++      , "subst=" ++ show sz_subst
++      , "pin=" ++ (if update then "yes" else "no")
++      ]
++    hFlush stderr
++    if update
++      then writeIORef probe41PinnedEnv (Just (env, sz_scope, sz_subst))
++      else return ()
++
++-- Check pinned env's current sizes vs registration-time sizes.
++-- Emit only if sizes have changed (drift).
++probe41Check :: String -> ()
++probe41Check site = unsafePerformIO $ do
++    m <- readIORef probe41PinnedEnv
++    case m of
++      Nothing -> return ()
++      Just (env, sz0_scope, sz0_subst) -> do
++        n <- atomicModifyIORef' probe41CheckCounter (\k -> (k+1, k+1))
++        let sz_scope_now = sizeVarSet (getInScopeVars (seInScope env))
++            sz_subst_now = sizeUFM (seIdSubst env)
++        if sz_scope_now == sz0_scope && sz_subst_now == sz0_subst
++          then return ()   -- No drift
++          else do
++            hPutStrLn stderr $ unwords
++              [ "PROBE41-DRIFT"
++              , "site=" ++ site
++              , "check=" ++ show n
++              , "scope_was=" ++ show sz0_scope
++              , "scope_now=" ++ show sz_scope_now
++              , "subst_was=" ++ show sz0_subst
++              , "subst_now=" ++ show sz_subst_now
++              ]
++            hFlush stderr
++
++-- Failure-site dump (extends probe40's): also emit pinned env's
++-- current sizes alongside the failing env's sizes.
++probe41DumpSubstFail :: InScopeSet -> SimplIdSubst -> Var -> String
++probe41DumpSubstFail in_scope id_subst v = unsafePerformIO $ do
++    m <- readIORef probe41PinnedEnv
++    let sz_scope_fail = sizeVarSet (getInScopeVars in_scope)
++        sz_subst_fail = sizeUFM id_subst
++        pinned_str = case m of
++          Nothing -> "pinned=none"
++          Just (env, sz0_scope, sz0_subst) ->
++            let sz_now = sizeVarSet (getInScopeVars (seInScope env))
++                ss_now = sizeUFM (seIdSubst env)
++            in  "pinned_was=(" ++ show sz0_scope ++ "," ++ show sz0_subst
++                ++ ") pinned_now=(" ++ show sz_now ++ "," ++ show ss_now ++ ")"
++        msg = unwords
++                [ "PROBE41-FAIL"
++                , "v=" ++ probe41DescribeVar v
++                , "fail_scope=" ++ show sz_scope_fail
++                , "fail_subst=" ++ show sz_subst_fail
++                , pinned_str
++                ]
++    hPutStrLn stderr msg
++    hFlush stderr
++    return msg
+ 
+ {-
+ ************************************************************************
+@@ -689,9 +804,15 @@ substId :: SimplEnv -> InId -> SimplSR
+ -- Returns DoneEx only on a non-Var expression
+ substId (SimplEnv { seInScope = in_scope, seIdSubst = ids }) v
+   = case lookupVarEnv ids v of  -- Note [Global Ids in the substitution]
+-        Nothing               -> DoneId (refineFromInScope in_scope v)
++        Nothing               -> probe41DumpIfFailing in_scope ids v `seq`
++                                 DoneId (refineFromInScope in_scope v)
+         Just (DoneId v)       -> DoneId (refineFromInScope in_scope v)
+         Just res              -> res    -- DoneEx non-var, or ContEx
++  where
++    probe41DumpIfFailing isc isub var
++      | isLocalId var && not (var `elemInScopeSet` isc)
++          = probe41DumpSubstFail isc isub var `seq` ()
++      | otherwise = ()
+ 
+         -- Get the most up-to-date thing from the in-scope set
+         -- Even though it isn't in the substitution, it may be in
+@@ -788,6 +909,7 @@ simplRecBndrs env@(SimplEnv {}) ids
+   -- See Note [Bangs in the Simplifier]
+   = ASSERT(all (not . isJoinId) ids)
+     do  { let (!env1, ids1) = mapAccumL substIdBndr env ids
++        ; let !_pin = probe41Pin env1
+         ; seqIds ids1 `seq` return env1 }
+ 
+ 

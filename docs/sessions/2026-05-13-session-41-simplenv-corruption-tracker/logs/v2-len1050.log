@@ -1,0 +1,38 @@
+
+Big2.hs:10:43: error:
+    * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+      tcl_env of environment: [aUg :-> Type variable `a' = a :: *,
+                               aUS :-> Identifier[k::Int, NotLetBound],
+                               aUT :-> Identifier[xs::[a], NotLetBound],
+                               rjN :-> Identifier[freqMap::forall a.
+                                                           Ord a =>
+                                                           [a] -> M.Map a Int, TopLevelLet {} True],
+                               rjO :-> Identifier[topK::forall a.
+                                                        Ord a =>
+                                                        Int
+                                                        -> [a] -> [(Int, a)], TopLevelLet {} True],
+                               rjP :-> Identifier[dedup::forall a.
+                                                         Ord a =>
+                                                         [a] -> [a], TopLevelLet {} True],
+                               rjQ :-> Identifier[countOf::forall a.
+                                                           Ord a =>
+                                                           a
+                                                           -> M.Map a Int
+                                                           -> Int, TopLevelLet {} True],
+                               rjR :-> Identifier[shift::Int -> [Int] -> [Int], TopLevelLet],
+                               rjS :-> Identifier[scaleAndShift::Int
+                                                                 -> Int
+                                                                 -> [Int]
+                                                                 -> [Int], TopLevelLet {} True],
+                               rjT :-> Identifier[allPositive::[Int]
+                                                               -> Bool, TopLevelLet {} True],
+                               rjU :-> Identifier[cumsum::forall a.
+                                                          Num a =>
+                                                          [a] -> [a], TopLevelLet {} True]]
+    * In the first argument of `map', namely `swap'
+      In the first argument of `(.)', namely `map swap'
+      In the second argument of `(.)', namely `map swap . M.toList'
+   |
+10 | topK k xs = take k . reverse . sort . map swap . M.toList $ freqMap xs
+   |                                           ^^^^
+RC=1

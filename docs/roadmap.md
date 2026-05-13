@@ -534,6 +534,33 @@ much smaller than session 17 left it.  See:
   scopes probe41: pin a SimplEnv reference in an IORef and
   periodically check its seInScope/seIdSubst sizes to
   directly observe the corruption.
+- [`docs/sessions/2026-05-13-session-41-simplenv-corruption-tracker/`](sessions/2026-05-13-session-41-simplenv-corruption-tracker/)
+  — round 23.  Probe41 (pin a SimplEnv reference in an IORef
+  at every `simplRecBndrs` call, track its `seInScope` /
+  `seIdSubst` sizes at every `substId`-failure) **partially
+  disproves session 40's "GC corrupts SimplEnv heap closure"
+  hypothesis**.  Two iterations: v1 hardcoded threshold (size
+  ≥5) didn't fire in failing runs because first simplRecBndrs
+  call has scope=2; v2 logs every call.  **Findings:**
+  (1) Pinned env's sizes are STABLE — pinned_was == pinned_now
+  at panic time.  GC does NOT corrupt the env probe41 tracks.
+  (2) The panic-site env is a DIFFERENT SimplEnv than the
+  pinned one — pinned scope=2 vs substId-failure scope=5.
+  Multiple envs in flight; probe41 didn't track the right one.
+  (3) In a CLEAN compile (-A256m), first simplRecBndrs call has
+  scope=10 (matching Big2.hs's ~10 top-level binders); in a
+  FAILING compile (-A1m -G1 len=600), first simplRecBndrs has
+  scope=2.  **New hypothesis:** the simplifier's input
+  `binds0 / CoreProgram` is corrupted UPSTREAM of
+  `simplTopBinds` — by the typechecker, desugarer, specializer,
+  or interface deserializer.  v0.12.0 ships unchanged; probe
+  applied and reverted; stage2 rebuilt+redeployed clean +
+  smoke-test PASS + baseline tests 30 PASS / 4 FAIL_OUTPUT
+  unchanged.  Session-41
+  [`HANDOFF.md`](sessions/2026-05-13-session-41-simplenv-corruption-tracker/HANDOFF.md)
+  scopes probe42: instrument `simplTopBinds`'s entry to dump
+  `length (bindersOfBinds binds0)` and directly compare
+  clean vs failing compile.
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.
