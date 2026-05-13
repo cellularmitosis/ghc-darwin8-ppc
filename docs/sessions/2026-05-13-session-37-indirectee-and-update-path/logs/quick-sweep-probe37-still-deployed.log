@@ -1,0 +1,19 @@
+len=650   panic=ghc-real: panic! (the 'impossible' happened) missing=                          inscope_size=
+len=700   panic=ghc-real: panic! (the 'impossible' happened) missing=                          inscope_size=
+len=750   panic=    * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer missing=                          inscope_size=
+len=800   panic=    * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer missing=                          inscope_size=
+len=850   panic=ghc-real: panic! (the 'impossible' happened) missing=                          inscope_size=
+len=900   panic=ghc-real: panic! (the 'impossible' happened) missing=                          inscope_size=
+len=950   panic=ghc-real: panic! (the 'impossible' happened) missing=                          inscope_size=
+len=1000  panic=ghc-real: panic! (the 'impossible' happened) missing=                          inscope_size=
+len=1100  panic=    * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer missing=                          inscope_size=
+len=1200  panic=    * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer missing=                          inscope_size=
+len=1300  panic=    * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer missing=                          inscope_size=
+len=1400  panic=    * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer missing=                          inscope_size=
+len=1500  panic=    * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer missing=                          inscope_size=
+len=1600  panic=    * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer missing=                          inscope_size=
+len=1650  panic=ghc-real: panic! (the 'impossible' happened) missing=$dOrd_a1k0                inscope_size=  InScope {wild_00 v_B1 allPositive}
+len=1700  panic=ghc-real: panic! (the 'impossible' happened) missing=$dOrd_a1k0                inscope_size=  InScope {wild_00 v_B1 allPositive}
+len=1800  panic=    * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer missing=                          inscope_size=
+len=1900  panic=    * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer missing=                          inscope_size=
+len=2000  panic=    * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer missing=                          inscope_size=

@@ -1,0 +1,115 @@
+diff --git a/compiler/GHC/Core/Opt/Simplify/Env.hs b/compiler/GHC/Core/Opt/Simplify/Env.hs
+index d1b33b02..ee9f2840 100644
+--- a/compiler/GHC/Core/Opt/Simplify/Env.hs
++++ b/compiler/GHC/Core/Opt/Simplify/Env.hs
+@@ -5,6 +5,9 @@
+ -}
+ 
+ {-# LANGUAGE CPP #-}
++{-# LANGUAGE MagicHash #-}
++{-# LANGUAGE UnboxedTuples #-}
++{-# LANGUAGE BangPatterns #-}
+ 
+ module GHC.Core.Opt.Simplify.Env (
+         -- * The simplifier mode
+@@ -76,6 +79,90 @@ import GHC.Types.Unique.FM      ( pprUniqFM )
+ 
+ import Data.List (mapAccumL)
+ 
++-- PROBE37: WHNF-verifying probe + indirectee follow.  Extends session
++-- 36's probe36 to also dump 4 words at v.word[1] & ~3 (the untagged
++-- indirectee pointer).  Expectation: indirectee's word[0] should be
++-- the Id constructor info-table (_ghc_GHCziTypesziVar_Id_con_info).
++--
++-- See docs/sessions/2026-05-13-session-37-indirectee-and-update-path/
++-- README.md for full context.
++--
++-- Session 36 finding being verified:
++--   v's word[0] = _stg_BLACKHOLE_info (exact)
++--   v's word[1] = tagged pointer (tag=0b011 = Id ctor) to indirectee
++--   seq v is a no-op (BEFORE == AFTER in every capture)
++--
++-- Probe37 captures four lines per panic:
++--   PROBE37-BEFORE           @<v>                  [w0 w1 w2 w3]
++--   PROBE37-INDIRECTEE       @<v.word[1] & ~3>     [w0 w1 w2 w3]
++--   PROBE37-AFTER            @<v>                  [w0 w1 w2 w3]
++--   PROBE37-INDIRECTEE-AFTER @<v'.word[1] & ~3>    [w0 w1 w2 w3]
++--
++-- All lines are flushed eagerly so any subsequent segfault doesn't
++-- lose the data.
++import GHC.Exts          (anyToAddr#, addr2Int#, int2Word#)
++import GHC.Word          (Word(..))
++import GHC.IO            (IO(..))
++import Foreign.Ptr       (Ptr, wordPtrToPtr, plusPtr)
++import Foreign.Storable  (peek)
++import Data.Bits         ((.&.), complement)
++import qualified Numeric (showHex)
++import System.IO         (hPutStrLn, stderr, hFlush)
++import System.IO.Unsafe  (unsafePerformIO)
++
++probe37AddressOf :: a -> IO Word
++probe37AddressOf x = IO $ \s ->
++    case anyToAddr# x s of
++      (# s', addr #) -> (# s', W# (int2Word# (addr2Int# addr)) #)
++
++probe37Hex :: Word -> String
++probe37Hex w = "0x" ++ Numeric.showHex w ""
++
++-- Read 4 consecutive words starting at (rawAddr & ~3).  PPC32 has
++-- 4-byte words and a 3-bit pointer tag, hence the mask.
++probe37ReadHeader :: Word -> IO [Word]
++probe37ReadHeader rawAddr =
++    let !base = rawAddr .&. complement 3
++    in mapM (\i -> peek (wordPtrToPtr (fromIntegral base) `plusPtr` (i * 4)
++                          :: Ptr Word))
++            [0 .. 3]
++
++probe37WhnfDump :: a -> String
++probe37WhnfDump x = unsafePerformIO $ do
++    !addr1 <- probe37AddressOf x
++    ws1   <- probe37ReadHeader addr1
++    let beforeStr = "PROBE37-BEFORE @" ++ probe37Hex addr1 ++ " ["
++                 ++ unwords (map probe37Hex ws1) ++ "]"
++    hPutStrLn stderr beforeStr
++    hFlush stderr
++    -- Follow word[1] (the indirectee) BEFORE forcing.
++    let w1 = case ws1 of (_:w:_) -> w; _ -> 0
++        indAddr = w1 .&. complement 3
++    indWs <- if indAddr == 0
++               then return [0,0,0,0]
++               else probe37ReadHeader indAddr
++    let indStr = "PROBE37-INDIRECTEE @" ++ probe37Hex indAddr ++ " ["
++              ++ unwords (map probe37Hex indWs) ++ "]"
++    hPutStrLn stderr indStr
++    hFlush stderr
++    -- Force x.  If x's payload is corrupt the entry-code may
++    -- segfault here, but BEFORE / INDIRECTEE are already flushed.
++    x `seq` return ()
++    !addr2 <- probe37AddressOf x
++    ws2   <- probe37ReadHeader addr2
++    let afterStr = "PROBE37-AFTER @" ++ probe37Hex addr2 ++ " ["
++                ++ unwords (map probe37Hex ws2) ++ "]"
++    hPutStrLn stderr afterStr
++    hFlush stderr
++    -- ALSO follow word[1] AFTER, in case the indirectee shifted.
++    let w1b = case ws2 of (_:w:_) -> w; _ -> 0
++        indAddr2 = w1b .&. complement 3
++    indWs2 <- if indAddr2 == 0
++                then return [0,0,0,0]
++                else probe37ReadHeader indAddr2
++    return $ "PROBE37-INDIRECTEE-AFTER @" ++ probe37Hex indAddr2 ++ " ["
++          ++ unwords (map probe37Hex indWs2) ++ "]"
++
+ {-
+ ************************************************************************
+ *                                                                      *
+@@ -703,7 +790,8 @@ refineFromInScope :: InScopeSet -> Var -> Var
+ refineFromInScope in_scope v
+   | isLocalId v = case lookupInScope in_scope v of
+                   Just v' -> v'
+-                  Nothing -> pprPanic "refineFromInScope" (ppr in_scope $$ ppr v)
++                  Nothing -> pprPanic ("refineFromInScope " ++ probe37WhnfDump v)
++                                       (ppr in_scope $$ ppr v)
+                              -- c.f #19074 for a subtle place where this went wrong
+   | otherwise = v
+ 
