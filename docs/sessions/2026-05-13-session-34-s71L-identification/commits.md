@@ -9,7 +9,7 @@ clean rebuild at session end) were initiated.
 The only commits associated with this session are the session-dir
 writeup files themselves:
 
-- (SHA TBD)  Session 34: identify `_s71L_info` as `ncgPlatform config`
+- 0d89e58  Session 34: identify `_s71L_info` as `ncgPlatform config`
   thunk in `GHC.CmmToAsm.AArch64.CodeGen`.
 
 The revert + clean rebuild + redeploy at session end restored
