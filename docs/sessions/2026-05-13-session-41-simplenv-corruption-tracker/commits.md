@@ -1,6 +1,6 @@
 # Session 41 commits
 
-- _TBD: backfill SHA after `git commit`._  Session 41: probe41
+- 3590b57 Session 41: probe41
   (pin SimplEnv reference in IORef at every simplRecBndrs call,
   track seInScope/seIdSubst drift at every substId failure)
   partially disproves session 40's "GC corrupts SimplEnv heap
