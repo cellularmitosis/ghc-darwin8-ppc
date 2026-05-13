@@ -1,0 +1,96 @@
+diff --git a/compiler/GHC/Core/Opt/Simplify/Env.hs b/compiler/GHC/Core/Opt/Simplify/Env.hs
+index d1b33b02..1cc6f13f 100644
+--- a/compiler/GHC/Core/Opt/Simplify/Env.hs
++++ b/compiler/GHC/Core/Opt/Simplify/Env.hs
+@@ -5,6 +5,9 @@
+ -}
+ 
+ {-# LANGUAGE CPP #-}
++{-# LANGUAGE MagicHash #-}
++{-# LANGUAGE UnboxedTuples #-}
++{-# LANGUAGE BangPatterns #-}
+ 
+ module GHC.Core.Opt.Simplify.Env (
+         -- * The simplifier mode
+@@ -76,6 +79,71 @@ import GHC.Types.Unique.FM      ( pprUniqFM )
+ 
+ import Data.List (mapAccumL)
+ 
++-- PROBE36: WHNF-verifying probe for refineFromInScope's panic site.
++--
++-- Sessions 33-35's probes used  aToWordzh (unsafeCoerce v :: Any),  which
++-- the GHC STG translator wraps in a let-bound thunk.  As a result, every
++-- captured info pointer for the past three sessions was the WRAPPING
++-- THUNK's info-table, not v's actual closure header.
++--
++-- This probe uses  anyToAddr# v s  directly: a polymorphic primop which
++-- in Cmm compiles to a register-to-register move (see compiler/GHC/
++-- StgToCmm/Prim.hs, AnyToAddrOp).  The argument v is passed through
++-- as-is -- no wrapping thunk -- as verified by a stand-alone test under
++-- both -O0 and -O on both uranium host-ghc and PPC cross-stage1 in
++-- session 36.
++--
++-- The probe captures the 4-word closure header at v's heap address
++-- BEFORE running  v `seq` return ()  to force WHNF, then re-reads
++-- AFTER.  If isLocalId actually forces v on PPC, BEFORE will already
++-- show a constructor info-table.  If isLocalId is broken on PPC unreg,
++-- BEFORE will show a THUNK_N_M info-table and AFTER will show an
++-- indirection or constructor.
++--
++-- The BEFORE line is flushed to stderr eagerly so we still see it if
++-- forcing v segfaults on a bogus payload.
++import GHC.Exts          (anyToAddr#, addr2Int#)
++import GHC.Prim          (int2Word#)
++import GHC.Word          (Word(..))
++import GHC.IO            (IO(..))
++import Foreign.Ptr       (Ptr, wordPtrToPtr, plusPtr)
++import Foreign.Storable  (peek)
++import Data.Bits         ((.&.), complement)
++import qualified Numeric (showHex)
++import System.IO         (hPutStrLn, stderr, hFlush)
++import System.IO.Unsafe  (unsafePerformIO)
++
++probe36AddressOf :: a -> IO Word
++probe36AddressOf x = IO $ \s ->
++    case anyToAddr# x s of
++      (# s', addr #) -> (# s', W# (int2Word# (addr2Int# addr)) #)
++
++probe36Hex :: Word -> String
++probe36Hex w = "0x" ++ Numeric.showHex w ""
++
++probe36ReadHeader :: Word -> IO [Word]
++probe36ReadHeader rawAddr =
++    let !base = rawAddr .&. complement 3   -- PPC32 tag mask = 3
++    in mapM (\i -> peek (wordPtrToPtr (fromIntegral base) `plusPtr` (i * 4)
++                          :: Ptr Word))
++            [0 .. 3]
++
++probe36WhnfDump :: a -> String
++probe36WhnfDump x = unsafePerformIO $ do
++    !addr1 <- probe36AddressOf x
++    ws1   <- probe36ReadHeader addr1
++    let beforeStr = "PROBE36-BEFORE @" ++ probe36Hex addr1 ++ " ["
++                 ++ unwords (map probe36Hex ws1) ++ "]"
++    hPutStrLn stderr beforeStr
++    hFlush stderr
++    -- Force x.  If x's payload is corrupt, the entry-code may segfault
++    -- here -- but the BEFORE line is already flushed to stderr.
++    x `seq` return ()
++    !addr2 <- probe36AddressOf x
++    ws2   <- probe36ReadHeader addr2
++    return $ "PROBE36-AFTER @" ++ probe36Hex addr2 ++ " ["
++          ++ unwords (map probe36Hex ws2) ++ "]"
++
+ {-
+ ************************************************************************
+ *                                                                      *
+@@ -703,7 +771,8 @@ refineFromInScope :: InScopeSet -> Var -> Var
+ refineFromInScope in_scope v
+   | isLocalId v = case lookupInScope in_scope v of
+                   Just v' -> v'
+-                  Nothing -> pprPanic "refineFromInScope" (ppr in_scope $$ ppr v)
++                  Nothing -> pprPanic ("refineFromInScope " ++ probe36WhnfDump v)
++                                       (ppr in_scope $$ ppr v)
+                              -- c.f #19074 for a subtle place where this went wrong
+   | otherwise = v
+ 

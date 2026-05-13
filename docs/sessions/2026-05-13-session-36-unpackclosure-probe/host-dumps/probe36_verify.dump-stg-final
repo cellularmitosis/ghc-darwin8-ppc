@@ -1,0 +1,1542 @@
+
+==================== Final STG: ====================
+2026-05-13 08:32:21.619782 UTC
+
+main:Main.SimVar{v r1Le} [InlPrag=CONLIKE]
+  :: ghc-prim:GHC.Types.Int{(w) tc 3u} %1 -> main:Main.SimVar{tc rL3}
+[GblId[DataCon], Arity=1, Caf=NoCafRefs, Cpr=1, Unf=OtherCon []] =
+    {} \r [(eta_B0{v} Just 'ghc-prim:GHC.Types.One{(w) d 65F} [lid] :: ghc-prim:GHC.Types.Int{(w) tc 3u})]
+        main:Main.SimVar{d rL4} [(eta_B0{v} Just 'ghc-prim:GHC.Types.One{(w) d 65F} [lid] :: ghc-prim:GHC.Types.Int{(w) tc 3u})];
+
+sat_s2fm{v}
+  :: ghc-prim:GHC.Types.Int{(w) tc 3u}
+     -> base:GHC.Maybe.Maybe{(w) tc 3U}
+          ghc-prim:GHC.Types.Int{(w) tc 3u}
+[LclId] =
+    {} \r [(ds{v s2fl} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Int{(w) tc 3u})]
+        base:GHC.Maybe.Just{(w) d 6o} [(ds{v s2fl} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Int{(w) tc 3u})];
+
+main:Main.lengthListN{v rLc} [InlPrag=NOINLINE]
+  :: ghc-prim:GHC.Types.Int{(w) tc 3u}
+     -> ghc-prim:GHC.Types.Int{(w) tc 3u}
+[GblId, Arity=1, Unf=OtherCon []] =
+    {} \r [(n{v s2fj} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Int{(w) tc 3u})]
+        let {
+          sat_s2fk{v} [Occ=Once1]
+            :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                 ghc-prim:GHC.Tuple.(){(w) tc 40}
+          [LclId] =
+              {(n{v s2fj} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Int{(w) tc 3u})} \u []
+                  (base:GHC.List.replicate{v rH} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (a{tv a1T7} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                        ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}).
+                                                                                                   ghc-prim:GHC.Types.Int{(w) tc 3u}
+                                                                                                   -> (a{tv a1T7} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                    ghc-prim:GHC.Types.LiftedRep{(w) tc 33a})
+                                                                                                      -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                           (a{tv a1T7} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                         ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}))
+                      (n{v s2fj} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Int{(w) tc 3u})
+                      (ghc-prim:GHC.Tuple.(){(w) v 71} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DataCon]] :: ghc-prim:GHC.Tuple.(){(w) tc 40});
+        } in 
+          (base:Data.Foldable.length{v r1x} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (t{tv a1T0} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                            ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}
+                                                                                                                                          -> ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                       base:Data.Foldable.Foldable{tc 2z}
+                                                                                                         (t{tv a1T0} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                       ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}
+                                                                                                                                     -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                       => forall (a{tv a1T3} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                               ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}).
+                                                                                                          (t{tv a1T0} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                        ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}
+                                                                                                                                      -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                            (a{tv a1T3} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                          ghc-prim:GHC.Types.LiftedRep{(w) tc 33a})
+                                                                                                          -> ghc-prim:GHC.Types.Int{(w) tc 3u})
+              (base:Data.Foldable.$fFoldable[]{v r15C} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:Data.Foldable.Foldable{tc 2z}
+                                                                                                                   ghc-prim:GHC.Types.[]{(w) tc 3Q})
+              (sat_s2fk{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                               ghc-prim:GHC.Tuple.(){(w) tc 40});
+
+sat_s2fo{v} :: ghc-prim:GHC.Types.Int{(w) tc 3u}
+[LclId] =
+    {} \u []
+        let {
+          sat_s2fn{v} [Occ=Once1] :: ghc-prim:GHC.Types.Int{(w) tc 3u}
+          [LclId] =
+              CCCS ghc-prim:GHC.Types.I#{(w) d 6i}! [100#];
+        } in 
+          (main:Main.lengthListN{v rLc} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Types.Int{(w) tc 3u}
+                                                                                          -> ghc-prim:GHC.Types.Int{(w) tc 3u})
+              (sat_s2fn{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Int{(w) tc 3u});
+
+main:Main.knownThunk{v rLb} [InlPrag=NOINLINE]
+  :: base:GHC.Maybe.Maybe{(w) tc 3U}
+       ghc-prim:GHC.Types.Int{(w) tc 3u}
+[GblId] =
+    {} \u []
+        (base:GHC.Base.$!{v rj} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (r{tv a1Ta} Nothing [tv] :: ghc-prim:GHC.Types.RuntimeRep{(w) tc 334})
+                                                                                         (a{tv a1Tb} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                         (b{tv a1Tc} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                       (r{tv a1Ta} Nothing [tv] :: ghc-prim:GHC.Types.RuntimeRep{(w) tc 334})).
+                                                                                  ((a{tv a1Tb} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                   -> (b{tv a1Tc} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                    (r{tv a1Ta} Nothing [tv] :: ghc-prim:GHC.Types.RuntimeRep{(w) tc 334})))
+                                                                                  -> (a{tv a1Tb} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                     -> (b{tv a1Tc} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                      (r{tv a1Ta} Nothing [tv] :: ghc-prim:GHC.Types.RuntimeRep{(w) tc 334})))
+            (sat_s2fm{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Int{(w) tc 3u}
+                                                                           -> base:GHC.Maybe.Maybe{(w) tc 3U}
+                                                                                ghc-prim:GHC.Types.Int{(w) tc 3u})
+            (sat_s2fo{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Int{(w) tc 3u});
+
+sat_s2eu{v} :: ghc-prim:GHC.Types.Word{(w) tc 31W}
+[LclId] =
+    {} \u []
+        (base:GHC.Enum.maxBound{v r1J} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (a{tv a1Uk} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                  base:GHC.Enum.Bounded{tc 21}
+                                                                                                    (a{tv a1Uk} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                  => (a{tv a1Uk} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+            (base:GHC.Enum.$fBoundedWord{v r1pY} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Enum.Bounded{tc 21}
+                                                                                                             ghc-prim:GHC.Types.Word{(w) tc 31W});
+
+sat_s2ev{v} :: ghc-prim:GHC.Types.Word{(w) tc 31W}
+[LclId] =
+    CCS_DONT_CARE ghc-prim:GHC.Types.W#{(w) d 6J}! [18446744073709551615##];
+
+main:Main.wordSize{v rL8} :: ghc-prim:GHC.Types.Int{(w) tc 3u}
+[GblId] =
+    {} \u []
+        case
+            (ghc-prim:GHC.Classes.>={v 02I} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (a{tv a1Ur} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                       ghc-prim:GHC.Classes.Ord{tc 2c}
+                                                                                                         (a{tv a1Ur} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                       => (a{tv a1Ur} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                          -> (a{tv a1Ur} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                             -> ghc-prim:GHC.Types.Bool{(w) tc 38})
+                (ghc-prim:GHC.Classes.$fOrdWord{v r19O} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: ghc-prim:GHC.Classes.Ord{tc 2c}
+                                                                                                                    ghc-prim:GHC.Types.Word{(w) tc 31W})
+                (sat_s2eu{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W})
+                (sat_s2ev{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W}) :: Alg ghc-prim:GHC.Types.Bool{(w) tc 38}
+        of
+        (wild{v s2ew} [Occ=Dead]
+           :: ghc-prim:GHC.Types.Bool{(w) tc 38}
+           Unf=OtherCon [])
+        { ghc-prim:GHC.Types.False{(w) d 6c} ->
+              ghc-prim:GHC.Types.I#{(w) d 6i} [4#];
+          ghc-prim:GHC.Types.True{(w) d 6G} ->
+              ghc-prim:GHC.Types.I#{(w) d 6i} [8#];
+        };
+
+main:Main.readHeader{v rL7}
+  :: ghc-prim:GHC.Types.Word{(w) tc 31W}
+     -> ghc-prim:GHC.Types.IO{tc 31Q}
+          (ghc-prim:GHC.Types.[]{(w) tc 3Q}
+             ghc-prim:GHC.Types.Word{(w) tc 31W})
+[GblId, Arity=1, Unf=OtherCon []] =
+    {} \r [(addr{v s2ex} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W})]
+        let {
+          sat_s2ez{v} [Occ=Once1] :: ghc-prim:GHC.Types.Word{(w) tc 31W}
+          [LclId] =
+              {} \u []
+                  let {
+                    sat_s2ey{v} [Occ=Once1] :: ghc-prim:GHC.Types.Word{(w) tc 31W}
+                    [LclId] =
+                        CCCS ghc-prim:GHC.Types.W#{(w) d 6J}! [3##];
+                  } in 
+                    (base:GHC.Bits.complement{v rrN} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (a{tv a1Vu} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                base:GHC.Bits.Bits{tc r5X}
+                                                                                                                  (a{tv a1Vu} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                => (a{tv a1Vu} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                   -> (a{tv a1Vu} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                        (base:GHC.Bits.$fBitsWord{v r10R} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Bits.Bits{tc r5X}
+                                                                                                                      ghc-prim:GHC.Types.Word{(w) tc 31W})
+                        (sat_s2ey{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W});
+        } in 
+          case
+              (base:GHC.Bits..&.{v rrH} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (a{tv a1Vu} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                   base:GHC.Bits.Bits{tc r5X}
+                                                                                                     (a{tv a1Vu} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                   => (a{tv a1Vu} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                      -> (a{tv a1Vu} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                         -> (a{tv a1Vu} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                  (base:GHC.Bits.$fBitsWord{v r10R} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Bits.Bits{tc r5X}
+                                                                                                                ghc-prim:GHC.Types.Word{(w) tc 31W})
+                  (addr{v s2ex} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W})
+                  (sat_s2ez{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W}) :: Alg ghc-prim:GHC.Types.Word{(w) tc 31W}
+          of
+          (base{v s2eA} [Occ=OnceL1]
+             :: ghc-prim:GHC.Types.Word{(w) tc 31W}
+             Unf=OtherCon [])
+          {
+          ghc-prim:GHC.Types.W#{(w) d 6J} (ipv{v s2eB} [Occ=Dead]
+                                             :: ghc-prim:GHC.Prim.Word#{(w) tc 31U}) ->
+          let {
+            sat_s2eK{v} [Occ=Once1]
+              :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                   ghc-prim:GHC.Types.Int{(w) tc 3u}
+            [LclId] =
+                {} \u []
+                    let {
+                      sat_s2eJ{v} [Occ=Once1] :: ghc-prim:GHC.Types.Int{(w) tc 3u}
+                      [LclId] =
+                          CCCS ghc-prim:GHC.Types.I#{(w) d 6i}! [3#]; } in
+                    let {
+                      sat_s2eI{v} [Occ=Once1] :: ghc-prim:GHC.Types.Int{(w) tc 3u}
+                      [LclId] =
+                          CCCS ghc-prim:GHC.Types.I#{(w) d 6i}! [0#];
+                    } in 
+                      (base:GHC.Enum.enumFromTo{v 02F} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (a{tv a1Ww} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                       ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}).
+                                                                                                                  base:GHC.Enum.Enum{tc 22}
+                                                                                                                    (a{tv a1Ww} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                  ghc-prim:GHC.Types.LiftedRep{(w) tc 33a})
+                                                                                                                  => (a{tv a1Ww} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                   ghc-prim:GHC.Types.LiftedRep{(w) tc 33a})
+                                                                                                                     -> (a{tv a1Ww} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                      ghc-prim:GHC.Types.LiftedRep{(w) tc 33a})
+                                                                                                                        -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                             (a{tv a1Ww} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                           ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}))
+                          (base:GHC.Enum.$fEnumInt{v r18t} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Enum.Enum{tc 22}
+                                                                                                                       ghc-prim:GHC.Types.Int{(w) tc 3u})
+                          (sat_s2eI{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Int{(w) tc 3u})
+                          (sat_s2eJ{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Int{(w) tc 3u}); } in
+          let {
+            sat_s2eH{v} [Occ=Once1]
+              :: ghc-prim:GHC.Types.Int{(w) tc 3u}
+                 -> ghc-prim:GHC.Types.IO{tc 31Q}
+                      ghc-prim:GHC.Types.Word{(w) tc 31W}
+            [LclId] =
+                {(base{v s2eA} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W})} \r [(i{v s2eC} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Int{(w) tc 3u})]
+                    let {
+                      sat_s2eG{v} [Occ=Once1]
+                        :: base:GHC.Ptr.Ptr{tc 32u} ghc-prim:GHC.Types.Word{(w) tc 31W}
+                      [LclId] =
+                          {(base{v s2eA} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W}),
+                           (i{v s2eC} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Int{(w) tc 3u})} \u []
+                              let {
+                                sat_s2eF{v} [Occ=Once1] :: ghc-prim:GHC.Types.Int{(w) tc 3u}
+                                [LclId] =
+                                    {(i{v s2eC} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Int{(w) tc 3u})} \u []
+                                        (base:GHC.Num.*{v r2n} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (a{tv a1Tl} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                          base:GHC.Num.Num{tc 2b}
+                                                                                                                            (a{tv a1Tl} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                          => (a{tv a1Tl} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                             -> (a{tv a1Tl} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                -> (a{tv a1Tl} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                                            (base:GHC.Num.$fNumInt{v r19E} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Num.Num{tc 2b}
+                                                                                                                                       ghc-prim:GHC.Types.Int{(w) tc 3u})
+                                            (i{v s2eC} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Int{(w) tc 3u})
+                                            (main:Main.wordSize{v rL8} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Types.Int{(w) tc 3u}); } in
+                              let {
+                                sat_s2eE{v} [Occ=Once1]
+                                  :: base:GHC.Ptr.Ptr{tc 32u}
+                                       (ghc-prim:GHC.Types.Any{(w) tc 360}
+                                          ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                [LclId] =
+                                    {(base{v s2eA} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W})} \u []
+                                        let {
+                                          sat_s2eD{v} [Occ=Once1]
+                                            :: base:Foreign.Ptr.WordPtr{tc rl5}
+                                          [LclId] =
+                                              {(base{v s2eA} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W})} \u []
+                                                  (base:GHC.Real.fromIntegral{v 034} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (a{tv a1Wh} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                              (b{tv a1Wi} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                                       base:GHC.Real.Integral{tc 27}
+                                                                                                                                         (a{tv a1Wh} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                       => base:GHC.Num.Num{tc 2b}
+                                                                                                                                            (b{tv a1Wi} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                          => (a{tv a1Wh} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                             -> (b{tv a1Wi} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                                                      (base:GHC.Real.$fIntegralWord{v r18O} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Real.Integral{tc 27}
+                                                                                                                                                        ghc-prim:GHC.Types.Word{(w) tc 31W})
+                                                      (base:Foreign.Ptr.$fNumWordPtr{v rn4} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Num.Num{tc 2b}
+                                                                                                                                                        base:Foreign.Ptr.WordPtr{tc rl5})
+                                                      (base{v s2eA} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W});
+                                        } in 
+                                          (base:Foreign.Ptr.wordPtrToPtr{v rkT} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (a{tv a1We} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                                  base:Foreign.Ptr.WordPtr{tc rl5}
+                                                                                                                                  -> base:GHC.Ptr.Ptr{tc 32u}
+                                                                                                                                       (a{tv a1We} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                                              (sat_s2eD{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: base:Foreign.Ptr.WordPtr{tc rl5});
+                              } in 
+                                (base:GHC.Ptr.plusPtr{v rl2} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (a{tv a1Wa} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                      (b{tv a1Wb} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                               base:GHC.Ptr.Ptr{tc 32u}
+                                                                                                                 (a{tv a1Wa} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                               -> ghc-prim:GHC.Types.Int{(w) tc 3u}
+                                                                                                                  -> base:GHC.Ptr.Ptr{tc 32u}
+                                                                                                                       (b{tv a1Wb} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                                    (sat_s2eE{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: base:GHC.Ptr.Ptr{tc 32u}
+                                                                                                     (ghc-prim:GHC.Types.Any{(w) tc 360}
+                                                                                                        ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                                    (sat_s2eF{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Int{(w) tc 3u});
+                    } in 
+                      (base:Foreign.Storable.peek{v roh} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (a{tv a1VX} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                         ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}).
+                                                                                                                    base:Foreign.Storable.Storable{tc rnD}
+                                                                                                                      (a{tv a1VX} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                    ghc-prim:GHC.Types.LiftedRep{(w) tc 33a})
+                                                                                                                    => base:GHC.Ptr.Ptr{tc 32u}
+                                                                                                                         (a{tv a1VX} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                       ghc-prim:GHC.Types.LiftedRep{(w) tc 33a})
+                                                                                                                       -> ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                                            (a{tv a1VX} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                          ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}))
+                          (base:Foreign.Storable.$fStorableWord{v rqJ} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:Foreign.Storable.Storable{tc rnD}
+                                                                                                                                   ghc-prim:GHC.Types.Word{(w) tc 31W})
+                          (sat_s2eG{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: base:GHC.Ptr.Ptr{tc 32u}
+                                                                                           ghc-prim:GHC.Types.Word{(w) tc 31W});
+          } in 
+            (base:Data.Traversable.mapM{v r1D} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (t{tv a1VI} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                             -> ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                          base:Data.Traversable.Traversable{tc 2A}
+                                                                                                            (t{tv a1VI} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                        -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                          => forall (m{tv a1VL} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                    (a{tv a1VM} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                  ghc-prim:GHC.Types.LiftedRep{(w) tc 33a})
+                                                                                                                    (b{tv a1VN} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                             base:GHC.Base.Monad{tc 28}
+                                                                                                               (m{tv a1VL} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                           -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                             => ((a{tv a1VM} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                               ghc-prim:GHC.Types.LiftedRep{(w) tc 33a})
+                                                                                                                 -> (m{tv a1VL} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                      (b{tv a1VN} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                                                                                                                -> (t{tv a1VI} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                               -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                     (a{tv a1VM} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                   ghc-prim:GHC.Types.LiftedRep{(w) tc 33a})
+                                                                                                                   -> (m{tv a1VL} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                  -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                        (t{tv a1VI} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                    -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                          (b{tv a1VN} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                (base:Data.Traversable.$fTraversable[]{v r15B} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:Data.Traversable.Traversable{tc 2A}
+                                                                                                                           ghc-prim:GHC.Types.[]{(w) tc 3Q})
+                (base:GHC.Base.$fMonadIO{v rHL} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Base.Monad{tc 28}
+                                                                                                            ghc-prim:GHC.Types.IO{tc 31Q})
+                (sat_s2eH{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Int{(w) tc 3u}
+                                                                               -> ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                    ghc-prim:GHC.Types.Word{(w) tc 31W})
+                (sat_s2eK{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                 ghc-prim:GHC.Types.Int{(w) tc 3u});
+          };
+
+main:Main.hex{v rL5}
+  :: ghc-prim:GHC.Types.Word{(w) tc 31W}
+     -> base:GHC.Base.String{(w) tc 3c}
+[GblId, Arity=1, Unf=OtherCon []] =
+    {} \r [(w{v s2er} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W})]
+        let {
+          sat_s2et{v} [Occ=Once1] :: base:GHC.Base.String{(w) tc 3c}
+          [LclId] =
+              {(w{v s2er} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W})} \u []
+                  (base:Numeric.showHex{v ruX} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (a{tv a1WQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                 base:GHC.Real.Integral{tc 27}
+                                                                                                   (a{tv a1WQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                 => base:GHC.Show.Show{tc 2h}
+                                                                                                      (a{tv a1WQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                    => (a{tv a1WQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                       -> base:GHC.Show.ShowS{tc r2J})
+                      (base:GHC.Real.$fIntegralWord{v r18O} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Real.Integral{tc 27}
+                                                                                                                        ghc-prim:GHC.Types.Word{(w) tc 31W})
+                      (base:GHC.Show.$fShowWord{v r20Z} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Show.Show{tc 2h}
+                                                                                                                    ghc-prim:GHC.Types.Word{(w) tc 31W})
+                      (w{v s2er} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W})
+                      (ghc-prim:GHC.Types.[]{(w) v 6v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DataCon]] :: forall (a{tv 11} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                  ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                    (a{tv 11} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})); } in
+        let {
+          sat_s2es{v} [Occ=Once1]
+            :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                 ghc-prim:GHC.Types.Char{(w) tc 3g}
+          [LclId] =
+              {} \u []
+                  (ghc-prim:GHC.CString.unpackCString#{v 0k} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Prim.Addr#{(w) tc 32}
+                                                                                                               -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                    ghc-prim:GHC.Types.Char{(w) tc 3g})
+                      "0x"#;
+        } in 
+          (base:GHC.Base.++{v 03} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                    ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                      (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                    -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                         (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                       -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                            (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+              (sat_s2es{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                               ghc-prim:GHC.Types.Char{(w) tc 3g})
+              (sat_s2et{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: base:GHC.Base.String{(w) tc 3c});
+
+main:Main.probe{v rL9} [InlPrag=NOINLINE]
+  :: forall (a{tv aZq} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+     base:GHC.Base.String{(w) tc 3c}
+     -> (a{tv aZq} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+        -> ghc-prim:GHC.Types.IO{tc 31Q} ghc-prim:GHC.Tuple.(){(w) tc 40}
+[GblId, Arity=2, Unf=OtherCon []] =
+    {} \r [(label{v s2eL} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: base:GHC.Base.String{(w) tc 3c})
+           (x{v s2eM} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: (a{tv a23p} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))]
+        let {
+          sat_s2fi{v} [Occ=Once1]
+            :: ghc-prim:GHC.Types.Word{(w) tc 31W}
+               -> ghc-prim:GHC.Types.IO{tc 31Q} ghc-prim:GHC.Tuple.(){(w) tc 40}
+          [LclId] =
+              {(label{v s2eL} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: base:GHC.Base.String{(w) tc 3c})} \r [(addr{v s2eY} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W})]
+                  case
+                      (addr{v s2eY} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W}) :: Alg ghc-prim:GHC.Types.Word{(w) tc 31W}
+                  of
+                  (addr1{v s2eZ}
+                     :: ghc-prim:GHC.Types.Word{(w) tc 31W}
+                     Unf=OtherCon [])
+                  {
+                  ghc-prim:GHC.Types.W#{(w) d 6J} (ipv{v s2f0} [Occ=Dead]
+                                                     :: ghc-prim:GHC.Prim.Word#{(w) tc 31U}) ->
+                  let {
+                    sat_s2fh{v} [Occ=Once1]
+                      :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                           ghc-prim:GHC.Types.Word{(w) tc 31W}
+                         -> ghc-prim:GHC.Types.IO{tc 31Q} ghc-prim:GHC.Tuple.(){(w) tc 40}
+                    [LclId] =
+                        {(addr1{v s2eZ} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W}),
+                         (label{v s2eL} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: base:GHC.Base.String{(w) tc 3c})} \r [(ws{v s2f2} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                                                                ghc-prim:GHC.Types.Word{(w) tc 31W})]
+                            let {
+                              sat_s2fg{v} [Occ=Once1]
+                                :: ghc-prim:GHC.Types.IO{tc 31Q} ghc-prim:GHC.Tuple.(){(w) tc 40}
+                              [LclId] =
+                                  {} \u []
+                                      (base:GHC.IO.Handle.hFlush{v rw6} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: base:GHC.IO.Handle.Types.Handle{tc rxc}
+                                                                                                                          -> ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                                               ghc-prim:GHC.Tuple.(){(w) tc 40})
+                                          (base:GHC.IO.StdHandles.stderr{v rwN} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: base:GHC.IO.Handle.Types.Handle{tc rxc}); } in
+                            let {
+                              sat_s2ff{v} [Occ=Once1]
+                                :: ghc-prim:GHC.Types.IO{tc 31Q} ghc-prim:GHC.Tuple.(){(w) tc 40}
+                              [LclId] =
+                                  {(ws{v s2f2} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                   ghc-prim:GHC.Types.Word{(w) tc 31W}),
+                                   (addr1{v s2eZ} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W}),
+                                   (label{v s2eL} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: base:GHC.Base.String{(w) tc 3c})} \u []
+                                      let {
+                                        sat_s2fe{v} [Occ=Once1]
+                                          :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                               ghc-prim:GHC.Types.Char{(w) tc 3g}
+                                        [LclId] =
+                                            {(ws{v s2f2} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                             ghc-prim:GHC.Types.Word{(w) tc 31W}),
+                                             (addr1{v s2eZ} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W}),
+                                             (label{v s2eL} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: base:GHC.Base.String{(w) tc 3c})} \u []
+                                                let {
+                                                  sat_s2fd{v} [Occ=Once1]
+                                                    :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                         ghc-prim:GHC.Types.Char{(w) tc 3g}
+                                                  [LclId] =
+                                                      {(ws{v s2f2} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                       ghc-prim:GHC.Types.Word{(w) tc 31W}),
+                                                       (addr1{v s2eZ} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W})} \u []
+                                                          let {
+                                                            sat_s2fc{v} [Occ=Once1]
+                                                              :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                   ghc-prim:GHC.Types.Char{(w) tc 3g}
+                                                            [LclId] =
+                                                                {(ws{v s2f2} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                 ghc-prim:GHC.Types.Word{(w) tc 31W}),
+                                                                 (addr1{v s2eZ} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W})} \u []
+                                                                    let {
+                                                                      sat_s2fb{v} [Occ=Once1]
+                                                                        :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                             ghc-prim:GHC.Types.Char{(w) tc 3g}
+                                                                      [LclId] =
+                                                                          {(ws{v s2f2} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                           ghc-prim:GHC.Types.Word{(w) tc 31W})} \u []
+                                                                              let {
+                                                                                sat_s2fa{v} [Occ=Once1]
+                                                                                  :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                       ghc-prim:GHC.Types.Char{(w) tc 3g}
+                                                                                [LclId] =
+                                                                                    {(ws{v s2f2} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                     ghc-prim:GHC.Types.Word{(w) tc 31W})} \u []
+                                                                                        let {
+                                                                                          sat_s2f9{v} [Occ=Once1]
+                                                                                            :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                 ghc-prim:GHC.Types.Char{(w) tc 3g}
+                                                                                          [LclId] =
+                                                                                              {} \u []
+                                                                                                  (ghc-prim:GHC.CString.unpackCString#{v 0k} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Prim.Addr#{(w) tc 32}
+                                                                                                                                                                                               -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                                                                    ghc-prim:GHC.Types.Char{(w) tc 3g})
+                                                                                                      "]"#; } in
+                                                                                        let {
+                                                                                          sat_s2f8{v} [Occ=Once1]
+                                                                                            :: base:GHC.Base.String{(w) tc 3c}
+                                                                                          [LclId] =
+                                                                                              {(ws{v s2f2} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                               ghc-prim:GHC.Types.Word{(w) tc 31W})} \u []
+                                                                                                  let {
+                                                                                                    sat_s2f7{v} [Occ=Once1]
+                                                                                                      :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                           base:GHC.Base.String{(w) tc 3c}
+                                                                                                    [LclId] =
+                                                                                                        {(ws{v s2f2} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                                         ghc-prim:GHC.Types.Word{(w) tc 31W})} \u []
+                                                                                                            (base:GHC.Base.map{v 01X} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (a{tv a28c} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                                                                                             ghc-prim:GHC.Types.LiftedRep{(w) tc 33a})
+                                                                                                                                                                                               (b{tv a28d} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                                                                                             ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}).
+                                                                                                                                                                                        ((a{tv a28c} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                                                                                       ghc-prim:GHC.Types.LiftedRep{(w) tc 33a})
+                                                                                                                                                                                         -> (b{tv a28d} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                                                                                          ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}))
+                                                                                                                                                                                        -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                                                             (a{tv a28c} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                                                                                           ghc-prim:GHC.Types.LiftedRep{(w) tc 33a})
+                                                                                                                                                                                           -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                                                                (b{tv a28d} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                                                                                              ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}))
+                                                                                                                (main:Main.hex{v rL5} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Types.Word{(w) tc 31W}
+                                                                                                                                                                                        -> base:GHC.Base.String{(w) tc 3c})
+                                                                                                                (ws{v s2f2} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                                                ghc-prim:GHC.Types.Word{(w) tc 31W});
+                                                                                                  } in 
+                                                                                                    (base:Data.OldList.unwords{v rf} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                                                         base:GHC.Base.String{(w) tc 3c}
+                                                                                                                                                                                       -> base:GHC.Base.String{(w) tc 3c})
+                                                                                                        (sat_s2f7{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                                         base:GHC.Base.String{(w) tc 3c});
+                                                                                        } in 
+                                                                                          (base:GHC.Base.++{v 03} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                                                                    ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                                      (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                                    -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                                         (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                                       -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                                            (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                                                                                              (sat_s2f8{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: base:GHC.Base.String{(w) tc 3c})
+                                                                                              (sat_s2f9{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                               ghc-prim:GHC.Types.Char{(w) tc 3g}); } in
+                                                                              let {
+                                                                                sat_s2f6{v} [Occ=Once1]
+                                                                                  :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                       ghc-prim:GHC.Types.Char{(w) tc 3g}
+                                                                                [LclId] =
+                                                                                    {} \u []
+                                                                                        (ghc-prim:GHC.CString.unpackCString#{v 0k} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Prim.Addr#{(w) tc 32}
+                                                                                                                                                                                     -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                                                          ghc-prim:GHC.Types.Char{(w) tc 3g})
+                                                                                            " ["#;
+                                                                              } in 
+                                                                                (base:GHC.Base.++{v 03} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                                                          ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                            (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                          -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                               (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                             -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                                  (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                                                                                    (sat_s2f6{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                     ghc-prim:GHC.Types.Char{(w) tc 3g})
+                                                                                    (sat_s2fa{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                     ghc-prim:GHC.Types.Char{(w) tc 3g}); } in
+                                                                    let {
+                                                                      sat_s2f5{v} [Occ=Once1]
+                                                                        :: base:GHC.Base.String{(w) tc 3c}
+                                                                      [LclId] =
+                                                                          {(addr1{v s2eZ} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W})} \u []
+                                                                              (main:Main.hex{v rL5} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Types.Word{(w) tc 31W}
+                                                                                                                                                      -> base:GHC.Base.String{(w) tc 3c})
+                                                                                  (addr1{v s2eZ} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W});
+                                                                    } in 
+                                                                      (base:GHC.Base.++{v 03} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                                                ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                  (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                     (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                   -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                        (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                                                                          (sat_s2f5{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: base:GHC.Base.String{(w) tc 3c})
+                                                                          (sat_s2fb{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                           ghc-prim:GHC.Types.Char{(w) tc 3g}); } in
+                                                          let {
+                                                            sat_s2f4{v} [Occ=Once1]
+                                                              :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                   ghc-prim:GHC.Types.Char{(w) tc 3g}
+                                                            [LclId] =
+                                                                {} \u []
+                                                                    (ghc-prim:GHC.CString.unpackCString#{v 0k} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Prim.Addr#{(w) tc 32}
+                                                                                                                                                                 -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                                      ghc-prim:GHC.Types.Char{(w) tc 3g})
+                                                                        ": @"#;
+                                                          } in 
+                                                            (base:GHC.Base.++{v 03} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                                      ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                        (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                      -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                           (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                         -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                              (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                                                                (sat_s2f4{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                 ghc-prim:GHC.Types.Char{(w) tc 3g})
+                                                                (sat_s2fc{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                 ghc-prim:GHC.Types.Char{(w) tc 3g});
+                                                } in 
+                                                  (base:GHC.Base.++{v 03} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                            ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                              (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                            -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                 (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                               -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                    (a{tv a1WO} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                                                      (label{v s2eL} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: base:GHC.Base.String{(w) tc 3c})
+                                                      (sat_s2fd{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                       ghc-prim:GHC.Types.Char{(w) tc 3g}); } in
+                                      let {
+                                        sat_s2f3{v} [Occ=Once1]
+                                          :: base:GHC.Base.String{(w) tc 3c}
+                                             -> ghc-prim:GHC.Types.IO{tc 31Q}
+                                                  ghc-prim:GHC.Tuple.(){(w) tc 40}
+                                        [LclId] =
+                                            {} \u []
+                                                (base:GHC.IO.Handle.Text.hPutStrLn{v rwF} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: base:GHC.IO.Handle.Types.Handle{tc rxc}
+                                                                                                                                            -> base:GHC.Base.String{(w) tc 3c}
+                                                                                                                                               -> ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                                                                    ghc-prim:GHC.Tuple.(){(w) tc 40})
+                                                    (base:GHC.IO.StdHandles.stderr{v rwN} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: base:GHC.IO.Handle.Types.Handle{tc rxc});
+                                      } in 
+                                        (base:GHC.Base.${v 01Z} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (r{tv a1WB} Nothing [tv] :: ghc-prim:GHC.Types.RuntimeRep{(w) tc 334})
+                                                                                                                         (a{tv a1WC} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                         (b{tv a1WD} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                       (r{tv a1WB} Nothing [tv] :: ghc-prim:GHC.Types.RuntimeRep{(w) tc 334})).
+                                                                                                                  ((a{tv a1WC} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                   -> (b{tv a1WD} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                    (r{tv a1WB} Nothing [tv] :: ghc-prim:GHC.Types.RuntimeRep{(w) tc 334})))
+                                                                                                                  -> (a{tv a1WC} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                     -> (b{tv a1WD} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                      (r{tv a1WB} Nothing [tv] :: ghc-prim:GHC.Types.RuntimeRep{(w) tc 334})))
+                                            (sat_s2f3{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: base:GHC.Base.String{(w) tc 3c}
+                                                                                                           -> ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                                ghc-prim:GHC.Tuple.(){(w) tc 40})
+                                            (sat_s2fe{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                             ghc-prim:GHC.Types.Char{(w) tc 3g});
+                            } in 
+                              (base:GHC.Base.>>{v 02M} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                     -> ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                  base:GHC.Base.Monad{tc 28}
+                                                                                                                    (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                  => forall (a{tv a23B} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                            (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                     (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                 -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                       (a{tv a23B} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                     -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                    -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                          (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                        -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                       -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                             (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                                  (base:GHC.Base.$fMonadIO{v rHL} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Base.Monad{tc 28}
+                                                                                                                              ghc-prim:GHC.Types.IO{tc 31Q})
+                                  (sat_s2ff{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                   ghc-prim:GHC.Tuple.(){(w) tc 40})
+                                  (sat_s2fg{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                   ghc-prim:GHC.Tuple.(){(w) tc 40}); } in
+                  let {
+                    sat_s2f1{v} [Occ=Once1]
+                      :: ghc-prim:GHC.Types.IO{tc 31Q}
+                           (ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                              ghc-prim:GHC.Types.Word{(w) tc 31W})
+                    [LclId] =
+                        {(addr1{v s2eZ} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W})} \u []
+                            (main:Main.readHeader{v rL7} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Types.Word{(w) tc 31W}
+                                                                                                           -> ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                                (ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                   ghc-prim:GHC.Types.Word{(w) tc 31W}))
+                                (addr1{v s2eZ} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W});
+                  } in 
+                    (base:GHC.Base.>>={v 02L} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                            -> ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                         base:GHC.Base.Monad{tc 28}
+                                                                                                           (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                       -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                         => forall (a{tv a23q} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                   (b{tv a23r} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                            (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                        -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                              (a{tv a23q} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                            -> ((a{tv a23q} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                               -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                     (b{tv a23r} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                                                                                                               -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                              -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                    (b{tv a23r} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                        (base:GHC.Base.$fMonadIO{v rHL} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Base.Monad{tc 28}
+                                                                                                                    ghc-prim:GHC.Types.IO{tc 31Q})
+                        (sat_s2f1{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                         (ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                            ghc-prim:GHC.Types.Word{(w) tc 31W}))
+                        (sat_s2fh{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                         ghc-prim:GHC.Types.Word{(w) tc 31W}
+                                                                                       -> ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                            ghc-prim:GHC.Tuple.(){(w) tc 40});
+                  }; } in
+        let {
+          sat_s2eX{v} [Occ=Once1]
+            :: ghc-prim:GHC.Types.IO{tc 31Q}
+                 ghc-prim:GHC.Types.Word{(w) tc 31W}
+          [LclId] =
+              {(x{v s2eM} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: (a{tv a23p} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))} \u []
+                  let {
+                    sat_s2eW{v} [Occ=Once1]
+                      :: ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                           ghc-prim:GHC.Prim.RealWorld{(w) tc 31c}
+                         -> ghc-prim:GHC.Prim.(#,#){(w) tc 54}
+                              ('ghc-prim:GHC.Types.TupleRep{(w) d 63u}
+                                 ('ghc-prim:GHC.Types.[]{(w) d 6u}
+                                    ghc-prim:GHC.Types.RuntimeRep{(w) tc 334}))
+                              ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}
+                              (ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                                 ghc-prim:GHC.Prim.RealWorld{(w) tc 31c})
+                              ghc-prim:GHC.Types.Word{(w) tc 31W}
+                    [LclId] =
+                        {(x{v s2eM} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: (a{tv a23p} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))} \r [(void_0E{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Prim.(##){(w) tc 50})]
+                            case
+                                anyToAddr#{v} [(x{v s2eM} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: (a{tv a23p} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                                               (ghc-prim:GHC.Prim.void#{(w) v 0m} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Prim.(##){(w) tc 50})] :: MultiAlt 1
+                            of
+                            (wild{v s2eQ} [Occ=Dead]
+                               :: ghc-prim:GHC.Prim.(#,#){(w) tc 54}
+                                    ('ghc-prim:GHC.Types.TupleRep{(w) d 63u}
+                                       ('ghc-prim:GHC.Types.[]{(w) d 6u}
+                                          ghc-prim:GHC.Types.RuntimeRep{(w) tc 334}))
+                                    'ghc-prim:GHC.Types.AddrRep{(w) d 647}
+                                    (ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                                       ghc-prim:GHC.Prim.RealWorld{(w) tc 31c})
+                                    ghc-prim:GHC.Prim.Addr#{(w) tc 32}
+                               Unf=OtherCon [])
+                            {
+                            ghc-prim:GHC.Prim.Solo#{(w) d 83} (addr{v s2eS} [Occ=Once1]
+                                                                 :: ghc-prim:GHC.Prim.Addr#{(w) tc 32}) ->
+                            case
+                                addr2Int#{v} [(addr{v s2eS} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Prim.Addr#{(w) tc 32})] :: Prim IntRep
+                            of
+                            (sat_s2eT{v} [Occ=Once1] :: ghc-prim:GHC.Prim.Int#{(w) tc 3s})
+                            {
+                            __DEFAULT ->
+                            case
+                                int2Word#{v} [(sat_s2eT{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Prim.Int#{(w) tc 3s})] :: Prim WordRep
+                            of
+                            (sat_s2eU{v} [Occ=Once1] :: ghc-prim:GHC.Prim.Word#{(w) tc 31U})
+                            {
+                            __DEFAULT ->
+                            let {
+                              sat_s2eV{v} [Occ=Once1] :: ghc-prim:GHC.Types.Word{(w) tc 31W}
+                              [LclId] =
+                                  CCCS ghc-prim:GHC.Types.W#{(w) d 6J}! [(sat_s2eU{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Prim.Word#{(w) tc 31U})];
+                            } in 
+                              ghc-prim:GHC.Prim.Solo#{(w) d 83} [(sat_s2eV{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W})];
+                            };
+                            };
+                            }; } in
+                  let {
+                    sat_s2eO{v} [Occ=Once1]
+                      :: (ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                            ghc-prim:GHC.Prim.RealWorld{(w) tc 31c}
+                          -> ghc-prim:GHC.Prim.(#,#){(w) tc 54}
+                               ('ghc-prim:GHC.Types.TupleRep{(w) d 63u}
+                                  ('ghc-prim:GHC.Types.[]{(w) d 6u}
+                                     ghc-prim:GHC.Types.RuntimeRep{(w) tc 334}))
+                               ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}
+                               (ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                                  ghc-prim:GHC.Prim.RealWorld{(w) tc 31c})
+                               ghc-prim:GHC.Types.Word{(w) tc 31W})
+                         -> ghc-prim:GHC.Types.IO{tc 31Q}
+                              ghc-prim:GHC.Types.Word{(w) tc 31W}
+                    [LclId] =
+                        {} \r [(ds{v s2eN} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                                                                                               ghc-prim:GHC.Prim.RealWorld{(w) tc 31c}
+                                                                                             -> ghc-prim:GHC.Prim.(#,#){(w) tc 54}
+                                                                                                  ('ghc-prim:GHC.Types.TupleRep{(w) d 63u}
+                                                                                                     ('ghc-prim:GHC.Types.[]{(w) d 6u}
+                                                                                                        ghc-prim:GHC.Types.RuntimeRep{(w) tc 334}))
+                                                                                                  ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}
+                                                                                                  (ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                                                                                                     ghc-prim:GHC.Prim.RealWorld{(w) tc 31c})
+                                                                                                  ghc-prim:GHC.Types.Word{(w) tc 31W})]
+                            (ds{v s2eN} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                                                                                            ghc-prim:GHC.Prim.RealWorld{(w) tc 31c}
+                                                                                          -> ghc-prim:GHC.Prim.(#,#){(w) tc 54}
+                                                                                               ('ghc-prim:GHC.Types.TupleRep{(w) d 63u}
+                                                                                                  ('ghc-prim:GHC.Types.[]{(w) d 6u}
+                                                                                                     ghc-prim:GHC.Types.RuntimeRep{(w) tc 334}))
+                                                                                               ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}
+                                                                                               (ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                                                                                                  ghc-prim:GHC.Prim.RealWorld{(w) tc 31c})
+                                                                                               ghc-prim:GHC.Types.Word{(w) tc 31W});
+                  } in 
+                    (base:GHC.Base.${v 01Z} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (r{tv a1WB} Nothing [tv] :: ghc-prim:GHC.Types.RuntimeRep{(w) tc 334})
+                                                                                                     (a{tv a1WC} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                     (b{tv a1WD} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                   (r{tv a1WB} Nothing [tv] :: ghc-prim:GHC.Types.RuntimeRep{(w) tc 334})).
+                                                                                              ((a{tv a1WC} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                               -> (b{tv a1WD} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                (r{tv a1WB} Nothing [tv] :: ghc-prim:GHC.Types.RuntimeRep{(w) tc 334})))
+                                                                                              -> (a{tv a1WC} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                 -> (b{tv a1WD} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                  (r{tv a1WB} Nothing [tv] :: ghc-prim:GHC.Types.RuntimeRep{(w) tc 334})))
+                        (sat_s2eO{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: (ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                                                                                          ghc-prim:GHC.Prim.RealWorld{(w) tc 31c}
+                                                                                        -> ghc-prim:GHC.Prim.(#,#){(w) tc 54}
+                                                                                             ('ghc-prim:GHC.Types.TupleRep{(w) d 63u}
+                                                                                                ('ghc-prim:GHC.Types.[]{(w) d 6u}
+                                                                                                   ghc-prim:GHC.Types.RuntimeRep{(w) tc 334}))
+                                                                                             ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}
+                                                                                             (ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                                                                                                ghc-prim:GHC.Prim.RealWorld{(w) tc 31c})
+                                                                                             ghc-prim:GHC.Types.Word{(w) tc 31W})
+                                                                                       -> ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                            ghc-prim:GHC.Types.Word{(w) tc 31W})
+                        (sat_s2eW{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                                                                                         ghc-prim:GHC.Prim.RealWorld{(w) tc 31c}
+                                                                                       -> ghc-prim:GHC.Prim.(#,#){(w) tc 54}
+                                                                                            ('ghc-prim:GHC.Types.TupleRep{(w) d 63u}
+                                                                                               ('ghc-prim:GHC.Types.[]{(w) d 6u}
+                                                                                                  ghc-prim:GHC.Types.RuntimeRep{(w) tc 334}))
+                                                                                            ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}
+                                                                                            (ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                                                                                               ghc-prim:GHC.Prim.RealWorld{(w) tc 31c})
+                                                                                            ghc-prim:GHC.Types.Word{(w) tc 31W});
+        } in 
+          (base:GHC.Base.>>={v 02L} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                  -> ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                               base:GHC.Base.Monad{tc 28}
+                                                                                                 (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                             -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                               => forall (a{tv a23q} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                         (b{tv a23r} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                  (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                              -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                    (a{tv a23q} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                  -> ((a{tv a23q} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                      -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                     -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                           (b{tv a23r} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                                                                                                     -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                    -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                          (b{tv a23r} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+              (base:GHC.Base.$fMonadIO{v rHL} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Base.Monad{tc 28}
+                                                                                                          ghc-prim:GHC.Types.IO{tc 31Q})
+              (sat_s2eX{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                               ghc-prim:GHC.Types.Word{(w) tc 31W})
+              (sat_s2fi{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W}
+                                                                             -> ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                  ghc-prim:GHC.Tuple.(){(w) tc 40});
+
+$tc'SimVar1{v r2bB} :: ghc-prim:GHC.Prim.Addr#{(w) tc 32}
+[GblId, Unf=OtherCon []] =
+    "'SimVar"#;
+
+$tc'SimVar2{v r2bC} :: ghc-prim:GHC.Types.TrName{tc 628}
+[GblId, Unf=OtherCon []] =
+    CCS_DONT_CARE ghc-prim:GHC.Types.TrNameS{d 62b}! [($tc'SimVar1{v r2bB} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Prim.Addr#{(w) tc 32})];
+
+$tcSimVar1{v r2bx} :: ghc-prim:GHC.Prim.Addr#{(w) tc 32}
+[GblId, Unf=OtherCon []] =
+    "SimVar"#;
+
+$tcSimVar2{v r2by} :: ghc-prim:GHC.Types.TrName{tc 628}
+[GblId, Unf=OtherCon []] =
+    CCS_DONT_CARE ghc-prim:GHC.Types.TrNameS{d 62b}! [($tcSimVar1{v r2bx} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Prim.Addr#{(w) tc 32})];
+
+$krep{v r2bw} :: ghc-prim:GHC.Types.KindRep{tc 62k}
+[GblId, Unf=OtherCon []] =
+    CCS_DONT_CARE ghc-prim:GHC.Types.KindRepTyConApp{d 658}! [(ghc-prim:GHC.Types.$tcInt{v 3v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Types.TyCon{tc 61W})
+                                                              (ghc-prim:GHC.Types.[]{(w) v 6v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DataCon]] :: forall (a{tv 11} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                                                          ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                            (a{tv 11} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))];
+
+$trModule3{v r2bu} :: ghc-prim:GHC.Prim.Addr#{(w) tc 32}
+[GblId, Unf=OtherCon []] =
+    "Main"#;
+
+$trModule4{v r2bv} :: ghc-prim:GHC.Types.TrName{tc 628}
+[GblId, Unf=OtherCon []] =
+    CCS_DONT_CARE ghc-prim:GHC.Types.TrNameS{d 62b}! [($trModule3{v r2bu} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Prim.Addr#{(w) tc 32})];
+
+$trModule1{v r2bs} :: ghc-prim:GHC.Prim.Addr#{(w) tc 32}
+[GblId, Unf=OtherCon []] =
+    "main"#;
+
+$trModule2{v r2bt} :: ghc-prim:GHC.Types.TrName{tc 628}
+[GblId, Unf=OtherCon []] =
+    CCS_DONT_CARE ghc-prim:GHC.Types.TrNameS{d 62b}! [($trModule1{v r2bs} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Prim.Addr#{(w) tc 32})];
+
+main:Main.$trModule{v r29W} :: ghc-prim:GHC.Types.Module{tc 622}
+[GblId, Unf=OtherCon []] =
+    CCS_DONT_CARE ghc-prim:GHC.Types.Module{d 625}! [($trModule2{v r2bt} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Types.TrName{tc 628})
+                                                     ($trModule4{v r2bv} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Types.TrName{tc 628})];
+
+main:Main.$tcSimVar{v r1Lf} :: ghc-prim:GHC.Types.TyCon{tc 61W}
+[GblId, Unf=OtherCon []] =
+    CCS_DONT_CARE ghc-prim:GHC.Types.TyCon{d 61Z}! [15581966166623556059##
+                                                    13009472111050147537##
+                                                    (main:Main.$trModule{v r29W} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Types.Module{tc 622})
+                                                    ($tcSimVar2{v r2by} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Types.TrName{tc 628})
+                                                    0#
+                                                    (ghc-prim:GHC.Types.krep$*{v 08o} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Types.KindRep{tc 62k})];
+
+$krep1{v r2bz} :: ghc-prim:GHC.Types.KindRep{tc 62k}
+[GblId, Unf=OtherCon []] =
+    CCS_DONT_CARE ghc-prim:GHC.Types.KindRepTyConApp{d 658}! [(main:Main.$tcSimVar{v r1Lf} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Types.TyCon{tc 61W})
+                                                              (ghc-prim:GHC.Types.[]{(w) v 6v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DataCon]] :: forall (a{tv 11} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                                                          ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                            (a{tv 11} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))];
+
+$krep2{v r2bA} :: ghc-prim:GHC.Types.KindRep{tc 62k}
+[GblId, Unf=OtherCon []] =
+    CCS_DONT_CARE ghc-prim:GHC.Types.KindRepFun{d 65h}! [($krep{v r2bw} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Types.KindRep{tc 62k})
+                                                         ($krep1{v r2bz} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Types.KindRep{tc 62k})];
+
+main:Main.$tc'SimVar{v r1L6} :: ghc-prim:GHC.Types.TyCon{tc 61W}
+[GblId, Unf=OtherCon []] =
+    CCS_DONT_CARE ghc-prim:GHC.Types.TyCon{d 61Z}! [15290463954833035312##
+                                                    3742549107082966449##
+                                                    (main:Main.$trModule{v r29W} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Types.Module{tc 622})
+                                                    ($tc'SimVar2{v r2bC} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Types.TrName{tc 628})
+                                                    0#
+                                                    ($krep2{v r2bA} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Types.KindRep{tc 62k})];
+
+simVar1{v r2br} :: ghc-prim:GHC.Types.Int{(w) tc 3u}
+[GblId, Unf=OtherCon []] =
+    CCS_DONT_CARE ghc-prim:GHC.Types.I#{(w) d 6i}! [7#];
+
+main:Main.simVar{v rLd} [InlPrag=NOINLINE]
+  :: main:Main.SimVar{tc rL3}
+[GblId, Unf=OtherCon []] =
+    CCS_DONT_CARE main:Main.SimVar{d rL4}! [(simVar1{v r2br} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Types.Int{(w) tc 3u})];
+
+knownWhnf1{v r2aT} :: ghc-prim:GHC.Types.Int{(w) tc 3u}
+[GblId, Unf=OtherCon []] =
+    CCS_DONT_CARE ghc-prim:GHC.Types.I#{(w) d 6i}! [42#];
+
+main:Main.knownWhnf{v rLa} [InlPrag=NOINLINE]
+  :: base:GHC.Maybe.Maybe{(w) tc 3U}
+       ghc-prim:GHC.Types.Int{(w) tc 3u}
+[GblId, Unf=OtherCon []] =
+    CCS_DONT_CARE base:GHC.Maybe.Just{(w) d 6o}! [(knownWhnf1{v r2aT} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Types.Int{(w) tc 3u})];
+
+sat_s2fL{v}
+  :: ghc-prim:GHC.Types.IO{tc 31Q} ghc-prim:GHC.Tuple.(){(w) tc 40}
+[LclId] =
+    {} \u []
+        let {
+          sat_s2fK{v} [Occ=Once1]
+            :: ghc-prim:GHC.Types.IO{tc 31Q} ghc-prim:GHC.Tuple.(){(w) tc 40}
+          [LclId] =
+              {} \u []
+                  let {
+                    sat_s2fJ{v} [Occ=Once1]
+                      :: ghc-prim:GHC.Types.IO{tc 31Q} ghc-prim:GHC.Tuple.(){(w) tc 40}
+                    [LclId] =
+                        {} \u []
+                            let {
+                              sat_s2fI{v} [Occ=Once1]
+                                :: ghc-prim:GHC.Types.IO{tc 31Q} ghc-prim:GHC.Tuple.(){(w) tc 40}
+                              [LclId] =
+                                  {} \u []
+                                      let {
+                                        sat_s2fH{v} [Occ=Once1]
+                                          :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                               ghc-prim:GHC.Tuple.(){(w) tc 40}
+                                        [LclId] =
+                                            {} \u []
+                                                let {
+                                                  sat_s2fG{v} [Occ=Once1]
+                                                    :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                         ghc-prim:GHC.Tuple.(){(w) tc 40}
+                                                  [LclId] =
+                                                      {} \u []
+                                                          let {
+                                                            sat_s2fF{v} [Occ=Once1]
+                                                              :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                   ghc-prim:GHC.Tuple.(){(w) tc 40}
+                                                            [LclId] =
+                                                                {} \u []
+                                                                    let {
+                                                                      sat_s2fE{v} [Occ=Once1]
+                                                                        :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                             ghc-prim:GHC.Tuple.(){(w) tc 40}
+                                                                      [LclId] =
+                                                                          {} \u []
+                                                                              let {
+                                                                                sat_s2fD{v} [Occ=Once1]
+                                                                                  :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                       ghc-prim:GHC.Types.Char{(w) tc 3g}
+                                                                                [LclId] =
+                                                                                    {} \u []
+                                                                                        (ghc-prim:GHC.CString.unpackCString#{v 0k} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Prim.Addr#{(w) tc 32}
+                                                                                                                                                                                     -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                                                          ghc-prim:GHC.Types.Char{(w) tc 3g})
+                                                                                            "T3-simVar-AFTER      "#;
+                                                                              } in 
+                                                                                (main:Main.probe{v rL9} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (a{tv aZq} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                                                          base:GHC.Base.String{(w) tc 3c}
+                                                                                                                                                          -> (a{tv aZq} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                             -> ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                                                                                  ghc-prim:GHC.Tuple.(){(w) tc 40})
+                                                                                    (sat_s2fD{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                     ghc-prim:GHC.Types.Char{(w) tc 3g})
+                                                                                    (main:Main.simVar{v rLd} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: main:Main.SimVar{tc rL3}); } in
+                                                                    let {
+                                                                      sat_s2fC{v} [Occ=Once1]
+                                                                        :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                             ghc-prim:GHC.Tuple.(){(w) tc 40}
+                                                                      [LclId] =
+                                                                          {} \u []
+                                                                              (base:GHC.Base.return{v 02O} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                                                                         -> ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                                                                      base:GHC.Base.Monad{tc 28}
+                                                                                                                                                                        (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                                                                    -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                                      => forall (a{tv a28u} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                                                                              ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}).
+                                                                                                                                                                         (a{tv a28u} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                                                                       ghc-prim:GHC.Types.LiftedRep{(w) tc 33a})
+                                                                                                                                                                         -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                                                                        -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                                              (a{tv a28u} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                                                                            ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}))
+                                                                                  (base:GHC.Base.$fMonadIO{v rHL} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Base.Monad{tc 28}
+                                                                                                                                                                              ghc-prim:GHC.Types.IO{tc 31Q})
+                                                                                  (ghc-prim:GHC.Tuple.(){(w) v 71} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DataCon]] :: ghc-prim:GHC.Tuple.(){(w) tc 40});
+                                                                    } in 
+                                                                      (base:GHC.Base.>>{v 02M} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                                                             -> ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                                                          base:GHC.Base.Monad{tc 28}
+                                                                                                                                                            (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                                                        -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                          => forall (a{tv a23B} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                                    (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                                                             (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                                                         -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                               (a{tv a23B} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                             -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                                                            -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                                  (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                                -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                                                               -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                                     (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                                                                          (base:GHC.Base.$fMonadIO{v rHL} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Base.Monad{tc 28}
+                                                                                                                                                                      ghc-prim:GHC.Types.IO{tc 31Q})
+                                                                          (sat_s2fC{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                                                           ghc-prim:GHC.Tuple.(){(w) tc 40})
+                                                                          (sat_s2fE{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                                                           ghc-prim:GHC.Tuple.(){(w) tc 40}); } in
+                                                          let {
+                                                            sat_s2fB{v} [Occ=Once1]
+                                                              :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                   ghc-prim:GHC.Tuple.(){(w) tc 40}
+                                                            [LclId] =
+                                                                {} \u []
+                                                                    let {
+                                                                      sat_s2fA{v} [Occ=Once1]
+                                                                        :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                             ghc-prim:GHC.Types.Char{(w) tc 3g}
+                                                                      [LclId] =
+                                                                          {} \u []
+                                                                              (ghc-prim:GHC.CString.unpackCString#{v 0k} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Prim.Addr#{(w) tc 32}
+                                                                                                                                                                           -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                                                ghc-prim:GHC.Types.Char{(w) tc 3g})
+                                                                                  "T3-simVar-BEFORE     "#;
+                                                                    } in 
+                                                                      (main:Main.probe{v rL9} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (a{tv aZq} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                                                base:GHC.Base.String{(w) tc 3c}
+                                                                                                                                                -> (a{tv aZq} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                   -> ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                                                                        ghc-prim:GHC.Tuple.(){(w) tc 40})
+                                                                          (sat_s2fA{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                           ghc-prim:GHC.Types.Char{(w) tc 3g})
+                                                                          (main:Main.simVar{v rLd} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: main:Main.SimVar{tc rL3});
+                                                          } in 
+                                                            (base:GHC.Base.>>{v 02M} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                                                   -> ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                                                base:GHC.Base.Monad{tc 28}
+                                                                                                                                                  (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                                              -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                => forall (a{tv a23B} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                          (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                                                   (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                                               -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                     (a{tv a23B} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                   -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                                                  -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                        (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                      -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                                                     -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                           (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                                                                (base:GHC.Base.$fMonadIO{v rHL} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Base.Monad{tc 28}
+                                                                                                                                                            ghc-prim:GHC.Types.IO{tc 31Q})
+                                                                (sat_s2fB{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                                                 ghc-prim:GHC.Tuple.(){(w) tc 40})
+                                                                (sat_s2fF{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                                                 ghc-prim:GHC.Tuple.(){(w) tc 40}); } in
+                                                let {
+                                                  sat_s2fz{v} [Occ=Once1]
+                                                    :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                         ghc-prim:GHC.Tuple.(){(w) tc 40}
+                                                  [LclId] =
+                                                      {} \u []
+                                                          let {
+                                                            sat_s2fy{v} [Occ=Once1]
+                                                              :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                   ghc-prim:GHC.Types.Char{(w) tc 3g}
+                                                            [LclId] =
+                                                                {} \u []
+                                                                    (ghc-prim:GHC.CString.unpackCString#{v 0k} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Prim.Addr#{(w) tc 32}
+                                                                                                                                                                 -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                                      ghc-prim:GHC.Types.Char{(w) tc 3g})
+                                                                        "T2-knownThunk-AFTER  "#;
+                                                          } in 
+                                                            (main:Main.probe{v rL9} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (a{tv aZq} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                                      base:GHC.Base.String{(w) tc 3c}
+                                                                                                                                      -> (a{tv aZq} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                         -> ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                                                              ghc-prim:GHC.Tuple.(){(w) tc 40})
+                                                                (sat_s2fy{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                 ghc-prim:GHC.Types.Char{(w) tc 3g})
+                                                                (main:Main.knownThunk{v rLb} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: base:GHC.Maybe.Maybe{(w) tc 3U}
+                                                                                                                                                 ghc-prim:GHC.Types.Int{(w) tc 3u});
+                                                } in 
+                                                  (base:GHC.Base.>>{v 02M} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                                         -> ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                                      base:GHC.Base.Monad{tc 28}
+                                                                                                                                        (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                                    -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                      => forall (a{tv a23B} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                                         (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                                     -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                           (a{tv a23B} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                         -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                                        -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                              (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                            -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                                           -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                 (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                                                      (base:GHC.Base.$fMonadIO{v rHL} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Base.Monad{tc 28}
+                                                                                                                                                  ghc-prim:GHC.Types.IO{tc 31Q})
+                                                      (sat_s2fz{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                                       ghc-prim:GHC.Tuple.(){(w) tc 40})
+                                                      (sat_s2fG{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                                       ghc-prim:GHC.Tuple.(){(w) tc 40}); } in
+                                      let {
+                                        sat_s2fx{v} [Occ=Once1]
+                                          :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                               ghc-prim:GHC.Tuple.(){(w) tc 40}
+                                        [LclId] =
+                                            {} \u []
+                                                case
+                                                    (main:Main.knownThunk{v rLb} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: base:GHC.Maybe.Maybe{(w) tc 3U}
+                                                                                                                                     ghc-prim:GHC.Types.Int{(w) tc 3u}) :: Alg base:GHC.Maybe.Maybe{(w) tc 3U}
+                                                of
+                                                (wild{v s2fw} [Occ=Dead]
+                                                   :: base:GHC.Maybe.Maybe{(w) tc 3U}
+                                                        ghc-prim:GHC.Types.Int{(w) tc 3u}
+                                                   Unf=OtherCon [])
+                                                {
+                                                __DEFAULT ->
+                                                (base:GHC.Base.return{v 02O} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                                           -> ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                                        base:GHC.Base.Monad{tc 28}
+                                                                                                                                          (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                                      -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                        => forall (a{tv a28u} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                                                ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}).
+                                                                                                                                           (a{tv a28u} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                                         ghc-prim:GHC.Types.LiftedRep{(w) tc 33a})
+                                                                                                                                           -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                                          -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                                (a{tv a28u} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                                              ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}))
+                                                    (base:GHC.Base.$fMonadIO{v rHL} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Base.Monad{tc 28}
+                                                                                                                                                ghc-prim:GHC.Types.IO{tc 31Q})
+                                                    (ghc-prim:GHC.Tuple.(){(w) v 71} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DataCon]] :: ghc-prim:GHC.Tuple.(){(w) tc 40});
+                                                };
+                                      } in 
+                                        (base:GHC.Base.>>{v 02M} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                               -> ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                            base:GHC.Base.Monad{tc 28}
+                                                                                                                              (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                          -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                            => forall (a{tv a23B} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                      (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                               (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                           -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                 (a{tv a23B} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                               -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                              -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                    (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                  -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                                 -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                                       (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                                            (base:GHC.Base.$fMonadIO{v rHL} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Base.Monad{tc 28}
+                                                                                                                                        ghc-prim:GHC.Types.IO{tc 31Q})
+                                            (sat_s2fx{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                             ghc-prim:GHC.Tuple.(){(w) tc 40})
+                                            (sat_s2fH{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                             ghc-prim:GHC.Tuple.(){(w) tc 40}); } in
+                            let {
+                              sat_s2fv{v} [Occ=Once1]
+                                :: ghc-prim:GHC.Types.IO{tc 31Q} ghc-prim:GHC.Tuple.(){(w) tc 40}
+                              [LclId] =
+                                  {} \u []
+                                      let {
+                                        sat_s2fu{v} [Occ=Once1]
+                                          :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                               ghc-prim:GHC.Types.Char{(w) tc 3g}
+                                        [LclId] =
+                                            {} \u []
+                                                (ghc-prim:GHC.CString.unpackCString#{v 0k} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Prim.Addr#{(w) tc 32}
+                                                                                                                                             -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                                  ghc-prim:GHC.Types.Char{(w) tc 3g})
+                                                    "T2-knownThunk-BEFORE "#;
+                                      } in 
+                                        (main:Main.probe{v rL9} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (a{tv aZq} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                  base:GHC.Base.String{(w) tc 3c}
+                                                                                                                  -> (a{tv aZq} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                     -> ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                                          ghc-prim:GHC.Tuple.(){(w) tc 40})
+                                            (sat_s2fu{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                             ghc-prim:GHC.Types.Char{(w) tc 3g})
+                                            (main:Main.knownThunk{v rLb} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: base:GHC.Maybe.Maybe{(w) tc 3U}
+                                                                                                                             ghc-prim:GHC.Types.Int{(w) tc 3u});
+                            } in 
+                              (base:GHC.Base.>>{v 02M} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                     -> ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                  base:GHC.Base.Monad{tc 28}
+                                                                                                                    (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                  => forall (a{tv a23B} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                            (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                                     (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                 -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                       (a{tv a23B} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                     -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                    -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                          (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                        -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                                       -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                             (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                                  (base:GHC.Base.$fMonadIO{v rHL} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Base.Monad{tc 28}
+                                                                                                                              ghc-prim:GHC.Types.IO{tc 31Q})
+                                  (sat_s2fv{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                   ghc-prim:GHC.Tuple.(){(w) tc 40})
+                                  (sat_s2fI{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                   ghc-prim:GHC.Tuple.(){(w) tc 40}); } in
+                  let {
+                    sat_s2ft{v} [Occ=Once1]
+                      :: ghc-prim:GHC.Types.IO{tc 31Q} ghc-prim:GHC.Tuple.(){(w) tc 40}
+                    [LclId] =
+                        {} \u []
+                            let {
+                              sat_s2fs{v} [Occ=Once1]
+                                :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                     ghc-prim:GHC.Types.Char{(w) tc 3g}
+                              [LclId] =
+                                  {} \u []
+                                      (ghc-prim:GHC.CString.unpackCString#{v 0k} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Prim.Addr#{(w) tc 32}
+                                                                                                                                   -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                                        ghc-prim:GHC.Types.Char{(w) tc 3g})
+                                          "T1-knownWhnf-AFTER   "#;
+                            } in 
+                              (main:Main.probe{v rL9} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (a{tv aZq} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                        base:GHC.Base.String{(w) tc 3c}
+                                                                                                        -> (a{tv aZq} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                           -> ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                                ghc-prim:GHC.Tuple.(){(w) tc 40})
+                                  (sat_s2fs{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                   ghc-prim:GHC.Types.Char{(w) tc 3g})
+                                  (main:Main.knownWhnf{v rLa} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: base:GHC.Maybe.Maybe{(w) tc 3U}
+                                                                                                                  ghc-prim:GHC.Types.Int{(w) tc 3u});
+                  } in 
+                    (base:GHC.Base.>>{v 02M} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                           -> ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                        base:GHC.Base.Monad{tc 28}
+                                                                                                          (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                      -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                        => forall (a{tv a23B} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                  (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                           (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                       -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                             (a{tv a23B} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                           -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                          -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                              -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                             -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                   (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                        (base:GHC.Base.$fMonadIO{v rHL} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Base.Monad{tc 28}
+                                                                                                                    ghc-prim:GHC.Types.IO{tc 31Q})
+                        (sat_s2ft{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                         ghc-prim:GHC.Tuple.(){(w) tc 40})
+                        (sat_s2fJ{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                         ghc-prim:GHC.Tuple.(){(w) tc 40}); } in
+        let {
+          sat_s2fr{v} [Occ=Once1]
+            :: ghc-prim:GHC.Types.IO{tc 31Q} ghc-prim:GHC.Tuple.(){(w) tc 40}
+          [LclId] =
+              {} \u []
+                  (base:GHC.Base.return{v 02O} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                             -> ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                          base:GHC.Base.Monad{tc 28}
+                                                                                                            (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                        -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                          => forall (a{tv a28u} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                  ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}).
+                                                                                                             (a{tv a28u} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                           ghc-prim:GHC.Types.LiftedRep{(w) tc 33a})
+                                                                                                             -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                            -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                                  (a{tv a28u} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                                                ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}))
+                      (base:GHC.Base.$fMonadIO{v rHL} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Base.Monad{tc 28}
+                                                                                                                  ghc-prim:GHC.Types.IO{tc 31Q})
+                      (ghc-prim:GHC.Tuple.(){(w) v 71} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DataCon]] :: ghc-prim:GHC.Tuple.(){(w) tc 40});
+        } in 
+          (base:GHC.Base.>>{v 02M} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                 -> ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                              base:GHC.Base.Monad{tc 28}
+                                                                                                (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                            -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                              => forall (a{tv a23B} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                        (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                 (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                             -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                   (a{tv a23B} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                 -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                      (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                    -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                   -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                         (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+              (base:GHC.Base.$fMonadIO{v rHL} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Base.Monad{tc 28}
+                                                                                                          ghc-prim:GHC.Types.IO{tc 31Q})
+              (sat_s2fr{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                               ghc-prim:GHC.Tuple.(){(w) tc 40})
+              (sat_s2fK{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                               ghc-prim:GHC.Tuple.(){(w) tc 40});
+
+sat_s2fq{v}
+  :: ghc-prim:GHC.Types.IO{tc 31Q} ghc-prim:GHC.Tuple.(){(w) tc 40}
+[LclId] =
+    {} \u []
+        let {
+          sat_s2fp{v} [Occ=Once1]
+            :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                 ghc-prim:GHC.Types.Char{(w) tc 3g}
+          [LclId] =
+              {} \u []
+                  (ghc-prim:GHC.CString.unpackCString#{v 0k} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Prim.Addr#{(w) tc 32}
+                                                                                                               -> ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                                                                    ghc-prim:GHC.Types.Char{(w) tc 3g})
+                      "T1-knownWhnf-BEFORE  "#;
+        } in 
+          (main:Main.probe{v rL9} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (a{tv aZq} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                    base:GHC.Base.String{(w) tc 3c}
+                                                                                    -> (a{tv aZq} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                       -> ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                            ghc-prim:GHC.Tuple.(){(w) tc 40})
+              (sat_s2fp{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.[]{(w) tc 3Q}
+                                                                               ghc-prim:GHC.Types.Char{(w) tc 3g})
+              (main:Main.knownWhnf{v rLa} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: base:GHC.Maybe.Maybe{(w) tc 3U}
+                                                                                              ghc-prim:GHC.Types.Int{(w) tc 3u});
+
+main:Main.main{v rLe}
+  :: ghc-prim:GHC.Types.IO{tc 31Q} ghc-prim:GHC.Tuple.(){(w) tc 40}
+[GblId] =
+    {} \u []
+        (base:GHC.Base.>>{v 02M} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[ClassOp]] :: forall (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                               -> ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                            base:GHC.Base.Monad{tc 28}
+                                                                                              (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                          -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                            => forall (a{tv a23B} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                      (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                               (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                           -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                 (a{tv a23B} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                               -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                              -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                    (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                  -> (m{tv a1VQ} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}
+                                                                                                                                 -> ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                       (b{tv a23C} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+            (base:GHC.Base.$fMonadIO{v rHL} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid[DFunId]] :: base:GHC.Base.Monad{tc 28}
+                                                                                                        ghc-prim:GHC.Types.IO{tc 31Q})
+            (sat_s2fq{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                             ghc-prim:GHC.Tuple.(){(w) tc 40})
+            (sat_s2fL{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                             ghc-prim:GHC.Tuple.(){(w) tc 40});
+
+main::Main.main{v 01D}
+  :: ghc-prim:GHC.Types.IO{tc 31Q} ghc-prim:GHC.Tuple.(){(w) tc 40}
+[GblId] =
+    {} \u []
+        (base:GHC.TopHandler.runMainIO{v 01E} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (a{tv a2aU} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+                                                                                                ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                  (a{tv a2aU} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                                -> ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                                     (a{tv a2aU} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+            (main:Main.main{v rLe} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                       ghc-prim:GHC.Tuple.(){(w) tc 40});
+
+main:Main.addressOf{v rL6}
+  :: forall (a{tv aZr} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}).
+     (a{tv aZr} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+     -> ghc-prim:GHC.Types.IO{tc 31Q}
+          ghc-prim:GHC.Types.Word{(w) tc 31W}
+[GblId, Arity=1, Unf=OtherCon []] =
+    {} \r [(x{v s2eg} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: (a{tv a1WA} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))]
+        let {
+          sat_s2eq{v} [Occ=Once1]
+            :: ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                 ghc-prim:GHC.Prim.RealWorld{(w) tc 31c}
+               -> ghc-prim:GHC.Prim.(#,#){(w) tc 54}
+                    ('ghc-prim:GHC.Types.TupleRep{(w) d 63u}
+                       ('ghc-prim:GHC.Types.[]{(w) d 6u}
+                          ghc-prim:GHC.Types.RuntimeRep{(w) tc 334}))
+                    ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}
+                    (ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                       ghc-prim:GHC.Prim.RealWorld{(w) tc 31c})
+                    ghc-prim:GHC.Types.Word{(w) tc 31W}
+          [LclId] =
+              {(x{v s2eg} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: (a{tv a1WA} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))} \r [(void_0E{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Prim.(##){(w) tc 50})]
+                  case
+                      anyToAddr#{v} [(x{v s2eg} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: (a{tv a1WA} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O}))
+                                     (ghc-prim:GHC.Prim.void#{(w) v 0m} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: ghc-prim:GHC.Prim.(##){(w) tc 50})] :: MultiAlt 1
+                  of
+                  (wild{v s2ek} [Occ=Dead]
+                     :: ghc-prim:GHC.Prim.(#,#){(w) tc 54}
+                          ('ghc-prim:GHC.Types.TupleRep{(w) d 63u}
+                             ('ghc-prim:GHC.Types.[]{(w) d 6u}
+                                ghc-prim:GHC.Types.RuntimeRep{(w) tc 334}))
+                          'ghc-prim:GHC.Types.AddrRep{(w) d 647}
+                          (ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                             ghc-prim:GHC.Prim.RealWorld{(w) tc 31c})
+                          ghc-prim:GHC.Prim.Addr#{(w) tc 32}
+                     Unf=OtherCon [])
+                  {
+                  ghc-prim:GHC.Prim.Solo#{(w) d 83} (addr{v s2em} [Occ=Once1]
+                                                       :: ghc-prim:GHC.Prim.Addr#{(w) tc 32}) ->
+                  case
+                      addr2Int#{v} [(addr{v s2em} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Prim.Addr#{(w) tc 32})] :: Prim IntRep
+                  of
+                  (sat_s2en{v} [Occ=Once1] :: ghc-prim:GHC.Prim.Int#{(w) tc 3s})
+                  {
+                  __DEFAULT ->
+                  case
+                      int2Word#{v} [(sat_s2en{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Prim.Int#{(w) tc 3s})] :: Prim WordRep
+                  of
+                  (sat_s2eo{v} [Occ=Once1] :: ghc-prim:GHC.Prim.Word#{(w) tc 31U})
+                  {
+                  __DEFAULT ->
+                  let {
+                    sat_s2ep{v} [Occ=Once1] :: ghc-prim:GHC.Types.Word{(w) tc 31W}
+                    [LclId] =
+                        CCCS ghc-prim:GHC.Types.W#{(w) d 6J}! [(sat_s2eo{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Prim.Word#{(w) tc 31U})];
+                  } in 
+                    ghc-prim:GHC.Prim.Solo#{(w) d 83} [(sat_s2ep{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Types.Word{(w) tc 31W})];
+                  };
+                  };
+                  }; } in
+        let {
+          sat_s2ei{v} [Occ=Once1]
+            :: (ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                  ghc-prim:GHC.Prim.RealWorld{(w) tc 31c}
+                -> ghc-prim:GHC.Prim.(#,#){(w) tc 54}
+                     ('ghc-prim:GHC.Types.TupleRep{(w) d 63u}
+                        ('ghc-prim:GHC.Types.[]{(w) d 6u}
+                           ghc-prim:GHC.Types.RuntimeRep{(w) tc 334}))
+                     ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}
+                     (ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                        ghc-prim:GHC.Prim.RealWorld{(w) tc 31c})
+                     ghc-prim:GHC.Types.Word{(w) tc 31W})
+               -> ghc-prim:GHC.Types.IO{tc 31Q}
+                    ghc-prim:GHC.Types.Word{(w) tc 31W}
+          [LclId] =
+              {} \r [(ds{v s2eh} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                                                                                     ghc-prim:GHC.Prim.RealWorld{(w) tc 31c}
+                                                                                   -> ghc-prim:GHC.Prim.(#,#){(w) tc 54}
+                                                                                        ('ghc-prim:GHC.Types.TupleRep{(w) d 63u}
+                                                                                           ('ghc-prim:GHC.Types.[]{(w) d 6u}
+                                                                                              ghc-prim:GHC.Types.RuntimeRep{(w) tc 334}))
+                                                                                        ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}
+                                                                                        (ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                                                                                           ghc-prim:GHC.Prim.RealWorld{(w) tc 31c})
+                                                                                        ghc-prim:GHC.Types.Word{(w) tc 31W})]
+                  (ds{v s2eh} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                                                                                  ghc-prim:GHC.Prim.RealWorld{(w) tc 31c}
+                                                                                -> ghc-prim:GHC.Prim.(#,#){(w) tc 54}
+                                                                                     ('ghc-prim:GHC.Types.TupleRep{(w) d 63u}
+                                                                                        ('ghc-prim:GHC.Types.[]{(w) d 6u}
+                                                                                           ghc-prim:GHC.Types.RuntimeRep{(w) tc 334}))
+                                                                                     ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}
+                                                                                     (ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                                                                                        ghc-prim:GHC.Prim.RealWorld{(w) tc 31c})
+                                                                                     ghc-prim:GHC.Types.Word{(w) tc 31W});
+        } in 
+          (base:GHC.Base.${v 01Z} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [gid] :: forall (r{tv a1WB} Nothing [tv] :: ghc-prim:GHC.Types.RuntimeRep{(w) tc 334})
+                                                                                           (a{tv a1WC} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                           (b{tv a1WD} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                         (r{tv a1WB} Nothing [tv] :: ghc-prim:GHC.Types.RuntimeRep{(w) tc 334})).
+                                                                                    ((a{tv a1WC} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                     -> (b{tv a1WD} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                      (r{tv a1WB} Nothing [tv] :: ghc-prim:GHC.Types.RuntimeRep{(w) tc 334})))
+                                                                                    -> (a{tv a1WC} Nothing [tv] :: ghc-prim:GHC.Types.Type{(w) tc 32O})
+                                                                                       -> (b{tv a1WD} Nothing [tv] :: ghc-prim:GHC.Prim.TYPE{(w) tc 32S}
+                                                                                                                        (r{tv a1WB} Nothing [tv] :: ghc-prim:GHC.Types.RuntimeRep{(w) tc 334})))
+              (sat_s2ei{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: (ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                                                                                ghc-prim:GHC.Prim.RealWorld{(w) tc 31c}
+                                                                              -> ghc-prim:GHC.Prim.(#,#){(w) tc 54}
+                                                                                   ('ghc-prim:GHC.Types.TupleRep{(w) d 63u}
+                                                                                      ('ghc-prim:GHC.Types.[]{(w) d 6u}
+                                                                                         ghc-prim:GHC.Types.RuntimeRep{(w) tc 334}))
+                                                                                   ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}
+                                                                                   (ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                                                                                      ghc-prim:GHC.Prim.RealWorld{(w) tc 31c})
+                                                                                   ghc-prim:GHC.Types.Word{(w) tc 31W})
+                                                                             -> ghc-prim:GHC.Types.IO{tc 31Q}
+                                                                                  ghc-prim:GHC.Types.Word{(w) tc 31W})
+              (sat_s2eq{v} Just 'ghc-prim:GHC.Types.Many{(w) d 65I} [lid] :: ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                                                                               ghc-prim:GHC.Prim.RealWorld{(w) tc 31c}
+                                                                             -> ghc-prim:GHC.Prim.(#,#){(w) tc 54}
+                                                                                  ('ghc-prim:GHC.Types.TupleRep{(w) d 63u}
+                                                                                     ('ghc-prim:GHC.Types.[]{(w) d 6u}
+                                                                                        ghc-prim:GHC.Types.RuntimeRep{(w) tc 334}))
+                                                                                  ghc-prim:GHC.Types.LiftedRep{(w) tc 33a}
+                                                                                  (ghc-prim:GHC.Prim.State#{(w) tc 31C}
+                                                                                     ghc-prim:GHC.Prim.RealWorld{(w) tc 31c})
+                                                                                  ghc-prim:GHC.Types.Word{(w) tc 31W});
+
+main:Main.$WSimVar{v r1Ld} [InlPrag=INLINE[final] CONLIKE]
+  :: ghc-prim:GHC.Types.Int{(w) tc 3u} %1 -> main:Main.SimVar{tc rL3}
+[GblId[DataConWrapper],
+ Arity=1,
+ Caf=NoCafRefs,
+ Str=<SL>,
+ Cpr=1,
+ Unf=OtherCon []] =
+    {} \r [(dt_s2ee{v} Just 'ghc-prim:GHC.Types.One{(w) d 65F} [lid] :: ghc-prim:GHC.Types.Int{(w) tc 3u})]
+        case
+            (dt_s2ee{v} Just 'ghc-prim:GHC.Types.One{(w) d 65F} [lid] :: ghc-prim:GHC.Types.Int{(w) tc 3u}) :: Alg ghc-prim:GHC.Types.Int{(w) tc 3u}
+        of
+        (dt_s2ef{v} [Occ=Once1] :: ghc-prim:GHC.Types.Int{(w) tc 3u})
+        {
+        __DEFAULT ->
+        main:Main.SimVar{d rL4} [(dt_s2ef{v} Just 'ghc-prim:GHC.Types.One{(w) d 65F} [lid] :: ghc-prim:GHC.Types.Int{(w) tc 3u})];
+        };
+

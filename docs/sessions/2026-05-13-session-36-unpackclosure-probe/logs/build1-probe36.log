@@ -1,0 +1,75 @@
+Warning: Specifying an absolute path to the project file is deprecated. Use
+--project-dir to set the project's directory.
+Configuration is affected by cabal.project at
+'/Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/hadrian'.
+Up to date
+Warning: Specifying an absolute path to the project file is deprecated. Use
+--project-dir to set the project's directory.
+Configuration is affected by cabal.project at
+'/Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/hadrian'.
+| Run Ghc FindHsDependencies Stage0: compiler/GHC.hs (and 578 more) => _build/stage0/compiler/.dependencies.mk
+| Remove file _build/stage0/compiler/.dependencies.mk.bak
+| Run Ghc CompileHs Stage0: compiler/GHC/Core/Opt/Simplify/Env.hs => _build/stage0/compiler/build/GHC/Core/Opt/Simplify/Env.p_o
+| Run Ghc CompileHs Stage0: compiler/GHC/Core/Opt/Simplify/Env.hs => _build/stage0/compiler/build/GHC/Core/Opt/Simplify/Env.o
+
+
+compiler/GHC/Core/Opt/Simplify/Env.hs:106:1: error:
+compiler/GHC/Core/Opt/Simplify/Env.hs:106:1: error:
+    Could not load module ‘GHC.Prim’
+    Could not load module ‘GHC.Prim’
+    It is a member of the hidden package ‘ghc-prim-0.8.0’.
+    It is a member of the hidden package ‘ghc-prim-0.8.0’.
+    You can run ‘:set -package ghc-prim’ to expose it.
+    You can run ‘:set -package ghc-prim’ to expose it.
+    (Note: this unloads all the modules in the current scope.)
+    (Note: this unloads all the modules in the current scope.)
+    Use -v (or `:set -v` in ghci) to see a list of the files searched for.
+    Use -v (or `:set -v` in ghci) to see a list of the files searched for.
+    |
+    |
+106 | import GHC.Prim          (int2Word#)
+106 | import GHC.Prim          (int2Word#)
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+| Configure package 'rts'
+Error when running Shake build system:
+  at want, called at src/Main.hs:104:30 in hadrian-0.1.0.0-inplace-hadrian:Main
+* Depends on: _build/stage1/lib/ppc-osx-ghc-9.2.8/ghc-9.2.8/libHSghc-9.2.8.a
+* Depends on: _build/stage1/lib/package.conf.d/ghc-9.2.8.conf
+* Depends on: OracleQ (ContextDataKey (Context {stage = Stage1, package = Package {pkgType = Library, pkgName = "ghc", pkgPath = "compiler"}, way = v}))
+* Depends on: _build/stage1/compiler/setup-config
+* Depends on: OracleQ (ContextDataKey (Context {stage = Stage1, package = Package {pkgType = Library, pkgName = "array", pkgPath = "libraries/array"}, way = v}))
+* Depends on: _build/stage1/libraries/array/setup-config
+* Depends on: OracleQ (ContextDataKey (Context {stage = Stage1, package = Package {pkgType = Library, pkgName = "base", pkgPath = "libraries/base"}, way = v}))
+* Depends on: _build/stage1/libraries/base/setup-config
+* Depends on: OracleQ (ContextDataKey (Context {stage = Stage1, package = Package {pkgType = Library, pkgName = "ghc-bignum", pkgPath = "libraries/ghc-bignum"}, way = v}))
+* Depends on: _build/stage1/libraries/ghc-bignum/setup-config
+* Depends on: OracleQ (ContextDataKey (Context {stage = Stage1, package = Package {pkgType = Library, pkgName = "ghc-prim", pkgPath = "libraries/ghc-prim"}, way = v}))
+* Depends on: _build/stage1/libraries/ghc-prim/setup-config
+* Depends on: OracleQ (ContextDataKey (Context {stage = Stage1, package = Package {pkgType = Library, pkgName = "rts", pkgPath = "rts"}, way = v}))
+* Depends on: _build/stage1/rts/setup-config
+* Depends on: _build/stage0/bin/powerpc-apple-darwin8-ghc
+* Depends on: _build/stage0/lib/aarch64-osx-ghc-9.2.8/ghc-9.2.8/libHSghc-9.2.8.a
+* Depends on: _build/stage0/lib/package.conf.d/ghc-9.2.8.conf
+* Depends on: _build/stage0/compiler/build/libHSghc-9.2.8.a
+* Depends on: _build/stage0/compiler/build/GHC/Core/Opt/Simplify/Env.o
+* Depends on: _build/stage0/compiler/build/GHC/Core/Opt/Simplify/Env.o _build/stage0/compiler/build/GHC/Core/Opt/Simplify/Env.hi
+  at cmd', called at src/Builder.hs:379:23 in hadrian-0.1.0.0-inplace-hadrian:Builder
+  at cmd, called at src/Builder.hs:483:8 in hadrian-0.1.0.0-inplace-hadrian:Builder
+* Raised the exception:
+Development.Shake.cmd, system command failed
+Command line: /Users/cell/.local/ghc-boot-wrap/bin/ghc -Wall -fdiagnostics-color=never -hisuf hi -osuf o -hcsuf hc -static -hide-all-packages -no-user-package-db '-package-env -' '-package-db _build/stage0/lib/package.conf.d' '-this-unit-id ghc-9.2.8' '-package-id array-0.5.4.0' '-package-id base-4.16.4.0' '-package-id binary-0.8.9.0' '-package-id bytestring-0.11.4.0' '-package-id containers-0.6.5.1' '-package-id deepseq-1.4.6.1' '-package-id directory-1.3.6.2' '-package-id exceptions-0.10.4' '-package-id filepath-1.4.2.2' '-package-id ghc-boot-9.2.8' '-package-id ghc-heap-9.2.8' '-package-id ghci-9.2.8' '-package-id hpc-0.6.1.0' '-package-id process-1.6.16.0' '-package-id template-haskell-2.18.0.0' '-package-id time-1.11.1.1' '-package-id transformers-0.5.6.2' '-package-id unix-2.7.2.2' -i -i/Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/_build/stage0/compiler/build -i/Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/_build/stage0/compiler/build/autogen -i/Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/compiler -Iincludes -I_build/stage0/lib -I_build/stage0/compiler/build -I_build/stage0/compiler/build/. -Icompiler/. -I/Users/cell/.local/ghc-9.2.8/lib/ghc-9.2.8/lib/aarch64-osx-ghc-9.2.8/process-1.6.16.0/include -I/Users/cell/.local/ghc-9.2.8/lib/ghc-9.2.8/lib/aarch64-osx-ghc-9.2.8/unix-2.7.2.2/include -I/Users/cell/.local/ghc-9.2.8/lib/ghc-9.2.8/lib/aarch64-osx-ghc-9.2.8/time-1.11.1.1/include -I/Users/cell/.local/ghc-9.2.8/lib/ghc-9.2.8/lib/aarch64-osx-ghc-9.2.8/bytestring-0.11.4.0/include -I/Users/cell/.local/ghc-9.2.8/lib/ghc-9.2.8/lib/aarch64-osx-ghc-9.2.8/base-4.16.4.0/include -I/Users/cell/.local/ghc-9.2.8/lib/ghc-9.2.8/lib/aarch64-osx-ghc-9.2.8/ghc-bignum-1.2/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/ffi -I/Users/cell/.local/ghc-9.2.8/lib/ghc-9.2.8/lib/aarch64-osx-ghc-9.2.8/rts-1.0.2/include -I_build/stage0/lib -optc-I_build/stage0/lib -optP-include -optP_build/stage0/compiler/build/autogen/cabal_macros.h -optP-DCAN_LOAD_DLL -outputdir _build/stage0/compiler/build -optc-Wno-unknown-pragmas -optP-Wno-nonportable-include-path -c compiler/GHC/Core/Opt/Simplify/Env.hs -o _build/stage0/compiler/build/GHC/Core/Opt/Simplify/Env.o -O0 -H64m -Wall -Wno-name-shadowing -Wnoncanonical-monad-instances -Wnoncanonical-monoid-instances -this-unit-id ghc -XHaskell2010 -XNoImplicitPrelude -XBangPatterns -XScopedTypeVariables -XMonoLocalBinds -DNO_REGS -DNOSMP -optc-DNOSMP -O2 -fno-warn-deprecated-flags
+Exit code: 1
+Stderr and Stdout:
+compiler/GHC/Core/Opt/Simplify/Env.hs:106:1: error:
+    Could not load module ‘GHC.Prim’
+    It is a member of the hidden package ‘ghc-prim-0.8.0’.
+    You can run ‘:set -package ghc-prim’ to expose it.
+    (Note: this unloads all the modules in the current scope.)
+    Use -v (or `:set -v` in ghci) to see a list of the files searched for.
+    |
+106 | import GHC.Prim          (int2Word#)
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+

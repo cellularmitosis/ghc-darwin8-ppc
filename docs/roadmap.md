@@ -362,6 +362,51 @@ much smaller than session 17 left it.  See:
   corruption inside `GarbageCollect()`, then an allocator + block-
   boundary audit.
 
+- Rounds 12-17 (sessions 30-35): debug-RTS build, env-var bisect,
+  closure-shape probes via `aToWordzh (unsafeCoerce v :: Any)`, STG
+  dump on AArch64/CodeGen.hs.  Capstone finding at session 35:
+  **the whole probe family was reading the wrong memory** —
+  `aToWordzh (unsafeCoerce v :: Any)` wraps v in a let-bound thunk
+  and reports the wrapping thunk's info pointer, not v's.  Session
+  35 dissolved sessions 33-34's "AArch64.CodeGen ncgPlatform-config
+  thunk" identification as a structural coincidence in `__DATA,__const`
+  layout.  What WAS robustly learned across these rounds: the bug
+  fires at 3 discrete env-len zones (~650-700, 850-900, 1650-1700)
+  and always misses a TYPECLASS DICTIONARY variable.  See sessions
+  [30](sessions/2026-05-12-session-30-debug-rts/),
+  [31](sessions/2026-05-12-session-31-cross-run-diff/),
+  [32](sessions/2026-05-12-session-32-env-var-bisect/),
+  [33](sessions/2026-05-13-session-33-closure-shape-probe/),
+  [34](sessions/2026-05-13-session-34-s71L-identification/),
+  [35](sessions/2026-05-13-session-35-stg-dump-and-whnf/).
+- [`docs/sessions/2026-05-13-session-36-unpackclosure-probe/`](sessions/2026-05-13-session-36-unpackclosure-probe/)
+  — round 18.  **Redesigned the probe to use `GHC.Exts.anyToAddr#`**
+  — a polymorphic primop that compiles to a Cmm register-to-register
+  move (no wrapping thunk) in `compiler/GHC/StgToCmm/Prim.hs`'s
+  `AnyToAddrOp`.  Verified clean via `-ddump-stg-final`
+  (`anyToAddr# [x void#]` with x passed directly) and a stand-alone
+  fixture program that distinguishes THUNK / WHNF / CAF-thunk-then-
+  forced cases on both uranium host-ghc and PPC unreg cross-stage1.
+  Sweep on pmacg5 produced 4 captures in 2 env-len zones (sessions
+  35's 650-700 zone didn't fire — heap layout shifted).  **All 4
+  captures show word[0] = exactly `0x092592a4` = `_stg_BLACKHOLE_info`,
+  word[1] tag bits `0b011` = pointer to evaluated `Id` ctor closure,
+  BEFORE = AFTER (no in-place update from seq).**  The thunk WAS
+  evaluated; the indirectee IS populated.  Only the BLACKHOLE→IND
+  info-pointer swap is missing.  This dissolves theory W
+  (wrapping-thunk artifact, definitively) and refines theory 1
+  (isLocalId DID force v — the indirectee exists — but v's closure
+  header retained `_stg_BLACKHOLE_info`).  Bug is in PPC unreg's
+  `stg_update_thunk_info` / `UPD_IND` path, or its interaction with
+  lazy blackholing.  v0.12.0 ships unchanged; probe applied for
+  measurement and reverted at session end; stage2 on pmacg5
+  rebuilt+redeployed clean.  Session-36
+  [`HANDOFF.md`](sessions/2026-05-13-session-36-unpackclosure-probe/HANDOFF.md)
+  scopes extending the probe to follow word[1] (confirm Id ctor
+  info-table), reading `rts/Updates.cmm` + `rts/Updates.h` for the
+  BLACKHOLE→IND swap, and experimenting with disabled lazy
+  blackholing.
+
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.
 
