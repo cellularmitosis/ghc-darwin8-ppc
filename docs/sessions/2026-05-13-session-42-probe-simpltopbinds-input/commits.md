@@ -1,6 +1,6 @@
 # Session 42 commits
 
-- _TBD: backfill SHA after `git commit`._  Session 42:
+- 35453cb Session 42:
   **SMOKING-GUN finding** for the stage2 GC bug.  Probe42
   instruments `simplTopBinds`'s entry in `Simplify.hs` to log
   `(length binds0, length (bindersOfBinds binds0))` via a
