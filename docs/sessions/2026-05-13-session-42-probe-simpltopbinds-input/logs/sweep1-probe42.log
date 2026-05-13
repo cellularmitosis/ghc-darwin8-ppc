@@ -1,0 +1,13 @@
+len=600   PROBE42-TOPBINDS call=1 num_groups=1 num_binders=1 RC=1  ghc-real: panic! (the 'impossible' happened)
+len=700   PROBE42-TOPBINDS call=1 num_groups=1 num_binders=1|PROBE42-TOPBINDS call=2 num_groups=5 num_binders=5 RC=1  ghc-real: panic! (the 'impossible' happened)
+len=800    RC=1      * GHC internal error: `swap' is not in scope during type
+len=850   PROBE42-TOPBINDS call=1 num_groups=0 num_binders=0 RC=0 OSIZE=152 
+len=900   PROBE42-TOPBINDS call=1 num_groups=0 num_binders=0 RC=0 OSIZE=152 
+len=950   PROBE42-TOPBINDS call=1 num_groups=0 num_binders=0 RC=0 OSIZE=152 
+len=1000  PROBE42-TOPBINDS call=1 num_groups=0 num_binders=0 RC=0 OSIZE=152 
+len=1100   RC=1      * GHC internal error: `swap' is not in scope during type
+len=1500   RC=1      * GHC internal error: `swap' is not in scope during type
+len=1650  PROBE42-TOPBINDS call=1 num_groups=1 num_binders=1 RC=1  ghc-real: panic! (the 'impossible' happened)
+len=1700  PROBE42-TOPBINDS call=1 num_groups=1 num_binders=1 RC=1  ghc-real: panic! (the 'impossible' happened)
+len=1900   RC=1      * GHC internal error: `swap' is not in scope during type
+len=2000   RC=1      * GHC internal error: `swap' is not in scope during type

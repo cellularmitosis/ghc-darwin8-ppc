@@ -1,0 +1,62 @@
+diff --git a/compiler/GHC/Core/Opt/Simplify.hs b/compiler/GHC/Core/Opt/Simplify.hs
+index 7fe17442..9ce53381 100644
+--- a/compiler/GHC/Core/Opt/Simplify.hs
++++ b/compiler/GHC/Core/Opt/Simplify.hs
+@@ -215,6 +215,7 @@ simplTopBinds env0 binds0
+                 -- It's rather as if the top-level binders were imported.
+                 -- See note [Glomming] in "GHC.Core.Opt.OccurAnal".
+         -- See Note [Bangs in the Simplifier]
++        ; let !_probe42 = probe42DumpBinds0 (length binds0) (length (bindersOfBinds binds0))
+         ; !env1 <- {-#SCC "simplTopBinds-simplRecBndrs" #-} simplRecBndrs env0 (bindersOfBinds binds0)
+         ; (floats, env2) <- {-#SCC "simplTopBinds-simpl_binds" #-} simpl_binds env1 binds0
+         ; freeTick SimplifierDone
+diff --git a/compiler/GHC/Core/Opt/Simplify/Env.hs b/compiler/GHC/Core/Opt/Simplify/Env.hs
+index d1b33b02..23fb10f1 100644
+--- a/compiler/GHC/Core/Opt/Simplify/Env.hs
++++ b/compiler/GHC/Core/Opt/Simplify/Env.hs
+@@ -5,8 +5,10 @@
+ -}
+ 
+ {-# LANGUAGE CPP #-}
++{-# LANGUAGE BangPatterns #-}
+ 
+ module GHC.Core.Opt.Simplify.Env (
++        probe42DumpBinds0,
+         -- * The simplifier mode
+         setMode, getMode, updMode, seDynFlags, seUnfoldingOpts, seLogger,
+ 
+@@ -75,6 +77,34 @@ import GHC.Utils.Logger
+ import GHC.Types.Unique.FM      ( pprUniqFM )
+ 
+ import Data.List (mapAccumL)
++import Data.IORef        (IORef, newIORef, atomicModifyIORef')
++import System.IO         (hPutStrLn, stderr, hFlush)
++import System.IO.Unsafe  (unsafePerformIO)
++
++-- PROBE42: dump simplTopBinds' input shape — number of binding
++-- groups (top-level Recs/NonRecs) and total binder count.
++--
++-- Hypothesis from session 41: in failing runs, simplRecBndrs's
++-- first call has scope=2 instead of scope=10.  If binds0
++-- (simplTopBinds' input CoreProgram) has only 2 binders in
++-- failing runs but 10 in clean runs, the corruption is UPSTREAM
++-- of simplTopBinds — in the typechecker/desugarer/specializer/
++-- interface deserializer pipeline.
++
++{-# NOINLINE probe42Counter #-}
++probe42Counter :: IORef Int
++probe42Counter = unsafePerformIO (newIORef 0)
++
++probe42DumpBinds0 :: Int -> Int -> ()
++probe42DumpBinds0 num_groups num_binders = unsafePerformIO $ do
++    n <- atomicModifyIORef' probe42Counter (\k -> (k+1, k+1))
++    hPutStrLn stderr $ unwords
++      [ "PROBE42-TOPBINDS"
++      , "call=" ++ show n
++      , "num_groups=" ++ show num_groups
++      , "num_binders=" ++ show num_binders
++      ]
++    hFlush stderr
+ 
+ {-
+ ************************************************************************

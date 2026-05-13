@@ -1,0 +1,110 @@
+=== Phase 1: Generate expected outputs (host ghc) ===
+  01_int_arith                             ok
+  02_double_literal                        ok
+  03_double_runtime                        ok
+  04_float_literal                         ok
+  05_word_sizes                            ok
+  06_integer_bignum                        ok
+  07_char_string                           ok
+  08_list_ops                              ok
+  09_maybe_either                          ok
+  10_adt_deriving                          ok
+  11_typeclasses                           ok
+  12_show_read                             ok
+  13_io_file                               ok
+  14_env_args                              ok
+  15_exceptions                            ok
+  16_ioref_mvar                            ok
+  17_bits                                  ok
+  18_bytestring                            ok
+  19_text                                  ok
+  20_laziness                              ok
+  21_typeable                              ok
+  22_array                                 ok
+  23_forkio                                ok
+  24_ffi                                   ok
+  25_numeric_boundaries                    ok
+  26_threaded_rts                          ok
+  27_stm                                   ok
+  29_data_time                             ok
+  30_long_running                          ok
+  31_mvar_stress                           ok
+  32_posix_signals                         ok
+  33_env_map                               ok
+  34_weak_refs                             ok
+  35_stm_retry_orelse                      ok
+
+=== Phase 2: Cross-build + Tiger run ===
+  01_int_arith                             PASS
+  02_double_literal                        PASS
+  03_double_runtime                        PASS
+  04_float_literal                         PASS
+  05_word_sizes                            PASS
+  06_integer_bignum                        PASS
+  07_char_string                           PASS
+  08_list_ops                              PASS
+  09_maybe_either                          PASS
+  10_adt_deriving                          PASS
+  11_typeclasses                           PASS
+  12_show_read                             PASS
+  13_io_file                               PASS
+  14_env_args                              PASS
+  15_exceptions                            PASS
+  16_ioref_mvar                            PASS
+  17_bits                                  PASS
+  18_bytestring                            PASS
+  19_text                                  PASS
+  20_laziness                              PASS
+  21_typeable                              PASS
+  22_array                                 PASS
+  23_forkio                                PASS
+  24_ffi                                   PASS
+  25_numeric_boundaries                    PASS
+  26_threaded_rts                          PASS
+  27_stm                                   PASS
+  29_data_time                             PASS
+  30_long_running                          PASS
+  31_mvar_stress                           PASS
+  32_posix_signals                         PASS
+  33_env_map                               PASS
+  34_weak_refs                             PASS
+  35_stm_retry_orelse                      PASS
+
+=== Summary ===
+PASS:         30 - 02_double_literal 03_double_runtime 04_float_literal 05_word_sizes 06_integer_bignum 07_char_string 08_list_ops 09_maybe_either 10_adt_deriving 11_typeclasses 12_show_read 13_io_file 15_exceptions 16_ioref_mvar 17_bits 18_bytestring 19_text 20_laziness 21_typeable 22_array 23_forkio 26_threaded_rts 27_stm 29_data_time 30_long_running 31_mvar_stress 32_posix_signals 33_env_map 34_weak_refs 35_stm_retry_orelse
+FAIL_COMPILE: 0 - 
+FAIL_RUN:     0 - 
+FAIL_OUTPUT:  4 - 01_int_arith 14_env_args 24_ffi 25_numeric_boundaries
+
+=== Output diffs (FAIL_OUTPUT) ===
+--- 01_int_arith ---
+7,8c7,8
+< minBound :: Int = -9223372036854775808
+< maxBound :: Int = 9223372036854775807
+---
+> minBound :: Int = -2147483648
+> maxBound :: Int = 2147483647
+
+--- 14_env_args ---
+2c2
+< getProgName = 14_env_args-host
+---
+> getProgName = ghc-test-bin
+
+--- 24_ffi ---
+1c1
+< getpid = 87927
+---
+> getpid = 21838
+
+--- 25_numeric_boundaries ---
+1,3c1,3
+< maxBound Int = 9223372036854775807
+< maxBound + 1 = -9223372036854775808
+< minBound - 1 = 9223372036854775807
+---
+> maxBound Int = 2147483647
+> maxBound + 1 = -2147483648
+> minBound - 1 = 2147483647
+
+TESTS_EXIT=0

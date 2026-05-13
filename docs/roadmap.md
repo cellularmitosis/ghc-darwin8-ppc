@@ -561,6 +561,35 @@ much smaller than session 17 left it.  See:
   scopes probe42: instrument `simplTopBinds`'s entry to dump
   `length (bindersOfBinds binds0)` and directly compare
   clean vs failing compile.
+- [`docs/sessions/2026-05-13-session-42-probe-simpltopbinds-input/`](sessions/2026-05-13-session-42-probe-simpltopbinds-input/)
+  — round 24.  **SMOKING GUN — root cause located.**  Probe42
+  instruments `simplTopBinds`'s entry in `Simplify.hs` to log
+  `(length binds0, length (bindersOfBinds binds0))`.  **Findings:**
+  Clean compile (`-A256m`/`-A1G`): binds0 has 9 binders, call 2
+  has 13.  Failing `-A1m -G1` at len=600/1650/1700: binds0 has
+  **1 binder** → refineFromInScope panic.  Failing `-A1m -G1`
+  at len=850-1000: binds0 has **0 binders** → ghc-real exits
+  RC=0 producing a **152-byte empty .o file** (SILENT
+  MISCOMPILE — no function definitions emitted; clean .o is
+  46340 B).  `-A1G` always sees 9 binders.  Deterministic
+  given env-len + RTS flags.  **Root cause:** GC corrupts the
+  `[InBind]` cons-list spine flowing into `simplTopBinds`,
+  truncating it to 0-1 elements.  This finding **subsumes
+  every prior session's framing** — v's-closure-shape (S33-36),
+  UniqMap-corruption (S28-38), Var.realUnique-drift (S38),
+  two-distinct-Vars (S39), SimplEnv-field-corruption (S40-41)
+  — all are downstream symptoms of the same root cause.
+  **Severity update:** the bug is worse than previously thought
+  — not just panics but also silent miscompiles producing
+  empty .o files.  User-facing workaround: `+RTS -A1G -RTS`
+  (or `-A256m`).  v0.12.0 ships unchanged; probe applied and
+  reverted; stage2 rebuilt+redeployed clean + smoke-test PASS
+  + baseline tests 30 PASS / 4 FAIL_OUTPUT unchanged.
+  Session-42
+  [`HANDOFF.md`](sessions/2026-05-13-session-42-probe-simpltopbinds-input/HANDOFF.md)
+  scopes probe43: identify WHICH GC pass corrupts
+  CONSTR_2_0 closures (the [InBind] cons cells).  Likely
+  candidate: `rts/sm/Evac.c::copy_tag` on PPC32 unreg.
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.
