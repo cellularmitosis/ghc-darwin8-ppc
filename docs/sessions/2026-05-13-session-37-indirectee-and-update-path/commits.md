@@ -1,6 +1,6 @@
 # Session 37 commits
 
-- _TBD: backfill SHA after `git commit`._  Session 37: probe37
+- 751a01a Session 37: probe37
   dissolves session 36's "BLACKHOLE→IND swap missing" framing —
   `rts/Updates.h:48-67`'s `updateWithIndirection` macro sets
   `word[0] = stg_BLACKHOLE_info` *by design* and writes the tagged

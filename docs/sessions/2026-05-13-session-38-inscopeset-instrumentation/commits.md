@@ -1,6 +1,6 @@
 # Session 38 commits
 
-- _TBD: backfill SHA after `git commit`._  Session 38: probe38
+- f3d776e Session 38: probe38
   instruments `compiler/GHC/Core/Opt/Simplify/Env.hs` with three
   silent-on-happy-path diagnostics — (A) `refineFromInScope`
   panic-site full dump of the InScopeSet contents + size +
