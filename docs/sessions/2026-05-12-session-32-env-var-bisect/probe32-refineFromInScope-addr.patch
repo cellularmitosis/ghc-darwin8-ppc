@@ -1,0 +1,46 @@
+diff --git a/compiler/GHC/Core/Opt/Simplify/Env.hs b/compiler/GHC/Core/Opt/Simplify/Env.hs
+index d1b33b02..e7da1373 100644
+--- a/compiler/GHC/Core/Opt/Simplify/Env.hs
++++ b/compiler/GHC/Core/Opt/Simplify/Env.hs
+@@ -5,6 +5,10 @@
+ -}
+ 
+ {-# LANGUAGE CPP #-}
++{-# LANGUAGE MagicHash #-}
++{-# LANGUAGE BangPatterns #-}
++{-# LANGUAGE GHCForeignImportPrim #-}
++{-# LANGUAGE UnliftedFFITypes #-}
+ 
+ module GHC.Core.Opt.Simplify.Env (
+         -- * The simplifier mode
+@@ -76,6 +80,20 @@ import GHC.Types.Unique.FM      ( pprUniqFM )
+ 
+ import Data.List (mapAccumL)
+ 
++-- PROBE32: heap-address probe for the refineFromInScope panic.
++-- Reuses the same trick as GHC.Exts.Heap.Closures' Box Show instance.
++import GHC.Exts (Any, Word#)
++import GHC.Word (Word(..))
++import qualified Numeric (showHex)
++import Unsafe.Coerce (unsafeCoerce)
++
++foreign import prim "aToWordzh" probe32_aToWord# :: Any -> Word#
++
++probe32AddrHex :: a -> String
++probe32AddrHex x =
++    let !w = W# (probe32_aToWord# (unsafeCoerce x :: Any))
++    in "0x" ++ Numeric.showHex w ""
++
+ {-
+ ************************************************************************
+ *                                                                      *
+@@ -703,7 +721,8 @@ refineFromInScope :: InScopeSet -> Var -> Var
+ refineFromInScope in_scope v
+   | isLocalId v = case lookupInScope in_scope v of
+                   Just v' -> v'
+-                  Nothing -> pprPanic "refineFromInScope" (ppr in_scope $$ ppr v)
++                  Nothing -> pprPanic ("refineFromInScope " ++ probe32AddrHex v)
++                                       (ppr in_scope $$ ppr v)
+                              -- c.f #19074 for a subtle place where this went wrong
+   | otherwise = v
+ 
