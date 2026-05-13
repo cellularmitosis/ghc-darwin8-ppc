@@ -19,8 +19,8 @@ new probe binaries on pmacg5.  All deliverables are in
 - `scripts/audit-all-true-frames.py` — generalised; works
   for any True-containing StackRep pattern.
 
-Plus one transient log artifact (gitignored):
+Plus one transient log artifact:
 
-- `log/session22/host/catch-host-O2.dump` — host GHC 9.2.8
+- `logs/host/catch-host-O2.dump` — host GHC 9.2.8
   `-ddump-cmm` output for `Catch.hs`, used in the
   cross-vs-host StackRep comparison.

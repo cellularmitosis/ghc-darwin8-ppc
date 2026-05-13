@@ -1,0 +1,39 @@
+=== Big2.hs iters=10 flags='+RTS -A1G -RTS' ===
+iter01 rc=0 : OK
+iter02 rc=0 : OK
+iter03 rc=0 : OK
+iter04 rc=0 : OK
+iter05 rc=0 : OK
+iter06 rc=0 : OK
+iter07 rc=0 : OK
+iter08 rc=0 : OK
+iter09 rc=0 : OK
+iter10 rc=0 : OK
+  SUMMARY: pass=10 fail=0 of 10
+
+=== Big2.hs iters=10 flags='+RTS -A1m -RTS' ===
+iter01 rc=1 : ghc-real: panic! (the 'impossible' happened)
+iter02 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter03 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter04 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter05 rc=0 : OK
+iter06 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter07 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter08 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter09 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter10 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+  SUMMARY: pass=1 fail=9 of 10
+
+=== Big2.hs iters=10 flags='+RTS -A1m -G1 -RTS' ===
+iter01 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter02 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter03 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter04 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter05 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter06 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter07 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter08 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter09 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter10 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+  SUMMARY: pass=0 fail=10 of 10
+

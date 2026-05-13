@@ -1,0 +1,13 @@
+PROBE23POISON gc_no=0 slot=8 old=0x0bdfff44 bd_gen=0 bd_flags=0x0
+PROBE23POISON gc_no=0 slot=42 old=0x0bd15e05 bd_gen=0 bd_flags=0x0
+PROBE23 gc_no=0 N=0 major=0 tso=0xbefe570 stk=0xbefeafc sp=0xbefedcc end=0xbefeeb0 words=57 heap_ptr=23 pinned_skip=0 evac_skip=21 poisoned=2
+PROBE23POISON gc_no=1 slot=13 old=0x0bdeb079 bd_gen=0 bd_flags=0x0
+PROBE23POISON gc_no=1 slot=20 old=0x0bdeabd6 bd_gen=0 bd_flags=0x0
+PROBE23POISON gc_no=1 slot=46 old=0x0bde9464 bd_gen=0 bd_flags=0x0
+PROBE23POISON gc_no=1 slot=65 old=0x0bd5111d bd_gen=0 bd_flags=0x0
+PROBE23 gc_no=1 N=0 major=0 tso=0xbefd570 stk=0xbfe1000 sp=0xbfe8e94 end=0xbfe9000 words=91 heap_ptr=31 pinned_skip=0 evac_skip=27 poisoned=4
+PROBE23POISON gc_no=2 slot=6 old=0x0bf5f38a bd_gen=0 bd_flags=0x0
+PROBE23POISON gc_no=2 slot=19 old=0x0bdff04c bd_gen=0 bd_flags=0x0
+PROBE23POISON gc_no=2 slot=25 old=0x0bdff0ad bd_gen=0 bd_flags=0x0
+PROBE23 gc_no=2 N=1 major=1 tso=0xbf8a19c stk=0xbfe1000 sp=0xbfe8be4 end=0xbfe9000 words=263 heap_ptr=157 pinned_skip=0 evac_skip=154 poisoned=3
+GHC_EXIT=139

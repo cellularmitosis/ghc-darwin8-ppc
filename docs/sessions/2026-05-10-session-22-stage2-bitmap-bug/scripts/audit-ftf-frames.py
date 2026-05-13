@@ -1,6 +1,6 @@
 import re, sys
 
-dump = open('log/session21/catch-cross/catch-O2.dump').read()
+dump = open('docs/sessions/2026-05-10-session-21-stage2-bitmap-bug/logs/catch-cross/catch-O2.dump').read()
 
 # Find each "block_cXXX_info" with rep StackRep [False, True, False] AND its body
 # Body is the immediately following block.

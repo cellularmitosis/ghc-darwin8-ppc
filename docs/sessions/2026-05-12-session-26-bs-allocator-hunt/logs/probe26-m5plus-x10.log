@@ -1,0 +1,40 @@
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+iter1_RC=0
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+iter2_RC=0
+PROBE26 #47 PlainPtr+pinned len=13
+PROBE26 #48 PlainPtr+pinned len=20
+PROBE26 #49 PlainPtr+pinned len=12
+iter3_RC=0
+PROBE26 #47 PlainPtr+pinned len=13
+PROBE26 #48 PlainPtr+pinned len=20
+PROBE26 #49 PlainPtr+pinned len=12
+iter4_RC=0
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+iter5_RC=0
+PROBE26 #47 PlainPtr+pinned len=13
+PROBE26 #48 PlainPtr+pinned len=20
+PROBE26 #49 PlainPtr+pinned len=12
+iter6_RC=0
+PROBE26 #47 PlainPtr+pinned len=13
+PROBE26 #48 PlainPtr+pinned len=20
+PROBE26 #49 PlainPtr+pinned len=12
+iter7_RC=0
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+iter8_RC=0
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+iter9_RC=0
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+iter10_RC=0

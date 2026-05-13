@@ -1,0 +1,37 @@
+PROBE31 gc=1 scavstack calls=1 frames=24 words=33 ptrs=25
+PROBE31 gc=1 frameHist t30=17 t33=2 t34=4 t36=1
+PROBE31 gc=2 scavstack calls=1 frames=39 words=47 ptrs=32
+PROBE31 gc=2 frameHist t30=28 t32=1 t34=9 t36=1
+PROBE31 gc=3 scavstack calls=1 frames=91 words=208 ptrs=158
+PROBE31 gc=3 frameHist t30=48 t33=36 t34=6 t36=1
+PROBE31 gc=4 scavstack calls=1 frames=48 words=102 ptrs=75
+PROBE31 gc=4 frameHist t30=28 t33=13 t34=6 t36=1
+PROBE31 gc=5 scavstack calls=1 frames=36 words=62 ptrs=37
+PROBE31 gc=5 frameHist t30=24 t33=3 t34=8 t36=1
+PROBE31 gc=6 scavstack calls=1 frames=41 words=54 ptrs=41
+PROBE31 gc=6 frameHist t30=32 t33=1 t34=7 t36=1
+PROBE31 gc=7 scavstack calls=1 frames=82 words=129 ptrs=96
+PROBE31 gc=7 frameHist t30=64 t33=7 t34=10 t36=1
+PROBE31 gc=8 scavstack calls=1 frames=73 words=109 ptrs=83
+PROBE31 gc=8 frameHist t30=58 t32=1 t33=3 t34=10 t36=1
+PROBE31 gc=9 scavstack calls=1 frames=78 words=141 ptrs=95
+PROBE31 gc=9 frameHist t30=64 t33=3 t34=10 t36=1
+PROBE31 gc=10 scavstack calls=1 frames=63 words=105 ptrs=72
+PROBE31 gc=10 frameHist t30=50 t33=3 t34=9 t36=1
+PROBE31 gc=11 scavstack calls=1 frames=97 words=137 ptrs=108
+PROBE31 gc=11 frameHist t30=84 t33=2 t34=10 t36=1
+PROBE31 gc=12 scavstack calls=1 frames=90 words=122 ptrs=96
+PROBE31 gc=12 frameHist t30=78 t33=2 t34=9 t36=1
+PROBE31 gc=13 scavstack calls=1 frames=119 words=205 ptrs=145
+PROBE31 gc=13 frameHist t30=103 t33=5 t34=10 t36=1
+PROBE31 gc=14 scavstack calls=1 frames=104 words=145 ptrs=117
+PROBE31 gc=14 frameHist t30=90 t33=3 t34=10 t36=1
+PROBE31 gc=15 scavstack calls=1 frames=157 words=200 ptrs=161
+PROBE31 gc=15 frameHist t30=126 t33=17 t34=13 t36=1
+PROBE31 gc=16 scavstack calls=1 frames=79 words=110 ptrs=78
+PROBE31 gc=16 frameHist t30=54 t33=16 t34=8 t36=1
+PROBE31 gc=17 scavstack calls=1 frames=29 words=61 ptrs=41
+PROBE31 gc=17 frameHist t30=21 t34=7 t36=1
+PROBE31 gc=18 scavstack calls=0 frames=0 words=0 ptrs=0
+PROBE31 gc=18 frameHist
+GHC_EXIT=0

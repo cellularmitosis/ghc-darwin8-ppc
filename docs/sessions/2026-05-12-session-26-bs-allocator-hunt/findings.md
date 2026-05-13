@@ -244,6 +244,6 @@ Suggested directions for session 27:
   session 25.  Counts PROBE26 / UNPINNED lines and prints histogram.
 - [`README.md`](README.md), [`findings.md`](findings.md),
   [`HANDOFF.md`](HANDOFF.md), `commits.md` — writeup.
-- Logs at [`../../../log/session26/`](../../../log/session26/)
-  (gitignored) capture the PROBE26 runs, plus the M5plus.hs panic
+- Logs at [`logs/`](logs/)
+ capture the PROBE26 runs, plus the M5plus.hs panic
   and Big.hs reruns.

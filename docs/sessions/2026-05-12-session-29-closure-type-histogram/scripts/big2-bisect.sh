@@ -12,7 +12,7 @@ set -uo pipefail
 PPC_HOST="${1:-pmacg5}"
 N_ITERS="${2:-3}"
 REPO_ROOT="$(cd "$(dirname "$0")/../../../../" && pwd)"
-LOGDIR="$REPO_ROOT/log/session29"
+LOGDIR="$REPO_ROOT/docs/sessions/2026-05-12-session-29-closure-type-histogram/logs"
 mkdir -p "$LOGDIR"
 
 GHC_REAL="/opt/ghc-stage2/bin/ghc-real"

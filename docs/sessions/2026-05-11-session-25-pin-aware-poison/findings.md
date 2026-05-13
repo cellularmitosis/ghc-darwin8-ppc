@@ -187,5 +187,5 @@ non-pinned BS.  Session 25 doesn't do that; session 26 should.
   session 23.  Counts PROBE23 / PROBE23POISON / PROBE23PINNED lines.
 - [`README.md`](README.md), [`findings.md`](findings.md),
   [`HANDOFF.md`](HANDOFF.md), `commits.md` — writeup.
-- Logs at [`../../../log/session25/`](../../../log/session25/)
-  (gitignored).
+- Logs at [`logs/`](logs/)
+

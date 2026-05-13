@@ -120,7 +120,7 @@ attribute precisely.
 `~/Library/Logs/CrashReporter/ghc-real.crash.log` on pmacg5 has 5
 matching `EXC_BAD_ACCESS at 0xdeadbeef` reports between
 03:54:45 and 03:55:21 — one per iter1..5 above.  Saved locally to
-[`../../../log/session23/ghc-real.crash.log`](../../../log/session23/ghc-real.crash.log)
+[`logs/ghc-real.crash.log`](logs/ghc-real.crash.log)
 (727 lines, includes earlier May-09 unrelated KERN_PROTECTION_FAILURE
 crashes too).
 
@@ -148,7 +148,7 @@ Thread 0 PPC Thread State 64 (excerpt):
 
 ### Step 5 — disassembly of the crash site
 
-[`scripts/blk_c7te.disasm`](../../../log/session23/blk_c7te.disasm) (54 lines):
+[`scripts/blk_c7te.disasm`](logs/blk_c7te.disasm) (54 lines):
 
 ```
 01fa47b0  __blk_c7te:
@@ -310,12 +310,12 @@ Still in PLAY:
   64-line RTS diff against unmodified `rts/sm/GC.c`.
 - [`scripts/run-poison.sh`](scripts/run-poison.sh) — orchestrates 5×
   M5.hs runs under `-A1m` plus `-A1m -DS` and `-A1G` controls.
-- [`../../../log/session23/poison-iter*.log`](../../../log/session23/)
+- [`logs/poison-iter*.log`](logs/)
   — captured PROBE22 / PROBE22POISON output per run.
-- [`../../../log/session23/ghc-real.crash.log`](../../../log/session23/ghc-real.crash.log)
+- [`logs/ghc-real.crash.log`](logs/ghc-real.crash.log)
   — full Mac OS X CrashReporter file (5 deadbeef events + earlier
   unrelated entries).
-- [`../../../log/session23/blk_c7te.disasm`](../../../log/session23/blk_c7te.disasm)
+- [`logs/blk_c7te.disasm`](logs/blk_c7te.disasm)
   — 54-line disassembly of the crashing block.
 
 ## Implications for v0.12.0

@@ -1,0 +1,39 @@
+PROBE19 markCAFs gc_no=0 dyn=90 rev=0 dyn_head=0x961bb13 rev_head=0x3
+PROBE19 markCAFs gc_no=1 dyn=616 rev=0 dyn_head=0x95c3c13 rev_head=0x3
+PROBE19 markCAFs gc_no=2 dyn=635 rev=0 dyn_head=0x958ff1b rev_head=0x3
+PROBE19 markCAFs gc_no=3 dyn=636 rev=0 dyn_head=0x9594c43 rev_head=0x3
+PROBE19 markCAFs gc_no=4 dyn=636 rev=0 dyn_head=0x9594c43 rev_head=0x3
+PROBE19 markCAFs gc_no=5 dyn=1343 rev=0 dyn_head=0x92d71fb rev_head=0x3
+PROBE19 markCAFs gc_no=6 dyn=1761 rev=0 dyn_head=0x92e105b rev_head=0x3
+PROBE19 markCAFs gc_no=7 dyn=1761 rev=0 dyn_head=0x92e105b rev_head=0x3
+PROBE19 markCAFs gc_no=8 dyn=1764 rev=0 dyn_head=0x92b148b rev_head=0x3
+PROBE19 markCAFs gc_no=9 dyn=2681 rev=0 dyn_head=0x92b3093 rev_head=0x3
+PROBE19 markCAFs gc_no=10 dyn=2997 rev=0 dyn_head=0x92e1193 rev_head=0x3
+PROBE19 markCAFs gc_no=11 dyn=3030 rev=0 dyn_head=0x951ef23 rev_head=0x3
+PROBE19 markCAFs gc_no=12 dyn=3030 rev=0 dyn_head=0x951ef23 rev_head=0x3
+PROBE19 markCAFs gc_no=13 dyn=3059 rev=0 dyn_head=0x957d893 rev_head=0x3
+PROBE19 markCAFs gc_no=14 dyn=3067 rev=0 dyn_head=0x92a9093 rev_head=0x3
+PROBE19 markCAFs gc_no=15 dyn=3067 rev=0 dyn_head=0x92a9093 rev_head=0x3
+PROBE19 markCAFs gc_no=16 dyn=3070 rev=0 dyn_head=0x945b37b rev_head=0x3
+PROBE19 markCAFs gc_no=17 dyn=3105 rev=0 dyn_head=0x957c493 rev_head=0x3
+PROBE19 markCAFs gc_no=18 dyn=3105 rev=0 dyn_head=0x957c493 rev_head=0x3
+PROBE19 markCAFs gc_no=19 dyn=3105 rev=0 dyn_head=0x957c493 rev_head=0x3
+PROBE19 markCAFs gc_no=20 dyn=3105 rev=0 dyn_head=0x957c493 rev_head=0x3
+PROBE19 markCAFs gc_no=21 dyn=3105 rev=0 dyn_head=0x957c493 rev_head=0x3
+PROBE19 markCAFs gc_no=22 dyn=3223 rev=0 dyn_head=0x951d16b rev_head=0x3
+ghc-real-debug: panic! (the 'impossible' happened)
+  (GHC version 9.2.8:
+	GHC.StgToCmm.Env: variable not found
+  $trModule2_ruq
+  local binds for:
+  Call stack:
+      CallStack (from HasCallStack):
+        callStackDoc, called at compiler/GHC/Utils/Panic.hs:181:37 in ghc:GHC.Utils.Panic
+        pprPanic, called at compiler/GHC/StgToCmm/Env.hs:153:9 in ghc:GHC.StgToCmm.Env
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+PROBE19 markCAFs gc_no=23 dyn=3463 rev=0 dyn_head=0x9615b73 rev_head=0x3
+----- M5.o size -----
+ls: M5.o: No such file or directory
+----- M5.o symbols -----

@@ -177,7 +177,7 @@ sane.
 ## Step 6 — run probe matrix
 
 [`scripts/run-probe-matrix.sh`](scripts/run-probe-matrix.sh) =
-session-29's matrix runner, retargeted to `log/session30/`.
+session-29's matrix runner, retargeted to `logs/`.
 
 ```
 === M5.hs   iters=5 flags='+RTS -A1m -G1 -RTS' ===  5/5 PASS, 13 GCs each

@@ -1,0 +1,20 @@
+ghc-real: panic! (the 'impossible' happened)
+  (GHC version 9.2.8:
+	depSortStgBinds
+  Found cyclic SCC:
+  [($trModule4_rXW :: TrName
+    [GblId, Unf=OtherCon []] =
+        CCS_DONT_CARE TrNameS! [$trModule3_rXV];,
+    {$trModule3_rXV}),
+   ($trModule3_rXV :: Addr#
+    [GblId, Unf=OtherCon []] =
+        "M5plus"#;,
+    {})]
+  Call stack:
+      CallStack (from HasCallStack):
+        callStackDoc, called at compiler/GHC/Utils/Panic.hs:181:37 in ghc:GHC.Utils.Panic
+        pprPanic, called at compiler/GHC/Stg/DepAnal.hs:144:7 in ghc:GHC.Stg.DepAnal
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+GHC_EXIT=1

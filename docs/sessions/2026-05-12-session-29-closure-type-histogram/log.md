@@ -101,7 +101,7 @@ main loop).
 ### Step 3 — run probe matrix
 
 [`scripts/run-probe-matrix.sh`](scripts/run-probe-matrix.sh) runs
-each cell 5×, captures all stderr per iter to `log/session29/`.
+each cell 5×, captures all stderr per iter to `logs/`.
 
 Results:
 

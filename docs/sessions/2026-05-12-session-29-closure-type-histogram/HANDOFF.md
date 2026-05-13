@@ -219,14 +219,14 @@ source ../../../scripts/cross-env.sh > /dev/null
 cd ../../..
 bash scripts/deploy-stage2.sh pmacg5
 
-# 3. Run the matrix (logs at log/session29/)
+# 3. Run the matrix (logs at logs/)
 bash docs/sessions/2026-05-12-session-29-closure-type-histogram/scripts/run-probe-matrix.sh \
     pmacg5 5
 
 # 4. Histogram diff (PASS GC vs FAIL GC)
 bash docs/sessions/2026-05-12-session-29-closure-type-histogram/scripts/diff-histograms.sh \
-    log/session29/M5-a1m-g1.iter1.log 13 \
-    log/session29/Big2-a1m-g1.iter1.log 17
+    logs/M5-a1m-g1.iter1.log 13 \
+    logs/Big2-a1m-g1.iter1.log 17
 
 # 5. Filename-sensitivity quick check
 ssh pmacg5 '
@@ -268,7 +268,7 @@ pass.
 - `pmacg5:/opt/ghc-stage2/bin/{ghc,ghc-real}` — clean rebuild+
   redeploy at session-29 end, matches v0.12.0.
 - New session dir: `docs/sessions/2026-05-12-session-29-closure-type-histogram/`
-  + run logs gitignored at `log/session29/`.
+  + run logs at `logs/`.
 
 ## Time estimate for session 30
 

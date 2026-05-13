@@ -1,0 +1,14 @@
+PROBE28 gc=1 N=0 maj=1 ng=1 preMut0=0 staticChain=181426 copiedW=8037 liveW=20355 liveB=27
+PROBE28 gc=2 N=0 maj=1 ng=1 preMut0=0 staticChain=180067 copiedW=78391 liveW=109149 liveB=117
+PROBE28 gc=3 N=0 maj=1 ng=1 preMut0=0 staticChain=180037 copiedW=121967 liveW=165013 liveB=171
+PROBE28 gc=4 N=0 maj=1 ng=1 preMut0=0 staticChain=180035 copiedW=161053 liveW=202046 liveB=207
+PROBE28 gc=5 N=0 maj=1 ng=1 preMut0=0 staticChain=180024 copiedW=208623 liveW=254719 liveB=260
+PROBE28 gc=6 N=0 maj=1 ng=1 preMut0=0 staticChain=177376 copiedW=298563 liveW=356186 liveB=363
+PROBE28 gc=7 N=0 maj=1 ng=1 preMut0=0 staticChain=177368 copiedW=392242 liveW=439600 liveB=440
+PROBE28 gc=8 N=0 maj=1 ng=1 preMut0=0 staticChain=175201 copiedW=468362 liveW=540341 liveB=540
+PROBE28 gc=9 N=0 maj=1 ng=1 preMut0=0 staticChain=175156 copiedW=534210 liveW=647627 liveB=647
+PROBE28 gc=10 N=0 maj=1 ng=1 preMut0=0 staticChain=175089 copiedW=624977 liveW=767624 liveB=764
+PROBE28 gc=11 N=0 maj=1 ng=1 preMut0=0 staticChain=174928 copiedW=731009 liveW=871603 liveB=865
+PROBE28 gc=12 N=0 maj=1 ng=1 preMut0=0 staticChain=174417 copiedW=765168 liveW=1199959 liveB=1443
+PROBE28 gc=13 N=0 maj=1 ng=1 preMut0=0 staticChain=174395 copiedW=366812 liveW=399931 liveB=409
+GHC_EXIT=0

@@ -1,0 +1,24 @@
+
+Big.hs:10:61: error:
+    * Couldn't match type `a' with `Int'
+      Expected: M.Map Int a
+        Actual: M.Map Int Int
+      `a' is a rigid type variable bound by
+        the type signature for:
+          topK :: forall a. Ord a => Int -> [a] -> [(a, Int)]
+        at Big.hs:9:1-41
+    * In the second argument of `($)', namely `freqMap xs'
+      In the expression:
+        take k . reverse . sort . map swap . M.toList $ freqMap xs
+      In an equation for `topK':
+          topK k xs
+            = take k . reverse . sort . map swap . M.toList $ freqMap xs
+            where
+                swap (a, b) = (b, a)
+    * Relevant bindings include
+        xs :: [a] (bound at Big.hs:10:8)
+        topK :: Int -> [a] -> [(a, Int)] (bound at Big.hs:10:1)
+   |
+10 | topK k xs = take k . reverse . sort . map swap . M.toList $ freqMap xs
+   |                                                             ^^^^^^^^^^
+GHC_EXIT=1

@@ -74,7 +74,7 @@ The "`swap`-not-in-scope" message includes the full `tcl_env`
 type-variable / argument bindings + 5 top-level identifiers, including
 `topK` and `freqMap`).  `swap` is the `where`-bound local that should
 be the 10th entry; it's missing.  See
-[`../../../log/session27/Big2-a1m-g1.iter1.log`](../../../log/session27/Big2-a1m-g1.iter1.log)
+[`logs/Big2-a1m-g1.iter1.log`](logs/Big2-a1m-g1.iter1.log)
 for a full dump.
 
 ### Big.hs (Big2.hs with a deliberate type-error variant) — discarded
@@ -238,5 +238,5 @@ Session 28 should pick from the following, in priority order:
   itself was discarded).
 - [`scripts/g1-big2-test.sh`](scripts/g1-big2-test.sh) — Big2.hs
   (corrected) `-A1G`, `-A1m`, `-A1m -G1` suite.
-- Run logs at [`../../../log/session27/`](../../../log/session27/)
-  (gitignored).
+- Run logs at [`logs/`](logs/)
+

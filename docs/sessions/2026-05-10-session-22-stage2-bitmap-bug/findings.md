@@ -49,7 +49,7 @@ getProgName, getpid, numeric boundaries).  Same as v0.12.0.
 
 ### Step 1 — re-cross-compile Catch.hs with -ddump-cmm-final
 
-(Session 21's `log/session21/catch-cross/catch-O2.dump` already
+(Session 21's `docs/sessions/2026-05-10-session-21-stage2-bitmap-bug/logs/catch-cross/catch-O2.dump` already
 contains the post-LayoutStack `Output Cmm` for Catch.hs.  All 8
 [F,T,F] and 1 [F,T] StackReps live in those `Output Cmm` sections.
 No re-build needed.)
@@ -108,7 +108,7 @@ Built `Catch.hs` with the host bootstrap GHC 9.2.8 at
     $SRC/Control/Monad/Catch.hs > catch-host-O2.dump
 ```
 
-(see [`log/session22/host/catch-host-O2.dump`](../../../log/session22/host/catch-host-O2.dump),
+(see [`logs/host/catch-host-O2.dump`](logs/host/catch-host-O2.dump),
 ~22.5k lines, gitignored).
 
 StackRep distribution (host vs cross):
@@ -277,5 +277,5 @@ two appear identical in 9.2.8 — both go through the
   no crash, those slots really were dead.  Decisive.
 - **Map.Internal audit not run.**  Larger module (dozens of PN/PNP
   tables); same script should run cleanly on
-  `log/session21/cmm-cross/internal-O2.dump`.  Worth doing as the
+  `docs/sessions/2026-05-10-session-21-stage2-bitmap-bug/logs/cmm-cross/internal-O2.dump`.  Worth doing as the
   next-cheapest experiment.

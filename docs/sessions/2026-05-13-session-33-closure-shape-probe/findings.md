@@ -52,7 +52,7 @@ surface.
 
 ### F1. All REFINE samples share `_s71L_info` and `W#_con_info`
 
-PROBE33-v1 sweep across env-zones (`log/session33/probe33-zones.log`):
+PROBE33-v1 sweep across env-zones (`logs/probe33-zones.log`):
 
 | env-len | tagged    | untag     | w0          | w1         | w2         | w3        |
 |---------|-----------|-----------|-------------|------------|------------|-----------|
@@ -165,7 +165,7 @@ Approaches:
 - `probe33-closure-dump.patch` — PROBE33-v2 (8-word dump) over
   clean `compiler/GHC/Core/Opt/Simplify/Env.hs`.  Re-apply with
   `git apply`.
-- Logs at `log/session33/`:
+- Logs at `logs/`:
   - `probe33-zones.log` — PROBE33-v1 sweep (4-word dump).  The
     canonical data for this session's finding.
   - `probe33-v2-zones.log` — PROBE33-v2 partial sweep (22/23 env-

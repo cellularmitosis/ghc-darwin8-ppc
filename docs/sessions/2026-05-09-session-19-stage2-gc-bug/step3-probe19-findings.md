@@ -133,4 +133,4 @@ forwarded" scenario.
 - Deployed binary: `pmacg5:/opt/ghc-stage2/bin/ghc-real-debug`
   (193 MB, contains the PROBE19 string).
 - Probe runner: [`scripts/exp-stage2-probe19.sh`](../../../scripts/exp-stage2-probe19.sh).
-- Logs: [`log/session19/probe19-*.log`](../../../log/session19/).
+- Logs: [`logs/probe19-*.log`](logs/).

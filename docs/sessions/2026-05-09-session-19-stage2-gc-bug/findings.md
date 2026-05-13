@@ -113,7 +113,7 @@ Done in [`scripts/exp-deploy-stage2-debug.sh`](../../../scripts/exp-deploy-stage
 Sister probe scripts:
 [`scripts/exp-stage2-debug-rts-probe.sh`](../../../scripts/exp-stage2-debug-rts-probe.sh)
 runs M5.hs through 8 RTS-flag combinations and dumps to
-`log/session19/`.
+`logs/`.
 
 ### How to rebuild only the RTS
 

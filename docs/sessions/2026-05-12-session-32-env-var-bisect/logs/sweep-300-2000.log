@@ -1,0 +1,23 @@
+len=300  REFINE rc=1 missing=$dNum_a1k2
+len=350  STGCMM rc=1 missing=$trModule4_r1kB
+len=400  STGCMM rc=1 missing=$trModule4_r1kB
+len=450  STGCMM rc=1 missing=$trModule4_r1kB
+len=500  PASS rc=0
+len=550  PASS rc=0
+len=600  PASS rc=0
+len=650  REFINE rc=1 missing=$dOrd_a1kc
+len=700  REFINE rc=1 missing=$dOrd_a1kc
+len=750  REFINE rc=1 missing=$dOrd_a1kc
+len=800  PASS rc=0
+len=850  REFINE rc=1 missing=$dOrd_a1ks
+len=900  REFINE rc=1 missing=$dOrd_a1ks
+len=950  REFINE rc=1 missing=$dOrd_a1ks
+len=1000 PASS rc=0
+len=1100 PASS rc=0
+len=1200 PASS rc=0
+len=1300 PASS rc=0
+len=1400 PASS rc=0
+len=1500 PASS rc=0
+len=1600 PASS rc=0
+len=1800 SCOPE rc=1 var=`swap' is not in scope
+len=2000 SCOPE rc=1 var=`swap' is not in scope

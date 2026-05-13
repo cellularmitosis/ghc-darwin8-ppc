@@ -223,7 +223,7 @@ accordingly when iterating.
 - `pmacg5:/opt/ghc-stage2/bin/{ghc,ghc-real}` — pending the clean
   redeploy after the rebuild finishes.
 - New session log: `docs/sessions/2026-05-12-session-26-bs-allocator-hunt/`
-  + run logs gitignored at `log/session26/`.
+  + run logs at `logs/`.
 
 ## Time estimate for session 27
 

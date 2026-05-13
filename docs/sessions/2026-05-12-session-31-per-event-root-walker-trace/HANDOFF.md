@@ -251,7 +251,7 @@ bash scripts/deploy-stage2.sh pmacg5
 - `pmacg5:/opt/ghc-stage2/bin/ghc-real-debug` — left from session 30,
   unchanged.
 - New session dir: `docs/sessions/2026-05-12-session-31-per-event-root-walker-trace/`.
-- Run logs gitignored at `log/session31/`.
+- Run logs at `logs/`.
 
 ## Time estimate for session 32
 

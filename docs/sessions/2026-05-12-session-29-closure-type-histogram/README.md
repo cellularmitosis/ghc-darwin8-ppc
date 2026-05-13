@@ -230,8 +230,8 @@ time) signature — clean v0.12.0-equivalent stage2 confirmed.
 - **No GHC-tree source edits committed this session.**  Probe lives
   only as the patch in this session dir.
 - **Stage2 ghc on pmacg5 is the clean rebuild after probe revert.**
-- **Logs at** [`../../../log/session29/`](../../../log/session29/)
-  (gitignored).
+- **Logs at** [`logs/`](logs/)
+
 - **HANDOFF for session 30** queues debug-RTS rebuild + heap-
   geometry / alignment audit (sees [`HANDOFF.md`](HANDOFF.md)).
 

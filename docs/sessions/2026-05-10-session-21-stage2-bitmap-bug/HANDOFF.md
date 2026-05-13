@@ -67,7 +67,7 @@ where the middle slot is **wrongly** marked non-pointer.
 ### Top: identify the Cmm-level *value* being saved at slot 1
 
 Pick one `block_cXXX_info` from
-`log/session21/catch-cross/catch-O2.dump` whose StackRep is
+`logs/catch-cross/catch-O2.dump` whose StackRep is
 `[False, True, False]`.  Then:
 
 1. Look at the surrounding Cmm to find where Sp-relative writes
@@ -139,7 +139,7 @@ python3 docs/sessions/2026-05-10-session-21-stage2-bitmap-bug/scripts/decode-inf
 
 ```
 python3 docs/sessions/2026-05-10-session-21-stage2-bitmap-bug/scripts/correlate-probe21-bads.py \
-    log/session20/probe20-iter1-vanilla-A1m.log 1
+    docs/sessions/2026-05-10-session-20-stage2-gc-bug-round2/logs/probe20-iter1-vanilla-A1m.log 1
 ```
 
 (Last arg = pay= filter; omit for all pays.)
@@ -150,8 +150,8 @@ python3 docs/sessions/2026-05-10-session-21-stage2-bitmap-bug/scripts/correlate-
 cd /Users/cell/claude/ghc-darwin8-ppc
 PPC_GHC=$PWD/external/ghc-modern/ghc-9.2.8/_build/stage1/bin/powerpc-apple-darwin8-ghc
 SRC=$PWD/external/ghc-modern/ghc-9.2.8/libraries/exceptions/src
-mkdir -p log/session22/cross
-cd log/session22/cross
+mkdir -p docs/sessions/2026-05-10-session-22-stage2-bitmap-bug/logs/cross
+cd docs/sessions/2026-05-10-session-22-stage2-bitmap-bug/logs/cross
 $PPC_GHC --make -c -O2 \
     -ddump-cmm -ddump-cmm-final -ddump-stg-final \
     -outputdir . -odir . -hidir . \
@@ -195,9 +195,9 @@ recipe above to get fresh dumps that include your debug output.
   (read-only investigation).
 - `external/ghc-modern/ghc-9.2.8/_build/stage1/...` — **unchanged**
   cross-built tree.  No probe / instrumentation patches applied.
-- `log/session21/cmm-cross/` and `log/session21/catch-cross/`
+- `logs/cmm-cross/` and `logs/catch-cross/`
   exist with cross-compile artifacts (~7 MB Cmm dumps).
-  Both are gitignored.  Clean up with `rm -rf log/session21/{cmm,catch}-cross/`
+  Both are gitignored.  Clean up with `rm -rf logs/{cmm,catch}-cross/`
   if needed.
 - `pmacg5:/opt/ghc-stage2/bin/ghc-real-debug` — **does not exist**
   (session 20 removed it on close; session 21 didn't recreate).
@@ -244,7 +244,7 @@ Read in order:
 3. docs/sessions/2026-05-10-session-21-stage2-bitmap-bug/README.md
 
 Then start with the top experiment: pick a `block_cXXX_info`
-from log/session21/catch-cross/catch-O2.dump with StackRep
+from logs/catch-cross/catch-O2.dump with StackRep
 [False, True, False], use `-ddump-cmm-final` to see what value
 is being written to slot 1's Sp-relative address, and classify.
 

@@ -1,0 +1,200 @@
+    r0: 0x0000000007f00b00   r1: 0x00000000bffff720   r2: 0x000000000bfe8bf0   r3: 0x000000000bdbc43c
+    r4: 0x00000000deadbeef   r5: 0x0000000000000010   r6: 0xffffffff2d2e054d   r7: 0x00000000ffffffff
+    r8: 0x0000000000000000   r9: 0x0000000000404a72  r10: 0x00000000db4fbe54  r11: 0x0000000008b05fb4
+   r12: 0x000000000bdbc43c  r13: 0x0000000008b00000  r14: 0x00000000095e0000  r15: 0x0000000000000001
+   r16: 0x0000000000000000  r17: 0x00000000095e0000  r18: 0x0000000008b00000  r19: 0x00000000095e0000
+   r20: 0x0000000008b00000  r21: 0x0000000008b00000  r22: 0x0000000008af0000  r23: 0x00000000095e0000
+   r24: 0x000000000bb005f0  r25: 0x0000000000000005  r26: 0x0000000000000001  r27: 0x000000000bf8a19c
+   r28: 0x00000000bffff7f0  r29: 0x000000000bdbc434  r30: 0x00000000095e2400  r31: 0x00000000bffff720
+
+Binary Images Description:
+    0x1000 -  0x8af1fff ghc-real 	/opt/ghc-stage2/bin/ghc-real
+ 0xb845000 -  0xb896fff libgmp.10.dylib 	/opt/gmp-6.2.1/lib/libgmp.10.dylib
+ 0xb8a1000 -  0xb8a1fff libgcc_s.1.dylib 	/opt/gcc14/lib/libgcc_s.1.dylib
+ 0xb8a4000 -  0xb8aafff libgcc_s.1.1.dylib 	/opt/gcc14/lib/libgcc_s.1.1.dylib
+ 0xb8b1000 -  0xb8b8fff libgcc_ehs.1.1.dylib 	/opt/gcc14/lib/libgcc_ehs.1.1.dylib
+0x8fe00000 - 0x8fe52fff dyld 46.16	/usr/lib/dyld
+0x90000000 - 0x901bcfff libSystem.B.dylib 	/usr/lib/libSystem.B.dylib
+0x90214000 - 0x90219fff libmathCommon.A.dylib 	/usr/lib/system/libmathCommon.A.dylib
+0x92a07000 - 0x92af5fff libiconv.2.dylib 	/usr/lib/libiconv.2.dylib
+
+**********
+
+Host Name:      pmacg5
+Date/Time:      2026-05-11 19:34:20.389 -0500
+OS Version:     10.4.11 (Build 8S165)
+Report Version: 4
+
+Command: ghc-real
+Path:    /opt/ghc-stage2/bin/ghc-real
+Parent:  bash [16974]
+
+Version: ??? (???)
+
+PID:    16976
+Thread: 0
+
+Exception:  EXC_BAD_ACCESS (0x0001)
+Codes:      KERN_INVALID_ADDRESS (0x0001) at 0xdeadbeef
+
+Thread 0 Crashed:
+0   <<00000000>> 	0xffff87f0 __memcpy + 80 (cpu_capabilities.h:189)
+1   ghc-real          	0x01fa4750 _blk_c7te + 112
+2   ghc-real          	0x07f00b00 StgRun + 32
+3   ghc-real          	0x07efc480 scheduleWaitThread + 944
+4   ghc-real          	0x07ef6178 rts_evalLazyIO + 168
+5   ghc-real          	0x07ef8abc hs_main + 172
+6   ghc-real          	0x0004f298 main + 248
+7   ghc-real          	0x0000b4bc _start + 760
+8   ghc-real          	0x0000b1c0 start + 48
+
+Thread 1:
+0   libSystem.B.dylib 	0x9002bfc8 semaphore_wait_signal_trap + 8
+1   libSystem.B.dylib 	0x90030aac pthread_cond_wait + 480
+2   ghc-real          	0x07f1c1f0 waitCondition + 16
+3   ghc-real          	0x07f1b9b8 itimer_thread_func + 184
+4   libSystem.B.dylib 	0x9002b908 _pthread_body + 96
+
+Thread 0 crashed with PPC Thread State 64:
+  srr0: 0x00000000ffff87f0 srr1: 0x100000000000f030                        vrsave: 0x0000000000000000
+    cr: 0x84000910          xer: 0x0000000020000000   lr: 0x0000000001fa4750  ctr: 0x0000000090130b60
+    r0: 0x0000000007f00b00   r1: 0x00000000bffff720   r2: 0x000000000bfe8bf0   r3: 0x000000000bdbc43c
+    r4: 0x00000000deadbeef   r5: 0x0000000000000010   r6: 0xffffffff2d2e054d   r7: 0x00000000ffffffff
+    r8: 0x0000000000000000   r9: 0x000000000041aa81  r10: 0x000000010be7f10b  r11: 0x0000000008b05fb4
+   r12: 0x000000000bdbc43c  r13: 0x0000000008b00000  r14: 0x00000000095e0000  r15: 0x0000000000000001
+   r16: 0x0000000000000000  r17: 0x00000000095e0000  r18: 0x0000000008b00000  r19: 0x00000000095e0000
+   r20: 0x0000000008b00000  r21: 0x0000000008b00000  r22: 0x0000000008af0000  r23: 0x00000000095e0000
+   r24: 0x000000000bb005f0  r25: 0x0000000000000005  r26: 0x0000000000000001  r27: 0x000000000bf8a19c
+   r28: 0x00000000bffff7f0  r29: 0x000000000bdbc434  r30: 0x00000000095e2400  r31: 0x00000000bffff720
+
+Binary Images Description:
+    0x1000 -  0x8af1fff ghc-real 	/opt/ghc-stage2/bin/ghc-real
+ 0xb845000 -  0xb896fff libgmp.10.dylib 	/opt/gmp-6.2.1/lib/libgmp.10.dylib
+ 0xb8a1000 -  0xb8a1fff libgcc_s.1.dylib 	/opt/gcc14/lib/libgcc_s.1.dylib
+ 0xb8a4000 -  0xb8aafff libgcc_s.1.1.dylib 	/opt/gcc14/lib/libgcc_s.1.1.dylib
+ 0xb8b1000 -  0xb8b8fff libgcc_ehs.1.1.dylib 	/opt/gcc14/lib/libgcc_ehs.1.1.dylib
+0x8fe00000 - 0x8fe52fff dyld 46.16	/usr/lib/dyld
+0x90000000 - 0x901bcfff libSystem.B.dylib 	/usr/lib/libSystem.B.dylib
+0x90214000 - 0x90219fff libmathCommon.A.dylib 	/usr/lib/system/libmathCommon.A.dylib
+0x92a07000 - 0x92af5fff libiconv.2.dylib 	/usr/lib/libiconv.2.dylib
+
+**********
+
+Host Name:      pmacg5
+Date/Time:      2026-05-11 19:34:27.979 -0500
+OS Version:     10.4.11 (Build 8S165)
+Report Version: 4
+
+Command: ghc-real
+Path:    /opt/ghc-stage2/bin/ghc-real
+Parent:  bash [16981]
+
+Version: ??? (???)
+
+PID:    16983
+Thread: 0
+
+Exception:  EXC_BAD_ACCESS (0x0001)
+Codes:      KERN_INVALID_ADDRESS (0x0001) at 0xdeadbeef
+
+Thread 0 Crashed:
+0   <<00000000>> 	0xffff87f0 __memcpy + 80 (cpu_capabilities.h:189)
+1   ghc-real          	0x01fa4750 _blk_c7te + 112
+2   ghc-real          	0x07f00b00 StgRun + 32
+3   ghc-real          	0x07efc480 scheduleWaitThread + 944
+4   ghc-real          	0x07ef6178 rts_evalLazyIO + 168
+5   ghc-real          	0x07ef8abc hs_main + 172
+6   ghc-real          	0x0004f298 main + 248
+7   ghc-real          	0x0000b4bc _start + 760
+8   ghc-real          	0x0000b1c0 start + 48
+
+Thread 1:
+0   libSystem.B.dylib 	0x9002bfc8 semaphore_wait_signal_trap + 8
+1   libSystem.B.dylib 	0x90030aac pthread_cond_wait + 480
+2   ghc-real          	0x07f1c1f0 waitCondition + 16
+3   ghc-real          	0x07f1b9b8 itimer_thread_func + 184
+4   libSystem.B.dylib 	0x9002b908 _pthread_body + 96
+
+Thread 0 crashed with PPC Thread State 64:
+  srr0: 0x00000000ffff87f0 srr1: 0x100000000000f030                        vrsave: 0x0000000000000000
+    cr: 0x84000910          xer: 0x0000000020000000   lr: 0x0000000001fa4750  ctr: 0x0000000090130b60
+    r0: 0x0000000007f00b00   r1: 0x00000000bffff720   r2: 0x000000000bfe8bf0   r3: 0x000000000bdbc43c
+    r4: 0x00000000deadbeef   r5: 0x0000000000000010   r6: 0xffffffff2d2e054d   r7: 0x00000000ffffffff
+    r8: 0x0000000000000000   r9: 0x00000000003f7903  r10: 0x00000000a6035e3a  r11: 0x0000000008b05fb4
+   r12: 0x000000000bdbc43c  r13: 0x0000000008b00000  r14: 0x00000000095e0000  r15: 0x0000000000000001
+   r16: 0x0000000000000000  r17: 0x00000000095e0000  r18: 0x0000000008b00000  r19: 0x00000000095e0000
+   r20: 0x0000000008b00000  r21: 0x0000000008b00000  r22: 0x0000000008af0000  r23: 0x00000000095e0000
+   r24: 0x000000000bb005f0  r25: 0x0000000000000005  r26: 0x0000000000000001  r27: 0x000000000bf8a19c
+   r28: 0x00000000bffff7f0  r29: 0x000000000bdbc434  r30: 0x00000000095e2400  r31: 0x00000000bffff720
+
+Binary Images Description:
+    0x1000 -  0x8af1fff ghc-real 	/opt/ghc-stage2/bin/ghc-real
+ 0xb845000 -  0xb896fff libgmp.10.dylib 	/opt/gmp-6.2.1/lib/libgmp.10.dylib
+ 0xb8a1000 -  0xb8a1fff libgcc_s.1.dylib 	/opt/gcc14/lib/libgcc_s.1.dylib
+ 0xb8a4000 -  0xb8aafff libgcc_s.1.1.dylib 	/opt/gcc14/lib/libgcc_s.1.1.dylib
+ 0xb8b1000 -  0xb8b8fff libgcc_ehs.1.1.dylib 	/opt/gcc14/lib/libgcc_ehs.1.1.dylib
+0x8fe00000 - 0x8fe52fff dyld 46.16	/usr/lib/dyld
+0x90000000 - 0x901bcfff libSystem.B.dylib 	/usr/lib/libSystem.B.dylib
+0x90214000 - 0x90219fff libmathCommon.A.dylib 	/usr/lib/system/libmathCommon.A.dylib
+0x92a07000 - 0x92af5fff libiconv.2.dylib 	/usr/lib/libiconv.2.dylib
+
+**********
+
+Host Name:      pmacg5
+Date/Time:      2026-05-11 19:34:35.449 -0500
+OS Version:     10.4.11 (Build 8S165)
+Report Version: 4
+
+Command: ghc-real
+Path:    /opt/ghc-stage2/bin/ghc-real
+Parent:  bash [16991]
+
+Version: ??? (???)
+
+PID:    16993
+Thread: 0
+
+Exception:  EXC_BAD_ACCESS (0x0001)
+Codes:      KERN_INVALID_ADDRESS (0x0001) at 0xdeadbeef
+
+Thread 0 Crashed:
+0   <<00000000>> 	0xffff87f0 __memcpy + 80 (cpu_capabilities.h:189)
+1   ghc-real          	0x01fa4750 _blk_c7te + 112
+2   ghc-real          	0x07f00b00 StgRun + 32
+3   ghc-real          	0x07efc480 scheduleWaitThread + 944
+4   ghc-real          	0x07ef6178 rts_evalLazyIO + 168
+5   ghc-real          	0x07ef8abc hs_main + 172
+6   ghc-real          	0x0004f298 main + 248
+7   ghc-real          	0x0000b4bc _start + 760
+8   ghc-real          	0x0000b1c0 start + 48
+
+Thread 1:
+0   libSystem.B.dylib 	0x9002bfc8 semaphore_wait_signal_trap + 8
+1   libSystem.B.dylib 	0x90030aac pthread_cond_wait + 480
+2   ghc-real          	0x07f1c1f0 waitCondition + 16
+3   ghc-real          	0x07f1b9b8 itimer_thread_func + 184
+4   libSystem.B.dylib 	0x9002b908 _pthread_body + 96
+
+Thread 0 crashed with PPC Thread State 64:
+  srr0: 0x00000000ffff87f0 srr1: 0x100000000000f030                        vrsave: 0x0000000000000000
+    cr: 0x84000910          xer: 0x0000000020000000   lr: 0x0000000001fa4750  ctr: 0x0000000090130b60
+    r0: 0x0000000007f00b00   r1: 0x00000000bffff720   r2: 0x000000000bfe8bf0   r3: 0x000000000bdbc43c
+    r4: 0x00000000deadbeef   r5: 0x0000000000000010   r6: 0xffffffff2d2e054d   r7: 0x00000000ffffffff
+    r8: 0x0000000000000000   r9: 0x0000000000391ec9  r10: 0x000000010bb7e14b  r11: 0x0000000008b05fb4
+   r12: 0x000000000bdbc43c  r13: 0x0000000008b00000  r14: 0x00000000095e0000  r15: 0x0000000000000001
+   r16: 0x0000000000000000  r17: 0x00000000095e0000  r18: 0x0000000008b00000  r19: 0x00000000095e0000
+   r20: 0x0000000008b00000  r21: 0x0000000008b00000  r22: 0x0000000008af0000  r23: 0x00000000095e0000
+   r24: 0x000000000bb005f0  r25: 0x0000000000000005  r26: 0x0000000000000001  r27: 0x000000000bf8a19c
+   r28: 0x00000000bffff7f0  r29: 0x000000000bdbc434  r30: 0x00000000095e2400  r31: 0x00000000bffff720
+
+Binary Images Description:
+    0x1000 -  0x8af1fff ghc-real 	/opt/ghc-stage2/bin/ghc-real
+ 0xb845000 -  0xb896fff libgmp.10.dylib 	/opt/gmp-6.2.1/lib/libgmp.10.dylib
+ 0xb8a1000 -  0xb8a1fff libgcc_s.1.dylib 	/opt/gcc14/lib/libgcc_s.1.dylib
+ 0xb8a4000 -  0xb8aafff libgcc_s.1.1.dylib 	/opt/gcc14/lib/libgcc_s.1.1.dylib
+ 0xb8b1000 -  0xb8b8fff libgcc_ehs.1.1.dylib 	/opt/gcc14/lib/libgcc_ehs.1.1.dylib
+0x8fe00000 - 0x8fe52fff dyld 46.16	/usr/lib/dyld
+0x90000000 - 0x901bcfff libSystem.B.dylib 	/usr/lib/libSystem.B.dylib
+0x90214000 - 0x90219fff libmathCommon.A.dylib 	/usr/lib/system/libmathCommon.A.dylib
+0x92a07000 - 0x92af5fff libiconv.2.dylib 	/usr/lib/libiconv.2.dylib
+

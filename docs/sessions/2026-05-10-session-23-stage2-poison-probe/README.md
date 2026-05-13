@@ -92,7 +92,7 @@ forced `-A1G` by calling `/opt/ghc-stage2/bin/ghc-real` directly.
 `~/Library/Logs/CrashReporter/ghc-real.crash.log` had 5 matching
 `EXC_BAD_ACCESS at 0xdeadbeef` reports between 03:54:45 and 03:55:21,
 one per iter1..5.  Pulled to
-[`../../../log/session23/ghc-real.crash.log`](../../../log/session23/ghc-real.crash.log).
+[`logs/ghc-real.crash.log`](logs/ghc-real.crash.log).
 
 Backtrace (identical for all 5):
 
@@ -220,7 +220,7 @@ walk back to the StgToCmm/LayoutStack code that produced it.
   [`scripts/run-poison.sh`](scripts/run-poison.sh) — re-applicable
   in 2 minutes.
 - **Crash log + disassembly + per-iter PROBE logs** saved to
-  [`../../../log/session23/`](../../../log/session23/).
+  [`logs/`](logs/).
 - **HANDOFF.md** for session 24 frames the next experiment: dump
   cross-built FastString.hs Cmm, find the offending info table /
   block / StackRep, classify, and instrument LayoutStack /

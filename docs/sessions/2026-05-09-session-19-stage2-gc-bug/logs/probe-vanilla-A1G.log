@@ -1,0 +1,8 @@
+----- M5.o symbols -----
+00000010 d _ruD_closure
+00000018 d _ruB_closure
+00000020 D _M5_zdtrModule_closure
+00000030 D _M5_six_closure
+00000038 D _M5_five_closure
+----- M5.o size -----
+-rw-r--r--   1 macuser  wheel  868 May  9 23:58 M5.o

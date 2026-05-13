@@ -181,7 +181,7 @@ bash scripts/deploy-stage2.sh pmacg5
 - `pmacg5:/opt/ghc-stage2/bin/{ghc,ghc-real}` — unchanged from
   session-26 end (v0.12.0-equivalent).
 - New session log: `docs/sessions/2026-05-12-session-27-non-perturbing-repro/`
-  + run logs gitignored at `log/session27/`.
+  + run logs at `logs/`.
 
 ## Time estimate for session 28
 

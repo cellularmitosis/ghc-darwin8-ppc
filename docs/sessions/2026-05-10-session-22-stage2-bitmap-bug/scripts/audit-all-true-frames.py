@@ -1,7 +1,7 @@
 """Audit every block-StackRep with at least one True in catch-cross dump."""
 import re
 
-dump = open('log/session21/catch-cross/catch-O2.dump').read()
+dump = open('docs/sessions/2026-05-10-session-21-stage2-bitmap-bug/logs/catch-cross/catch-O2.dump').read()
 
 pattern = re.compile(
     r'_blk_(\w+)\(\)[^{]*\{[^}]*?info_tbls:\s*\[\((\w+),\s*label:\s*block_(\w+)_info\s*'

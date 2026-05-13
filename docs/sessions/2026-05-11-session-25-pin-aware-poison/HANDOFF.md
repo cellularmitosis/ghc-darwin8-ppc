@@ -213,7 +213,7 @@ bash docs/sessions/2026-05-11-session-25-pin-aware-poison/scripts/run-poison.sh 
 
 # 5. Pull crash log
 ssh -q pmacg5 'tail -200 ~/Library/Logs/CrashReporter/ghc-real.crash.log' \
-    > log/session25/ghc-real.crash.log
+    > logs/ghc-real.crash.log
 
 # 6. Revert + redeploy clean
 cd external/ghc-modern/ghc-9.2.8
@@ -240,7 +240,7 @@ bash scripts/deploy-stage2.sh pmacg5
   — clean RTS rebuilt + redeployed.
 - `pmacg5:/opt/ghc-stage2/bin/{ghc,ghc-real}` — clean (matches v0.12.0).
 - New session log: `docs/sessions/2026-05-11-session-25-pin-aware-poison/`
-  + run logs gitignored at `log/session25/`.
+  + run logs at `logs/`.
 
 ## Time estimate for session 26
 

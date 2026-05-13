@@ -117,7 +117,7 @@ User requested capture-and-handoff.  Source + stage2 left dirty.
 - **Stage2 on pmacg5 DIRTY**: `/opt/ghc-stage2/bin/ghc-real` is
   the probe33-v2 build (8-word dump, larger than session-32-end's
   clean binary).
-- Logs at `log/session33/`:
+- Logs at `logs/`:
   - `probe33-zones.log` — PROBE33-v1 results (the canonical data
     for this session's finding).
   - `probe33-v2-zones.log` — PROBE33-v2 partial sweep, 22/23 env-

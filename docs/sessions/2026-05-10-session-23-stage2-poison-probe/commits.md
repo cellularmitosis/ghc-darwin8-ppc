@@ -16,7 +16,7 @@ redeployed the clean stage2 ghc to pmacg5.  No persistent changes to
   (re-applicable in 2 minutes).
 - `scripts/run-poison.sh` — harness for the 5×iteration M5.hs repro.
 
-Plus log artifacts under `log/session23/` (gitignored):
+Plus log artifacts under `logs/`:
 
 - `poison-iter*.log` — per-iteration PROBE22 / PROBE22POISON output
   + GHC exit code.

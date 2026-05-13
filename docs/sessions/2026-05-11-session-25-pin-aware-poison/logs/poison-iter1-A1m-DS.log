@@ -1,0 +1,96 @@
+ghc-real: the flag -DS requires the program to be built with -debug
+ghc-real: 
+ghc-real: Usage: <prog> <args> [+RTS <rtsopts> | -RTS <args>] ... --RTS <args>
+ghc-real: 
+ghc-real:    +RTS    Indicates run time system options follow
+ghc-real:    -RTS    Indicates program arguments follow
+ghc-real:   --RTS    Indicates that ALL subsequent arguments will be given to the
+ghc-real:            program (including any of these RTS flags)
+ghc-real: 
+ghc-real: The following run time system options are available:
+ghc-real: 
+ghc-real:   -?       Prints this message and exits; the program is not executed
+ghc-real:   --info   Print information about the RTS used by this program
+ghc-real: 
+ghc-real:   --nonmoving-gc
+ghc-real:             Selects the non-moving mark-and-sweep garbage collector to
+ghc-real:             manage the oldest generation.
+ghc-real:   --copying-gc
+ghc-real:             Selects the copying garbage collector to manage all generations.
+ghc-real: 
+ghc-real:   -K<size>  Sets the maximum stack size (default: 80% of the heap)
+ghc-real:             Egs: -K32k -K512k -K8M
+ghc-real:   -ki<size> Sets the initial thread stack size (default 1k)  Egs: -ki4k -ki2m
+ghc-real:   -kc<size> Sets the stack chunk size (default 32k)
+ghc-real:   -kb<size> Sets the stack chunk buffer size (default 1k)
+ghc-real: 
+ghc-real:   -A<size>  Sets the minimum allocation area size (default 4m) Egs: -A20m -A10k
+ghc-real:   -AL<size> Sets the amount of large-object memory that can be allocated
+ghc-real:             before a GC is triggered (default: the value of -A)
+ghc-real:   -F<n>     Sets the collecting threshold for old generations as a factor of
+ghc-real:             the live data in that generation the last time it was collected
+ghc-real:             (default: 2.0)
+ghc-real:   -Fd<n>    Sets the inverse rate which memory is returned to the OS after being
+ghc-real:             optimistically retained after being allocated. Subsequent major
+ghc-real:             collections not caused by heap overflow will return an amount of
+ghc-real:             memory controlled by this factor (higher is slower). Setting the factor
+ghc-real:             to 0 means memory is not returned.
+ghc-real:             (default 4.0)
+ghc-real:   -n<size>  Allocation area chunk size (0 = disabled, default: 0)
+ghc-real:   -O<size>  Sets the minimum size of the old generation (default 1M)
+ghc-real:   -M<size>  Sets the maximum heap size (default unlimited)  Egs: -M256k -M1G
+ghc-real:   -H<size>  Sets the minimum heap size (default 0M)   Egs: -H24m  -H1G
+ghc-real:   -xb<addr> Sets the address from which a suitable start for the heap memory
+ghc-real:             will be searched from. This is useful if the default address
+ghc-real:             clashes with some third-party library.
+ghc-real:   -xn       Use the non-moving collector for the old generation.
+ghc-real:   -m<n>     Minimum % of heap which must be available (default 3%)
+ghc-real:   -G<n>     Number of generations (default: 2)
+ghc-real:   -c<n>     Use in-place compaction instead of copying in the oldest generation
+ghc-real:            when live data is at least <n>% of the maximum heap size set with
+ghc-real:            -M (default: 30%)
+ghc-real:   -c       Use in-place compaction for all oldest generation collections
+ghc-real:            (the default is to use copying)
+ghc-real:   -w       Use mark-region for the oldest generation (experimental)
+ghc-real: 
+ghc-real:   -T         Collect GC statistics (useful for in-program statistics access)
+ghc-real:   -t[<file>] One-line GC statistics (if <file> omitted, uses stderr)
+ghc-real:   -s[<file>] Summary  GC statistics (if <file> omitted, uses stderr)
+ghc-real:   -S[<file>] Detailed GC statistics (if <file> omitted, uses stderr)
+ghc-real: 
+ghc-real: 
+ghc-real:   -Z         Don't squeeze out update frames on context switch
+ghc-real:   -B         Sound the bell at the start of each garbage collection
+ghc-real:   -h       Heap residency profile (output file <program>.hp)
+ghc-real:   -hT      Produce a heap profile grouped by closure type
+ghc-real:   -po<file>  Override profiling output file name prefix (program name by default)
+ghc-real:   -i<sec>  Time between heap profile samples (seconds, default: 0.1)
+ghc-real:   --no-automatic-heap-samples  Do not start the heap profile interval timer on start-up,
+ghc-real:                                Rather, the application will be responsible for triggering
+ghc-real:                                heap profiler samples.
+ghc-real:   -C<secs>  Context-switch interval in seconds.
+ghc-real:             0 or no argument means switch as often as possible.
+ghc-real:             Default: 0.02 sec.
+ghc-real:   -V<secs>  Master tick interval in seconds (0 == disable timer).
+ghc-real:             This sets the resolution for -C and the heap profile timer -i,
+ghc-real:             and is the frequency of time profile samples.
+ghc-real:             Default: 0.01 sec.
+ghc-real: 
+ghc-real:   --install-signal-handlers=<yes|no>
+ghc-real:             Install signal handlers (default: yes)
+ghc-real:   --io-manager=<native|posix>
+ghc-real:             The I/O manager subsystem to use. (default: posix)
+ghc-real:   -xq       The allocation limit given to a thread after it receives
+ghc-real:             an AllocationLimitExceeded exception. (default: 100k)
+ghc-real: 
+ghc-real:   -Mgrace=<n>
+ghc-real:             The amount of allocation after the program receives a
+ghc-real:             HeapOverflow exception before the exception is thrown again, if
+ghc-real:             the program is still exceeding the heap limit.
+ghc-real: 
+ghc-real: RTS options may also be specified using the GHCRTS environment variable.
+ghc-real: 
+ghc-real: Other RTS options may be available for programs compiled a different way.
+ghc-real: The GHC User's Guide has full details.
+ghc-real: 
+GHC_EXIT=1

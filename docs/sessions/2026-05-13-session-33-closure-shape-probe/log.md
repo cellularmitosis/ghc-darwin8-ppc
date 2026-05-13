@@ -24,7 +24,7 @@ Rebuilt stage1 (5m50s) and stage2 (~8m).  Deployed to pmacg5.
 
 ## Step 2 — PROBE33-v1 sweep across env-zones
 
-Sweep results in `log/session33/probe33-zones.log` (24 lines).
+Sweep results in `logs/probe33-zones.log` (24 lines).
 
 REFINE zones in v1-probe-deployed binary (env-len, addresses):
 

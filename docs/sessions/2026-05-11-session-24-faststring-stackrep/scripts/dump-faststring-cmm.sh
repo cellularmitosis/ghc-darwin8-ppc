@@ -16,14 +16,14 @@
 #     across rebuilds of the same source).
 #   * -ddump-file-prefix points the dumps at the same scratch dir.
 #
-# Output dir is created fresh under log/session24/cross/.
+# Output dir is created fresh under docs/sessions/2026-05-11-session-24-faststring-stackrep/logs/cross/.
 
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../../../.." && pwd)"
 GHC_SRC="$REPO_ROOT/external/ghc-modern/ghc-9.2.8"
 GHC_CROSS="$GHC_SRC/_build/stage0/bin/powerpc-apple-darwin8-ghc"
-OUT="$REPO_ROOT/log/session24/cross"
+OUT="$REPO_ROOT/docs/sessions/2026-05-11-session-24-faststring-stackrep/logs/cross"
 BUILD_DIR="$GHC_SRC/_build/stage1/compiler/build"
 
 source "$REPO_ROOT/scripts/cross-env.sh" >/dev/null 2>&1

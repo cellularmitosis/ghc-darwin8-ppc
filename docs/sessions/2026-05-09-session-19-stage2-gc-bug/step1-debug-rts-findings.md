@@ -15,7 +15,7 @@
 3. Sidequest: ran `M5.hs` 5×5×3 times under different flags to
    characterise non-determinism.
 
-Logs in [`log/session19/probe-*.log`](../../../log/session19/).
+Logs in [`logs/probe-*.log`](logs/).
 
 ## Probe summary
 

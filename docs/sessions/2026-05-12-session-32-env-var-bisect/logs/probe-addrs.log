@@ -1,0 +1,35 @@
+len=100 SCOPE
+len=150 PASS
+len=200 PASS
+len=250 SCOPE
+len=300 SCOPE
+len=350 PASS
+len=400 PASS
+len=450 PASS
+len=500 OTHER rc=1
+len=550 PASS
+len=600 PASS
+len=650 refineFromInScope 0xe003348
+len=700 refineFromInScope 0xe003348
+len=750 SCOPE
+len=800 SCOPE
+len=850 refineFromInScope 0xcce80d0
+len=900 refineFromInScope 0xcce80d0
+len=950 STGCMM
+len=1000 STGCMM
+len=1050 SCOPE
+len=1100 SCOPE
+len=1200 SCOPE
+len=1300 SCOPE
+len=1400 SCOPE
+len=1500 SCOPE
+len=1600 SCOPE
+len=1700 refineFromInScope 0xbe30ddc
+len=1800 SCOPE
+len=1900 SCOPE
+len=2000 SCOPE
+len=2100 OTHER rc=1
+len=2200 SCOPE
+len=2300 SCOPE
+len=2400 SCOPE
+len=2500 PASS

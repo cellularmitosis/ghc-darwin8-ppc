@@ -229,7 +229,7 @@ hypotheses and points to:
   runner (note: the script's `PROBE31_VERBOSE=0` env var
   unintentionally dodges the bug; for a real reproducer remove
   the `$ENV` prefix).
-- Run logs at `log/session31/`:
+- Run logs at `logs/`:
   - `filename-bisect.log` — full filename sweep results.
   - `Big2-fail-verbose.log` — the failing run's PROBE31 trace
     with hardcoded `verbose=1` (captures the post-panic GC 17).

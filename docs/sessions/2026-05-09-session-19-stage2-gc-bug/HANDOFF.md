@@ -166,7 +166,7 @@ bash scripts/exp-stage2-probe19.sh pmacg5
 ```
 
 Edit that script's `run_one` calls to taste.  Logs to
-`log/session19/probe19-*.log` (rename / move directory for a new
+`logs/probe19-*.log` (rename / move directory for a new
 session).
 
 ## Hosts (unchanged from session 18)

@@ -33,6 +33,9 @@ _build/
 
 # Logs from background builds we didn't mean to commit.
 *.log
+# …but DO track session log dirs (point-in-time evidence for each session).
+!docs/sessions/*/logs/
+!docs/sessions/*/logs/**
 
 # Test battery outputs (regenerated on every run).
 tests/bin/

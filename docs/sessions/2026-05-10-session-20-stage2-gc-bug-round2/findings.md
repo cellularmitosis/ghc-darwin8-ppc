@@ -230,5 +230,5 @@ on rebuild.
 — probe runner.  Compiles M5.hs under multiple flag sets and
 captures `PROBE20*` lines.
 
-Logs in [`log/session20/probe20-*`](../../../log/session20/) (last
+Logs in [`logs/probe20-*`](logs/) (last
 runs from the deref iteration).

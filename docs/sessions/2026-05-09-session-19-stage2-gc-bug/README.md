@@ -30,7 +30,7 @@ against `libHSrts-1.0.2_debug.a` and deploy it as
 Wrote [`scripts/exp-stage2-debug-rts-probe.sh`](../../../scripts/exp-stage2-debug-rts-probe.sh)
 to compile `M5.hs` under 8 different RTS-flag combinations and
 capture stderr + the resulting `M5.o`.  Logs in
-[`log/session19/probe-*.log`](../../../log/session19/).
+[`logs/probe-*.log`](logs/).
 
 Detail: [step1-debug-rts-findings.md](step1-debug-rts-findings.md).
 

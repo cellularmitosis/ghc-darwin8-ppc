@@ -40,9 +40,9 @@ StgToCmm / LayoutStack code path that produces it.
 4. (Reference) [Session 22
    findings](../2026-05-10-session-22-stage2-bitmap-bug/findings.md)
    — the per-block audit that ruled out Catch.hs.
-5. (Reference) [`../../log/session23/ghc-real.crash.log`](../../../log/session23/ghc-real.crash.log)
+5. (Reference) [`../../logs/ghc-real.crash.log`](logs/ghc-real.crash.log)
    — full crash dumps if you need register state.
-6. (Reference) [`../../log/session23/blk_c7te.disasm`](../../../log/session23/blk_c7te.disasm)
+6. (Reference) [`../../logs/blk_c7te.disasm`](logs/blk_c7te.disasm)
    — disassembly of the crashing block.
 
 ## What to NOT redo
@@ -77,8 +77,8 @@ StgToCmm / LayoutStack code path that produces it.
 cd /Users/cell/claude/ghc-darwin8-ppc
 PPC_GHC=$PWD/external/ghc-modern/ghc-9.2.8/_build/stage1/bin/powerpc-apple-darwin8-ghc
 SRC=$PWD/external/ghc-modern/ghc-9.2.8/compiler/GHC/Data
-mkdir -p log/session24/cross
-cd log/session24/cross
+mkdir -p docs/sessions/2026-05-11-session-24-faststring-stackrep/logs/cross
+cd docs/sessions/2026-05-11-session-24-faststring-stackrep/logs/cross
 $PPC_GHC --make -c -O2 -ddump-cmm -ddump-cmm-final -ddump-stg-final \
     -outputdir . -odir . -hidir . -i$SRC \
     -hide-package ghc -package-id ghc-9.2.8 \
@@ -204,7 +204,7 @@ bash docs/sessions/2026-05-10-session-23-stage2-poison-probe/scripts/run-poison.
 
 ```
 ssh pmacg5 'cat ~/Library/Logs/CrashReporter/ghc-real.crash.log' \
-  > log/session24/ghc-real.crash.log
+  > docs/sessions/2026-05-11-session-24-faststring-stackrep/logs/ghc-real.crash.log
 ```
 
 ### Restore stage2 to clean state
@@ -236,8 +236,8 @@ bash scripts/deploy-stage2.sh pmacg5
   — **clean RTS** rebuilt + redeployed (no PROBE22 instrumentation).
 - `pmacg5:/opt/ghc-stage2/bin/{ghc,ghc-real}` — **clean** (matches
   v0.12.0).
-- `log/session23/` exists with the crash log + per-iter PROBE logs +
-  block disassembly (gitignored).
+- `logs/` exists with the crash log + per-iter PROBE logs +
+  block disassembly
 
 ## Time estimate for session 24
 

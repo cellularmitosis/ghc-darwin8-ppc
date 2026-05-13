@@ -1,0 +1,31 @@
+PROBE28 gc=1 N=0 maj=1 ng=1 preMut0=0 staticChain=181426 copiedW=8043 liveW=20361 liveB=27
+PROBE28 gc=2 N=0 maj=1 ng=1 preMut0=0 staticChain=180067 copiedW=78397 liveW=109155 liveB=117
+PROBE28 gc=3 N=0 maj=1 ng=1 preMut0=0 staticChain=180037 copiedW=121973 liveW=165019 liveB=171
+PROBE28 gc=4 N=0 maj=1 ng=1 preMut0=0 staticChain=180035 copiedW=161059 liveW=202052 liveB=207
+PROBE28 gc=5 N=0 maj=1 ng=1 preMut0=0 staticChain=180024 copiedW=208629 liveW=254725 liveB=260
+PROBE28 gc=6 N=0 maj=1 ng=1 preMut0=0 staticChain=179166 copiedW=232047 liveW=282249 liveB=289
+PROBE28 gc=7 N=0 maj=1 ng=1 preMut0=0 staticChain=177356 copiedW=334253 liveW=383684 liveB=387
+PROBE28 gc=8 N=0 maj=1 ng=1 preMut0=0 staticChain=177253 copiedW=426741 liveW=474119 liveB=474
+PROBE28 gc=9 N=0 maj=1 ng=1 preMut0=0 staticChain=175207 copiedW=489171 liveW=543969 liveB=544
+PROBE28 gc=10 N=0 maj=1 ng=1 preMut0=0 staticChain=175127 copiedW=570320 liveW=692483 liveB=693
+PROBE28 gc=11 N=0 maj=1 ng=1 preMut0=0 staticChain=174969 copiedW=677780 liveW=829701 liveB=827
+PROBE28 gc=12 N=0 maj=1 ng=1 preMut0=0 staticChain=174949 copiedW=799462 liveW=947277 liveB=940
+PROBE28 gc=13 N=0 maj=1 ng=1 preMut0=0 staticChain=174928 copiedW=935205 liveW=1232053 liveB=1221
+PROBE28 gc=14 N=0 maj=1 ng=1 preMut0=0 staticChain=174829 copiedW=1051169 liveW=1481025 liveB=1470
+PROBE28 gc=15 N=0 maj=1 ng=1 preMut0=0 staticChain=174582 copiedW=1175980 liveW=1617728 liveB=1602
+PROBE28 gc=16 N=0 maj=1 ng=1 preMut0=0 staticChain=174451 copiedW=1295144 liveW=1752729 liveB=1735
+ghc-real: panic! (the 'impossible' happened)
+  (GHC version 9.2.8:
+	refineFromInScope
+  InScope {wild_00 a_a1jJ $dNum_a1jK countOf cumsum $trModule
+           $trModule_s1lr $trModule_s1ls $trModule_s1lt $trModule_s1lu}
+  $dNum_a1jO
+  Call stack:
+      CallStack (from HasCallStack):
+        callStackDoc, called at compiler/GHC/Utils/Panic.hs:181:37 in ghc:GHC.Utils.Panic
+        pprPanic, called at compiler/GHC/Core/Opt/Simplify/Env.hs:706:30 in ghc:GHC.Core.Opt.Simplify.Env
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+PROBE28 gc=17 N=0 maj=1 ng=1 preMut0=0 staticChain=174041 copiedW=464922 liveW=485703 liveB=483
+GHC_EXIT=1

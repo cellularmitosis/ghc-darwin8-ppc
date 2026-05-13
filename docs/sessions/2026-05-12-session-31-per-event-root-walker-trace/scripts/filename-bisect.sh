@@ -11,7 +11,7 @@ set -uo pipefail
 
 PPC_HOST="${1:-pmacg5}"
 REPO_ROOT="$(cd "$(dirname "$0")/../../../../" && pwd)"
-LOGDIR="$REPO_ROOT/log/session31"
+LOGDIR="$REPO_ROOT/docs/sessions/2026-05-12-session-31-per-event-root-walker-trace/logs"
 mkdir -p "$LOGDIR"
 
 GHC_REAL="/opt/ghc-stage2/bin/ghc-real"

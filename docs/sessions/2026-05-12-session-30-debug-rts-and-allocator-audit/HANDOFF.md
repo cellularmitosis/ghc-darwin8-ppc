@@ -193,16 +193,16 @@ source ../../../scripts/cross-env.sh > /dev/null
 cd ../../..
 bash scripts/deploy-stage2.sh pmacg5
 
-# 3. Run the matrix (logs at log/session30/)
+# 3. Run the matrix (logs at logs/)
 bash docs/sessions/2026-05-12-session-30-debug-rts-and-allocator-audit/scripts/run-probe-matrix.sh \
     pmacg5 5
 
 # 4. Inspect specific GCs
-grep "^PROBE30 gc=13 " log/session30/M5-a1m-g1.iter1.log
-grep "^PROBE30 gc=17 " log/session30/Big2-a1m-g1.iter1.log
+grep "^PROBE30 gc=13 " logs/M5-a1m-g1.iter1.log
+grep "^PROBE30 gc=17 " logs/Big2-a1m-g1.iter1.log
 
 # 5. Determinism check
-for f in log/session30/Big2-a1m-g1.iter*.log; do
+for f in logs/Big2-a1m-g1.iter*.log; do
   grep "^PROBE30 gc=17 " "$f" | md5
 done
 # Expected: all 5 iters produce md5 f859e676adef6e1a0dd06c44566ae315
@@ -248,7 +248,7 @@ Big2 GC 17 PROBE30 counters scale 1.24-1.30× over M5 GC 13's.
 - `pmacg5:/opt/ghc-stage2/bin/ghc-real-debug` — debug-RTS-linked
   stage2 from this session.  KEPT (not removed at session end).
 - New session dir: `docs/sessions/2026-05-12-session-30-debug-rts-and-allocator-audit/`
-  + run logs gitignored at `log/session30/`.
+  + run logs at `logs/`.
 
 ## Time estimate for session 31
 

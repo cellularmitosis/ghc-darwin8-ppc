@@ -1,0 +1,15 @@
+ghc-real-debug: panic! (the 'impossible' happened)
+  (GHC version 9.2.8:
+	refineFromInScope
+  InScope {wild_00 xs_aUi a_a1kG $dOrd_a1kH freqMap $trModule
+           $trModule_s1lo $trModule_s1lp $trModule_s1lq $trModule_s1lr}
+  $dNum_a1kO
+  Call stack:
+      CallStack (from HasCallStack):
+        callStackDoc, called at compiler/GHC/Utils/Panic.hs:181:37 in ghc:GHC.Utils.Panic
+        pprPanic, called at compiler/GHC/Core/Opt/Simplify/Env.hs:706:30 in ghc:GHC.Core.Opt.Simplify.Env
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+==========================
+rc=1

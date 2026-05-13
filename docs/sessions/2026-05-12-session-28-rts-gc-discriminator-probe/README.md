@@ -182,8 +182,8 @@ again.  Source tree is clean.
 - **No GHC-tree source edits committed this session.**  Probe lives
   only as the patch in this session dir.
 - **Stage2 ghc on pmacg5 is the clean rebuild after probe revert.**
-- **Logs at** [`../../../log/session28/`](../../../log/session28/)
-  (gitignored).
+- **Logs at** [`logs/`](logs/)
+
 - **HANDOFF for session 29** queues per-closure-type probe
   enhancement + `Evac.c` / `Scav.c` audit.
 

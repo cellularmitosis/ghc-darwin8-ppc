@@ -231,6 +231,6 @@ arithmetic was designed (small allocs, no big-object path).
   Re-apply with `git apply` from inside `external/ghc-modern/ghc-9.2.8`.
 - [`scripts/run-probe-matrix.sh`](scripts/run-probe-matrix.sh) —
   the M5 / Big2 × -A1m -G1 matrix runner, retargeted to
-  `log/session30/`.
-- Run logs at [`../../../log/session30/`](../../../log/session30/)
-  (gitignored).
+  `logs/`.
+- Run logs at [`logs/`](logs/)
+

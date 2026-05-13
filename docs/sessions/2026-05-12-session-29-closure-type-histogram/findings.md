@@ -421,5 +421,5 @@ invasive but would identify the EXACT corrupted closure.
   diff two PROBE29 GCs side-by-side.
 - [`scripts/big2-bisect.sh`](scripts/big2-bisect.sh) — the Big2.hs
   variant bisect (that uncovered the filename effect).
-- Run logs at [`../../../log/session29/`](../../../log/session29/)
-  (gitignored).
+- Run logs at [`logs/`](logs/)
+

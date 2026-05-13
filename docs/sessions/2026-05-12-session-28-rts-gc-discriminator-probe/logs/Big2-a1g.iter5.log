@@ -1,0 +1,2 @@
+PROBE28 gc=1 N=1 maj=1 ng=2 preMut0=0 preMut1=0 staticChain=173169 copiedW=485588 liveW=573541 liveB=606
+GHC_EXIT=0

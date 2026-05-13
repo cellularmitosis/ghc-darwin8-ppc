@@ -159,8 +159,8 @@ harness scripts.  No rebuild, no redeploy.
 - **No GHC-tree source edits this session.**
 - **Stage2 ghc on pmacg5 is the clean rebuild from session-26 end**
   (unchanged).
-- **Logs at** [`../../../log/session27/`](../../../log/session27/)
-  (gitignored).
+- **Logs at** [`logs/`](logs/)
+
 - **HANDOFF for session 28** queues mut_list / write-barrier audit
   and a single-cause-vs-two-causes probe design.
 

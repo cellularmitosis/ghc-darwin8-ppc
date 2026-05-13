@@ -153,8 +153,8 @@ PROBE lines in output — clean v0.12.0-equivalent stage2 confirmed.
   31.  Session 19 ritually removed it; session 30 leaves it because
   it's clearly distinct from `ghc-real` and immediately useful for
   `-Dg` / `-Db` traces in the next round.
-- **Logs at** [`../../../log/session30/`](../../../log/session30/)
-  (gitignored).
+- **Logs at** [`logs/`](logs/)
+
 - **HANDOFF for session 31** pivots the audit strategy from aggregate
   counters to per-event traces (see [`HANDOFF.md`](HANDOFF.md)).
 
@@ -168,4 +168,4 @@ PROBE lines in output — clean v0.12.0-equivalent stage2 confirmed.
   Re-apply with `git apply` from inside `external/ghc-modern/ghc-9.2.8`.
 - [`scripts/run-probe-matrix.sh`](scripts/run-probe-matrix.sh) —
   M5 / Big2 × `-A1m -G1` (5 iters each), retargeted to
-  `log/session30/`.
+  `logs/`.

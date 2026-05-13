@@ -1,0 +1,81 @@
+==> iter1-A1m  (+RTS -A1m -RTS)
+    log: /Users/cell/claude/ghc-darwin8-ppc/log/session25/poison-iter1-A1m.log (ssh exit=0)
+    GHC_EXIT line: GHC_EXIT=139
+    PROBE23 lines:        3
+    PROBE23POISON lines:  9
+    PROBE23PINNED lines:  0
+0
+
+==> iter2-A1m  (+RTS -A1m -RTS)
+    log: /Users/cell/claude/ghc-darwin8-ppc/log/session25/poison-iter2-A1m.log (ssh exit=0)
+    GHC_EXIT line: GHC_EXIT=139
+    PROBE23 lines:        3
+    PROBE23POISON lines:  9
+    PROBE23PINNED lines:  0
+0
+
+==> iter3-A1m  (+RTS -A1m -RTS)
+    log: /Users/cell/claude/ghc-darwin8-ppc/log/session25/poison-iter3-A1m.log (ssh exit=0)
+    GHC_EXIT line: GHC_EXIT=139
+    PROBE23 lines:        3
+    PROBE23POISON lines:  9
+    PROBE23PINNED lines:  0
+0
+
+==> iter4-A1m  (+RTS -A1m -RTS)
+    log: /Users/cell/claude/ghc-darwin8-ppc/log/session25/poison-iter4-A1m.log (ssh exit=0)
+    GHC_EXIT line: GHC_EXIT=139
+    PROBE23 lines:        3
+    PROBE23POISON lines:  9
+    PROBE23PINNED lines:  0
+0
+
+==> iter5-A1m  (+RTS -A1m -RTS)
+    log: /Users/cell/claude/ghc-darwin8-ppc/log/session25/poison-iter5-A1m.log (ssh exit=0)
+    GHC_EXIT line: GHC_EXIT=139
+    PROBE23 lines:        3
+    PROBE23POISON lines:  9
+    PROBE23PINNED lines:  0
+0
+
+==> iter1-A1m-DS  (+RTS -A1m -DS -RTS)
+    log: /Users/cell/claude/ghc-darwin8-ppc/log/session25/poison-iter1-A1m-DS.log (ssh exit=0)
+    GHC_EXIT line: GHC_EXIT=1
+    PROBE23 lines:        0
+0
+    PROBE23POISON lines:  0
+0
+    PROBE23PINNED lines:  0
+0
+
+==> iter1-A1G  (+RTS -A1G -RTS)
+    log: /Users/cell/claude/ghc-darwin8-ppc/log/session25/poison-iter1-A1G.log (ssh exit=0)
+    GHC_EXIT line: GHC_EXIT=0
+    PROBE23 lines:        0
+0
+    PROBE23POISON lines:  0
+0
+    PROBE23PINNED lines:  0
+0
+
+
+All runs done.  Logs in /Users/cell/claude/ghc-darwin8-ppc/log/session25/poison-*.log
+Summary by exit code:
+  iter1-A1G            exit=0    gc=0
+0 poisoned=0
+0 pinned=0
+0  
+  iter1-A1m-DS         exit=1    gc=0
+0 poisoned=0
+0 pinned=0
+0  
+  iter1-A1m            exit=139  gc=3   poisoned=9   pinned=0
+0  
+  iter2-A1m            exit=139  gc=3   poisoned=9   pinned=0
+0  
+  iter3-A1m            exit=139  gc=3   poisoned=9   pinned=0
+0  
+  iter4-A1m            exit=139  gc=3   poisoned=9   pinned=0
+0  
+  iter5-A1m            exit=139  gc=3   poisoned=9   pinned=0
+0  

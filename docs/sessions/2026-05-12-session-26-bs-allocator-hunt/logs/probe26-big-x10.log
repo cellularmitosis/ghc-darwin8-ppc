@@ -1,0 +1,60 @@
+PROBE26 #45 PlainPtr+pinned len=16
+PROBE26 #46 PlainPtr+pinned len=12
+PROBE26 #47 PlainPtr+pinned len=13
+PROBE26 #48 PlainPtr+pinned len=20
+PROBE26 #49 PlainPtr+pinned len=12
+big_iter1_RC=0
+        callStackDoc, called at compiler/GHC/Utils/Panic.hs:181:37 in ghc:GHC.Utils.Panic
+        pprPanic, called at compiler/GHC/StgToCmm/Env.hs:153:9 in ghc:GHC.StgToCmm.Env
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+big_iter2_RC=0
+PROBE26 #45 PlainPtr+pinned len=16
+PROBE26 #46 PlainPtr+pinned len=12
+PROBE26 #47 PlainPtr+pinned len=13
+PROBE26 #48 PlainPtr+pinned len=20
+PROBE26 #49 PlainPtr+pinned len=12
+big_iter3_RC=0
+PROBE26 #45 PlainPtr+pinned len=16
+PROBE26 #46 PlainPtr+pinned len=12
+PROBE26 #47 PlainPtr+pinned len=13
+PROBE26 #48 PlainPtr+pinned len=20
+PROBE26 #49 PlainPtr+pinned len=12
+big_iter4_RC=0
+PROBE26 #45 PlainPtr+pinned len=16
+PROBE26 #46 PlainPtr+pinned len=12
+PROBE26 #47 PlainPtr+pinned len=13
+PROBE26 #48 PlainPtr+pinned len=20
+PROBE26 #49 PlainPtr+pinned len=12
+big_iter5_RC=0
+PROBE26 #45 PlainPtr+pinned len=16
+PROBE26 #46 PlainPtr+pinned len=12
+PROBE26 #47 PlainPtr+pinned len=13
+PROBE26 #48 PlainPtr+pinned len=20
+PROBE26 #49 PlainPtr+pinned len=12
+big_iter6_RC=0
+        callStackDoc, called at compiler/GHC/Utils/Panic.hs:181:37 in ghc:GHC.Utils.Panic
+        pprPanic, called at compiler/GHC/Stg/DepAnal.hs:144:7 in ghc:GHC.Stg.DepAnal
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+big_iter7_RC=0
+        callStackDoc, called at compiler/GHC/Utils/Panic.hs:181:37 in ghc:GHC.Utils.Panic
+        pprPanic, called at compiler/GHC/Stg/DepAnal.hs:144:7 in ghc:GHC.Stg.DepAnal
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+big_iter8_RC=0
+        callStackDoc, called at compiler/GHC/Utils/Panic.hs:181:37 in ghc:GHC.Utils.Panic
+        pprPanic, called at compiler/GHC/Stg/DepAnal.hs:144:7 in ghc:GHC.Stg.DepAnal
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+big_iter9_RC=0
+PROBE26 #45 PlainPtr+pinned len=16
+PROBE26 #46 PlainPtr+pinned len=12
+PROBE26 #47 PlainPtr+pinned len=13
+PROBE26 #48 PlainPtr+pinned len=20
+PROBE26 #49 PlainPtr+pinned len=12
+big_iter10_RC=0

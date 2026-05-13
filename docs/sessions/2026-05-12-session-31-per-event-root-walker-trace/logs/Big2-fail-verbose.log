@@ -1,0 +1,64 @@
+PROBE31_CALL gc=1 idx=1 start=0xbeffdcc end=0xbeffeb0 nbytes=228 frames=24 words=33 ptrs=25
+PROBE31 gc=1 scavstack calls=1 frames=24 words=33 ptrs=25
+PROBE31 gc=1 frameHist t30=15 t32=1 t33=3 t34=4 t36=1
+PROBE31_CALL gc=2 idx=1 start=0xbfe9e94 end=0xbfea000 nbytes=364 frames=40 words=51 ptrs=34
+PROBE31 gc=2 scavstack calls=1 frames=40 words=51 ptrs=34
+PROBE31 gc=2 frameHist t30=30 t34=9 t36=1
+PROBE31_CALL gc=3 idx=1 start=0xbfe9be4 end=0xbfea000 nbytes=1052 frames=91 words=208 ptrs=158
+PROBE31 gc=3 scavstack calls=1 frames=91 words=208 ptrs=158
+PROBE31 gc=3 frameHist t30=48 t33=36 t34=6 t36=1
+PROBE31_CALL gc=4 idx=1 start=0xbfe9ddc end=0xbfea000 nbytes=548 frames=48 words=102 ptrs=75
+PROBE31 gc=4 scavstack calls=1 frames=48 words=102 ptrs=75
+PROBE31 gc=4 frameHist t30=28 t33=13 t34=6 t36=1
+PROBE31_CALL gc=5 idx=1 start=0xbfe9e84 end=0xbfea000 nbytes=380 frames=36 words=62 ptrs=37
+PROBE31 gc=5 scavstack calls=1 frames=36 words=62 ptrs=37
+PROBE31 gc=5 frameHist t30=24 t33=3 t34=8 t36=1
+PROBE31_CALL gc=6 idx=1 start=0xbfe9e50 end=0xbfea000 nbytes=432 frames=46 words=64 ptrs=44
+PROBE31 gc=6 scavstack calls=1 frames=46 words=64 ptrs=44
+PROBE31 gc=6 frameHist t30=36 t33=2 t34=7 t36=1
+PROBE31_CALL gc=7 idx=1 start=0xbfe9d18 end=0xbfea000 nbytes=744 frames=74 words=115 ptrs=86
+PROBE31 gc=7 scavstack calls=1 frames=74 words=115 ptrs=86
+PROBE31 gc=7 frameHist t30=60 t33=3 t34=10 t36=1
+PROBE31_CALL gc=8 idx=1 start=0xbfe9cf0 end=0xbfea000 nbytes=784 frames=75 words=124 ptrs=89
+PROBE31 gc=8 scavstack calls=1 frames=75 words=124 ptrs=89
+PROBE31 gc=8 frameHist t30=61 t33=3 t34=10 t36=1
+PROBE31_CALL gc=9 idx=1 start=0xbfe9bd4 end=0xbfea000 nbytes=1068 frames=123 words=141 ptrs=122
+PROBE31 gc=9 scavstack calls=1 frames=123 words=141 ptrs=122
+PROBE31 gc=9 frameHist t30=111 t32=1 t34=10 t36=1
+PROBE31_CALL gc=10 idx=1 start=0xbfe9d68 end=0xbfea000 nbytes=664 frames=65 words=105 ptrs=79
+PROBE31 gc=10 scavstack calls=1 frames=65 words=105 ptrs=79
+PROBE31 gc=10 frameHist t30=51 t33=4 t34=9 t36=1
+PROBE31_CALL gc=11 idx=1 start=0xbfe9c60 end=0xbfea000 nbytes=928 frames=97 words=137 ptrs=109
+PROBE31 gc=11 scavstack calls=1 frames=97 words=137 ptrs=109
+PROBE31 gc=11 frameHist t30=84 t33=2 t34=10 t36=1
+PROBE31_CALL gc=12 idx=1 start=0xbfe9c78 end=0xbfea000 nbytes=904 frames=94 words=134 ptrs=100
+PROBE31 gc=12 scavstack calls=1 frames=94 words=134 ptrs=100
+PROBE31 gc=12 frameHist t30=82 t33=2 t34=9 t36=1
+PROBE31_CALL gc=13 idx=1 start=0xbfe9bc4 end=0xbfea000 nbytes=1084 frames=114 words=162 ptrs=131
+PROBE31 gc=13 scavstack calls=1 frames=114 words=162 ptrs=131
+PROBE31 gc=13 frameHist t30=98 t33=5 t34=10 t36=1
+PROBE31_CALL gc=14 idx=1 start=0xbfe9c38 end=0xbfea000 nbytes=968 frames=104 words=142 ptrs=115
+PROBE31 gc=14 scavstack calls=1 frames=104 words=142 ptrs=115
+PROBE31 gc=14 frameHist t30=89 t33=4 t34=10 t36=1
+PROBE31_CALL gc=15 idx=1 start=0xbfe9a94 end=0xbfea000 nbytes=1388 frames=160 words=203 ptrs=164
+PROBE31 gc=15 scavstack calls=1 frames=160 words=203 ptrs=164
+PROBE31 gc=15 frameHist t30=130 t33=16 t34=13 t36=1
+PROBE31_CALL gc=16 idx=1 start=0xbfe9da8 end=0xbfea000 nbytes=600 frames=70 words=80 ptrs=67
+PROBE31 gc=16 scavstack calls=1 frames=70 words=80 ptrs=67
+PROBE31 gc=16 frameHist t30=61 t34=8 t36=1
+ghc-real: panic! (the 'impossible' happened)
+  (GHC version 9.2.8:
+	refineFromInScope
+  InScope {wild_00 a_a1jJ $dNum_a1jK countOf cumsum $trModule
+           $trModule_s1lr $trModule_s1ls $trModule_s1lt $trModule_s1lu}
+  $dNum_a1jO
+  Call stack:
+      CallStack (from HasCallStack):
+        callStackDoc, called at compiler/GHC/Utils/Panic.hs:181:37 in ghc:GHC.Utils.Panic
+        pprPanic, called at compiler/GHC/Core/Opt/Simplify/Env.hs:706:30 in ghc:GHC.Core.Opt.Simplify.Env
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+PROBE31_CALL gc=17 idx=1 start=0xbfe9fe8 end=0xbfea000 nbytes=24 frames=4 words=2 ptrs=1
+PROBE31 gc=17 scavstack calls=1 frames=4 words=2 ptrs=1
+PROBE31 gc=17 frameHist t30=2 t34=1 t36=1

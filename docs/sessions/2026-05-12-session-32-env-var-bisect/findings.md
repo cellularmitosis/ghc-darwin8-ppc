@@ -54,9 +54,9 @@ extractor: [`scripts/extract-fail-detail.sh`](scripts/extract-fail-detail.sh).
 
 ### F1. PASS/FAIL/SHIFT zones are non-monotonic in env-var length
 
-(see `log/session32/sweep-2-300-step4.log`,
-`log/session32/sweep-300-2000.log`,
-`log/session32/probe-addrs.log`)
+(see `logs/sweep-2-300-step4.log`,
+`logs/sweep-300-2000.log`,
+`logs/probe-addrs.log`)
 
 Sweep of `A=A...A` (varying value length) via the `env` wrapper.
 Stable iters 2-5 results:
@@ -92,7 +92,7 @@ A second PASS zone at ~500..600.  A third at ~2500..3000.
 (NOTE: these zones were measured with a probe-modified stage2
 binary; the binary's larger size shifts zones from the original.
 The qualitative non-monotonicity holds with original v0.12.0
-binary as well — see `log/session32/sweep-2-300-step4.log`,
+binary as well — see `logs/sweep-2-300-step4.log`,
 the pre-probe baseline.)
 
 ### F2. FIVE pipeline stages can detect the dropped Var
@@ -256,7 +256,7 @@ common patterns.
   outcome classification.
 - `scripts/full-sweep.sh` — length sweep driver.
 - `scripts/extract-fail-detail.sh` — dropped-Var-name extractor.
-- Logs at `log/session32/`:
+- Logs at `logs/`:
   - `sweep-2-300-step4.log` — fine sweep, pre-probe baseline.
   - `sweep-300-2000.log` — coarse sweep, pre-probe.
   - `probe-sweep.log` — first probe sweep, sparse.

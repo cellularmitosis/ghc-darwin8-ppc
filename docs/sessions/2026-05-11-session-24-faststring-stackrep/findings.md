@@ -143,7 +143,7 @@ The 1 in FastString that read-after-poisoned could be either real
 ```
 cd /Users/cell/claude/ghc-darwin8-ppc
 bash docs/sessions/2026-05-11-session-24-faststring-stackrep/scripts/dump-faststring-cmm.sh
-# ~8 sec.  Output: log/session24/cross/dump-{cmm,cmm-cps,cmm-sp,cmm-info,stg-final}
+# ~8 sec.  Output: logs/cross/dump-{cmm,cmm-cps,cmm-sp,cmm-info,stg-final}
 ```
 
 The script restores the original FastString.o / FastString.hi via an
@@ -152,7 +152,7 @@ EXIT trap, so it doesn't disturb the stage2 build artefact.
 ### Find c7te in the dumps
 
 ```
-grep -n c7te log/session24/cross/dump-cmm-info | head
+grep -n c7te logs/cross/dump-cmm-info | head
 # 3611:          I32[Sp - 12] = block_c7te_info;
 # 3627:_blk_c7te() { //  [R1]
 # 3628:        { info_tbls: [(c7te,
@@ -200,7 +200,7 @@ get `False`.  Hence `False` ↔ pointer, `True` ↔ non-pointer.
   -ddump-to-file -dno-suppress-uniques` added; .o/.hi backed up &
   restored.
 - [`excerpts/c7t9-c7te.cmm`](excerpts/c7t9-c7te.cmm) — the slice of
-  `log/session24/cross/dump-cmm-info` for `_blk_c7t9` and `_blk_c7te`.
+  `logs/cross/dump-cmm-info` for `_blk_c7t9` and `_blk_c7te`.
 - [`excerpts/mkFastStringByteString.stg`](excerpts/mkFastStringByteString.stg)
   — the STG of `mkFastStringByteString` showing the `case bs of BS
   ipv_s77l ipv1_s77m ipv2_s77n -> ...` pattern.

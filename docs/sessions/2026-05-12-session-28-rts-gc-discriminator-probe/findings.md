@@ -332,5 +332,5 @@ function is the trigger.
   the M5 / Big2 × `-A1m` / `-A1m -G1` / `-A1G` matrix.
 - [`scripts/big2-a1m-test.sh`](scripts/big2-a1m-test.sh) — Big2 at
   default `-G2`.
-- Run logs at [`../../../log/session28/`](../../../log/session28/)
-  (gitignored).
+- Run logs at [`logs/`](logs/)
+

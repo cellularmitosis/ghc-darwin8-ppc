@@ -126,7 +126,7 @@ GHC_EXIT.  ~30 sec total.
 
 ```
 ssh -q pmacg5 'tail -200 ~/Library/Logs/CrashReporter/ghc-real.crash.log' \
-    > log/session25/ghc-real.crash.log
+    > logs/ghc-real.crash.log
 ```
 
 All 3 most recent crash entries match PROBE22POISON's session-23
@@ -173,7 +173,7 @@ Stage2 on pmacg5 back to clean RTS.
 - **No source-tree edits this session** persist.  GC.c is back to
   upstream `dfa83462`.
 - **Stage2 ghc on pmacg5 is clean.**
-- **Logs at** [`log/session25/`](../../../log/session25/) (gitignored)
+- **Logs at** [`logs/`](logs/)
   capture the PROBE23 run + the crash log.
 - **HANDOFF for session 26** scopes the BS-allocator hunt.
 

@@ -1,0 +1,9 @@
+PROBE20 gc_no=0 N=1 major=1 tso=0x962e890 stk=0x0 sp=0x0 end=0x0 words=0 heap_ptr=0 evacd=0 g0=0 g1=0 other=0 rCurNurs=0xf300760 rCurAlloc=0xf300740 rCurTSO=0x0
+----- M5.o size -----
+-rw-r--r--   1 macuser  wheel  868 May 10 01:36 M5.o
+----- M5.o symbols -----
+00000010 d _ruD_closure
+00000018 d _ruB_closure
+00000020 D _M5_zdtrModule_closure
+00000030 D _M5_six_closure
+00000038 D _M5_five_closure

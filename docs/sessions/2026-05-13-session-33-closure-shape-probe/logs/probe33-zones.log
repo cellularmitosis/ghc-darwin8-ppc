@@ -1,0 +1,24 @@
+len=100 OTHER:     * GHC internal error: `swap' is not in scope during type
+len=200 PASS
+len=300 OTHER:     * GHC internal error: `swap' is not in scope during type
+len=400 OTHER: ghc-real: panic! (the 'impossible' happened)
+len=500 OTHER: ghc-real: panic! (the 'impossible' happened)
+len=600 PASS
+len=650 REFINE 	refineFromInScope tagged=0xd9b1ce0 untag=0xd9b1ce0 w0=0x8c62bac w1=0x55e3a5d w2=0xd96ee20 w3=0x92577e0
+len=700 OTHER: ghc-real: panic! (the 'impossible' happened)
+len=750 OTHER:     * GHC internal error: `swap' is not in scope during type
+len=800 OTHER:     * GHC internal error: `swap' is not in scope during type
+len=850 REFINE 	refineFromInScope tagged=0xcce0cbc untag=0xcce0cbc w0=0x8c62bac w1=0xcce00c1 w2=0xcc94c6c w3=0x92577e0
+len=900 REFINE 	refineFromInScope tagged=0xcce0cbc untag=0xcce0cbc w0=0x8c62bac w1=0xcce00c1 w2=0xcc94c6c w3=0x92577e0
+len=950 OTHER: ghc-real: panic! (the 'impossible' happened)
+len=1000 OTHER: ghc-real: panic! (the 'impossible' happened)
+len=1100 OTHER:     * GHC internal error: `swap' is not in scope during type
+len=1200 OTHER:     * GHC internal error: `swap' is not in scope during type
+len=1300 OTHER:     * GHC internal error: `swap' is not in scope during type
+len=1500 OTHER:     * GHC internal error: `swap' is not in scope during type
+len=1700 REFINE 	refineFromInScope tagged=0xcf9a5e0 untag=0xcf9a5e0 w0=0x8c62bac w1=0xdb8589a w2=0xdbca644 w3=0x92577e0
+len=1900 OTHER:     * GHC internal error: `swap' is not in scope during type
+len=2000 OTHER:     * GHC internal error: `swap' is not in scope during type
+len=2100 OTHER: ghc-real: panic! (the 'impossible' happened)
+len=2500 OTHER: ghc-real: panic! (the 'impossible' happened)
+len=3000 PASS

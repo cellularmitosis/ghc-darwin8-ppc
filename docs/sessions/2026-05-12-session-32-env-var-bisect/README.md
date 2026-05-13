@@ -79,7 +79,7 @@ Discovered:
 - 23-166: PASS — wide PASS zone, ~143 bytes
 - 178-298: REFINE — second REFINE zone
 
-(Full data in `log/session32/sweep-2-300-step4.log`.)
+(Full data in `logs/sweep-2-300-step4.log`.)
 
 ### Step 3 — sweep 300..3000, dropped-Var detail
 
@@ -161,7 +161,7 @@ Verified baseline matches v0.12.0 with no env var.
 - **v0.12.0 unchanged.**  No GHC-tree source edits committed.
 - **Stage2 on pmacg5 is the clean rebuild after probe revert.**
   Matches v0.12.0 behavior.
-- **Logs at** `log/session32/` (gitignored).
+- **Logs at** `logs/`
 - **HANDOFF for session 33** pivots to closure-shape probing
   and GC-event-sequence analysis (single-blind-spot falsified).
   See [`HANDOFF.md`](HANDOFF.md).

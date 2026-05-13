@@ -8,13 +8,13 @@
 #
 # Usage:  ./scripts/exp-stage2-debug-rts-probe.sh [SSH_HOST]
 #
-# Output: written to /Users/cell/claude/ghc-darwin8-ppc/log/session19/
+# Output: written to /Users/cell/claude/ghc-darwin8-ppc/docs/sessions/2026-05-09-session-19-stage2-gc-bug/logs/
 
 set -uo pipefail
 
 PPC_HOST="${1:-pmacg5}"
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-LOGDIR="$REPO_ROOT/log/session19"
+LOGDIR="$REPO_ROOT/docs/sessions/2026-05-09-session-19-stage2-gc-bug/logs"
 mkdir -p "$LOGDIR"
 
 GHC_DEBUG="/opt/ghc-stage2/bin/ghc-real-debug"

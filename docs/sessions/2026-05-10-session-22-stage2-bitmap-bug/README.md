@@ -36,7 +36,7 @@ v0.12.0 baseline.
 ### Step 2 — re-cross-compile is unnecessary
 
 Session 21's
-[`log/session21/catch-cross/catch-O2.dump`](../../../log/session21/catch-cross/catch-O2.dump)
+[`docs/sessions/2026-05-10-session-21-stage2-bitmap-bug/logs/catch-cross/catch-O2.dump`](../docs/sessions/2026-05-10-session-21-stage2-bitmap-bug/logs/catch-cross/catch-O2.dump)
 already contains the post-LayoutStack `Output Cmm` for Catch.hs.
 The 8 `[F,T,F]` and 1 `[F,T]` and 6 other `True`-containing
 StackReps live in those `Output Cmm` sections, with concrete
@@ -141,7 +141,7 @@ PROBE21's `is_ptr=0` flag detects the *latter*, not a *bug*.
   PNP version) and `audit-all-true-frames.py` (generalised, all
   patterns).  Re-usable on any cross-built Cmm dump.
 - **Host dump captured** at
-  [`log/session22/host/catch-host-O2.dump`](../../../log/session22/host/catch-host-O2.dump)
+  [`logs/host/catch-host-O2.dump`](logs/host/catch-host-O2.dump)
   for any future host-vs-cross comparison work (gitignored;
   ~22.5k lines).
 - **No edits** to `external/ghc-modern/` or to live build state.

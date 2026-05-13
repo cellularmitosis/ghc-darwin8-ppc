@@ -16,6 +16,14 @@ contains:
 - `findings.md` — "things we learned this session that will matter
   later." Bullets are fine.
 - `commits.md` — commits landed this session, one-liner each.
+- `logs/` (optional) — raw command output / sweep data / probe
+  traces / disasm dumps captured during the session.  Tracked
+  in git (not gitignored) so future sessions can audit the
+  point-in-time evidence behind findings.  Most are <100 KB;
+  occasional `+RTS -Dg` traces run into the MBs.  Scripts in
+  this session's `scripts/` should write here (relative path
+  `$session_dir/logs/`) rather than the now-removed top-level
+  `log/` directory.
 
 Historical context for work done before this workflow existed lives in
 [`docs/experiments/`](../experiments/) (phase write-ups) and

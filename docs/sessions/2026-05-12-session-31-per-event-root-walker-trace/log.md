@@ -38,7 +38,7 @@ EXACT Big2.hs body (modulo the `module N where` header) under
 104 module names: `A..Z`, `AA..AZ`, `BA..BZ`, `AAA..AAZ`.
 
 Script: [scripts/filename-bisect.sh](scripts/filename-bisect.sh).
-Log: [log/session31/filename-bisect.log](../../../log/session31/filename-bisect.log).
+Log: [logs/filename-bisect.log](logs/filename-bisect.log).
 
 ### Distribution by name length
 

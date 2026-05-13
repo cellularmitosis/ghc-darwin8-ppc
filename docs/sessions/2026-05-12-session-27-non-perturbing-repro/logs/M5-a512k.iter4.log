@@ -1,0 +1,13 @@
+ghc-real: panic! (the 'impossible' happened)
+  (GHC version 9.2.8:
+	GHC.StgToCmm.Env: variable not found
+  $trModule2_ruB
+  local binds for:
+  Call stack:
+      CallStack (from HasCallStack):
+        callStackDoc, called at compiler/GHC/Utils/Panic.hs:181:37 in ghc:GHC.Utils.Panic
+        pprPanic, called at compiler/GHC/StgToCmm/Env.hs:153:9 in ghc:GHC.StgToCmm.Env
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+GHC_EXIT=1

@@ -1,0 +1,111 @@
+=== Single-char names (A..Z) ===
+A        FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+B        FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+C        FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+D        FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+E        PASS
+F        PASS
+G        PASS
+H        PASS
+I        PASS
+J        PASS
+K        PASS
+L        PASS
+M        PASS
+N        PASS
+O        FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+P        PASS
+Q        FAIL:ghc-real: panic! (the 'impossible' happened)
+R        PASS
+S        PASS
+T        PASS
+U        FAIL:ghc-real: panic! (the 'impossible' happened)
+V        FAIL:ghc-real: panic! (the 'impossible' happened)
+W        FAIL:ghc-real: panic! (the 'impossible' happened)
+X        FAIL:ghc-real: panic! (the 'impossible' happened)
+Y        FAIL:ghc-real: panic! (the 'impossible' happened)
+Z        FAIL:ghc-real: panic! (the 'impossible' happened)
+
+=== 2-char names A[A..Z] ===
+AA       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AB       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AC       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AD       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AE       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AF       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AG       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AH       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AI       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AJ       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AK       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AL       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AM       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AN       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AO       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AP       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AQ       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AR       PASS
+AS       PASS
+AT       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AU       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AV       PASS
+AW       PASS
+AX       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AY       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AZ       PASS
+
+=== 2-char names B[A..Z] ===
+BA       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+BB       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+BC       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+BD       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+BE       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+BF       FAIL:ghc-real: panic! (the 'impossible' happened)
+BG       FAIL:ghc-real: panic! (the 'impossible' happened)
+BH       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+BI       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+BJ       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+BK       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+BL       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+BM       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+BN       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+BO       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+BP       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+BQ       FAIL:ghc-real: panic! (the 'impossible' happened)
+BR       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+BS       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+BT       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+BU       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+BV       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+BW       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+BX       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+BY       FAIL:ghc-real: panic! (the 'impossible' happened)
+BZ       FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+
+=== 3-char names AA[A..Z] ===
+AAA      PASS
+AAB      PASS
+AAC      PASS
+AAD      FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AAE      FAIL:ghc-real: panic! (the 'impossible' happened)
+AAF      PASS
+AAG      FAIL:ghc-real: panic! (the 'impossible' happened)
+AAH      PASS
+AAI      PASS
+AAJ      FAIL:ghc-real: panic! (the 'impossible' happened)
+AAK      PASS
+AAL      PASS
+AAM      PASS
+AAN      PASS
+AAO      PASS
+AAP      PASS
+AAQ      PASS
+AAR      PASS
+AAS      PASS
+AAT      PASS
+AAU      PASS
+AAV      PASS
+AAW      PASS
+AAX      FAIL:    * GHC internal error: `swap' is not in scope during type checking, but it pa
+AAY      PASS
+AAZ      PASS

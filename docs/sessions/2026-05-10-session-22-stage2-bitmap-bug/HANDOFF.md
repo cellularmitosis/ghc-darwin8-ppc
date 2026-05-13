@@ -127,7 +127,7 @@ and 0xDEADBEEF gets read, the segfault address will be
 ### Second: audit Map.Internal frames the same way
 
 `scripts/audit-all-true-frames.py` should run cleanly on
-[`log/session21/cmm-cross/internal-O2.dump`](../../../log/session21/cmm-cross/internal-O2.dump)
+[`docs/sessions/2026-05-10-session-21-stage2-bitmap-bug/logs/cmm-cross/internal-O2.dump`](../docs/sessions/2026-05-10-session-21-stage2-bitmap-bug/logs/cmm-cross/internal-O2.dump)
 (~6.9 MB, 45+ PN and 25+ PNP info tables per session 21
 counts).
 
@@ -178,7 +178,7 @@ If a typechecker-CAF gets collected when it shouldn't, the
 cd /Users/cell/claude/ghc-darwin8-ppc
 python3 docs/sessions/2026-05-10-session-22-stage2-bitmap-bug/scripts/audit-all-true-frames.py
 # Edit the script's hard-coded path to point at any other
-# Cmm dump (e.g. log/session21/cmm-cross/internal-O2.dump).
+# Cmm dump (e.g. docs/sessions/2026-05-10-session-21-stage2-bitmap-bug/logs/cmm-cross/internal-O2.dump).
 ```
 
 ### Re-cross-compile a single module with -ddump-cmm
@@ -189,8 +189,8 @@ python3 docs/sessions/2026-05-10-session-22-stage2-bitmap-bug/scripts/audit-all-
 cd /Users/cell/claude/ghc-darwin8-ppc
 PPC_GHC=$PWD/external/ghc-modern/ghc-9.2.8/_build/stage1/bin/powerpc-apple-darwin8-ghc
 SRC=$PWD/external/ghc-modern/ghc-9.2.8/libraries/exceptions/src
-mkdir -p log/session23/cross
-cd log/session23/cross
+mkdir -p docs/sessions/2026-05-10-session-23-stage2-poison-probe/logs/cross
+cd docs/sessions/2026-05-10-session-23-stage2-poison-probe/logs/cross
 $PPC_GHC --make -c -O2 -ddump-cmm -ddump-cmm-final -ddump-stg-final \
     -outputdir . -odir . -hidir . -i$SRC -hide-package exceptions \
     $SRC/Control/Monad/Catch.hs > catch-O2.dump 2>&1
@@ -200,8 +200,8 @@ $PPC_GHC --make -c -O2 -ddump-cmm -ddump-cmm-final -ddump-stg-final \
 
 ```
 cd /Users/cell/claude/ghc-darwin8-ppc
-mkdir -p log/session23/host
-cd log/session23/host
+mkdir -p docs/sessions/2026-05-10-session-23-stage2-poison-probe/logs/host
+cd docs/sessions/2026-05-10-session-23-stage2-poison-probe/logs/host
 SRC=$PWD/../../../external/ghc-modern/ghc-9.2.8/libraries/exceptions/src
 ~/.local/ghc-9.2.8/bin/ghc --make -c -O2 -ddump-cmm \
     -outputdir . -i$SRC -hide-package exceptions \
@@ -239,9 +239,9 @@ source ../../../scripts/cross-env.sh > /dev/null 2>&1
   (read-only investigation).
 - `external/ghc-modern/ghc-9.2.8/_build/stage1/...` — **unchanged**
   cross-built tree.  No probe / instrumentation patches applied.
-- `log/session22/host/catch-host-O2.dump` exists with the host
+- `logs/host/catch-host-O2.dump` exists with the host
   build output (~22.5k lines, gitignored).  Clean up with
-  `rm -rf log/session22/` if needed.
+  `rm -rf logs/` if needed.
 - `pmacg5:/opt/ghc-stage2/bin/{ghc,ghc-real}` — unchanged
   (production stage2 with `-A1G` wrapper).
 

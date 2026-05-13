@@ -85,7 +85,7 @@ IS what landed in stage2's text section.)
 replays hadrian's command verbatim with the dump flags added, the
 `.o` and `.hi` redirected through a backup/restore trap so we don't
 disturb the stage2 build artefact.  Output: 5 dump files in
-[`../../../log/session24/cross/`](../../../log/session24/cross/),
+[`logs/cross/`](logs/cross/),
 ~2 MB total.
 
 `-ddump-cmm-final` doesn't exist in 9.2.8; the closest equivalents
@@ -266,7 +266,7 @@ Session 25 will write the patch.  Session 24 stops at the diagnosis.
 - **Stage2 ghc on pmacg5 unchanged** (still has the clean RTS from
   session-23 end-of-session revert).
 - **Dumps captured at**
-  [`log/session24/cross/`](../../../log/session24/cross/) (gitignored).
+  [`logs/cross/`](logs/cross/)
   Smaller excerpts saved into the session dir under
   [`excerpts/`](excerpts/).
 - **HANDOFF for session 25** scopes PROBE23.

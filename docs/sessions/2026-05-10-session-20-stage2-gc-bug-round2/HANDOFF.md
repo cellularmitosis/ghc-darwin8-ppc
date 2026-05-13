@@ -171,7 +171,7 @@ bash scripts/exp-deploy-stage2-debug.sh pmacg5
 bash scripts/exp-stage2-probe20.sh pmacg5
 ```
 
-Edits its `run_one` calls to taste.  Logs to `log/session20/`.
+Edits its `run_one` calls to taste.  Logs to `logs/`.
 
 ## Hosts (unchanged)
 

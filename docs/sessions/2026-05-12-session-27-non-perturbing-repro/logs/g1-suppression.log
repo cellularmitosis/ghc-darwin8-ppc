@@ -1,0 +1,32 @@
+=== M5plus.hs iters=5 flags='+RTS -A1m -RTS' ===
+iter01 rc=0 : OK
+iter02 rc=0 : OK
+iter03 rc=1 : ghc-real: panic! (the 'impossible' happened)
+iter04 rc=0 : OK
+iter05 rc=0 : OK
+  SUMMARY: pass=4 fail=1 of 5
+
+=== M5plus.hs iters=5 flags='+RTS -A1m -G1 -RTS' ===
+iter01 rc=0 : OK
+iter02 rc=0 : OK
+iter03 rc=0 : OK
+iter04 rc=0 : OK
+iter05 rc=0 : OK
+  SUMMARY: pass=5 fail=0 of 5
+
+=== Big.hs iters=5 flags='+RTS -A1m -RTS' ===
+iter01 rc=1 : UNKNOWN_FAIL_rc=1
+iter02 rc=1 : ghc-real: panic! (the 'impossible' happened)
+iter03 rc=0 : OK
+iter04 rc=1 : UNKNOWN_FAIL_rc=1
+iter05 rc=0 : OK
+  SUMMARY: pass=2 fail=3 of 5
+
+=== Big.hs iters=5 flags='+RTS -A1m -G1 -RTS' ===
+iter01 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter02 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter03 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter04 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter05 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+  SUMMARY: pass=0 fail=5 of 5
+

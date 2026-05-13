@@ -1,0 +1,80 @@
+PROBE28 gc=1 N=0 maj=0 ng=2 preMut0=0 preMut1=0 staticChain=0 copiedW=8043 liveW=20361 liveB=28
+PROBE28 gc=2 N=0 maj=0 ng=2 preMut0=0 preMut1=0 staticChain=0 copiedW=78401 liveW=109155 liveB=118
+PROBE28 gc=3 N=1 maj=1 ng=2 preMut0=0 preMut1=4 staticChain=180037 copiedW=122233 liveW=165019 liveB=173
+PROBE28 gc=4 N=0 maj=0 ng=2 preMut0=0 preMut1=512 staticChain=0 copiedW=87175 liveW=206711 liveB=213
+PROBE28 gc=5 N=0 maj=0 ng=2 preMut0=0 preMut1=588 staticChain=0 copiedW=67860 liveW=250965 liveB=257
+PROBE28 gc=6 N=0 maj=0 ng=2 preMut0=0 preMut1=361 staticChain=0 copiedW=50212 liveW=281931 liveB=291
+PROBE28 gc=7 N=0 maj=0 ng=2 preMut0=0 preMut1=287 staticChain=0 copiedW=37410 liveW=287538 liveB=293
+PROBE28 gc=8 N=1 maj=1 ng=2 preMut0=0 preMut1=464 staticChain=177356 copiedW=300146 liveW=349316 liveB=355
+PROBE28 gc=9 N=0 maj=0 ng=2 preMut0=0 preMut1=262 staticChain=0 copiedW=123099 liveW=405241 liveB=409
+PROBE28 gc=10 N=0 maj=0 ng=2 preMut0=0 preMut1=664 staticChain=0 copiedW=54312 liveW=446758 liveB=450
+PROBE28 gc=11 N=0 maj=0 ng=2 preMut0=0 preMut1=261 staticChain=0 copiedW=39672 liveW=472778 liveB=477
+PROBE28 gc=12 N=0 maj=0 ng=2 preMut0=0 preMut1=450 staticChain=0 copiedW=36022 liveW=496656 liveB=499
+PROBE28 gc=13 N=0 maj=0 ng=2 preMut0=0 preMut1=1432 staticChain=0 copiedW=52053 liveW=532511 liveB=536
+PROBE28 gc=14 N=0 maj=0 ng=2 preMut0=0 preMut1=418 staticChain=0 copiedW=42882 liveW=561808 liveB=567
+PROBE28 gc=15 N=0 maj=0 ng=2 preMut0=0 preMut1=538 staticChain=0 copiedW=51253 liveW=613129 liveB=619
+PROBE28 gc=16 N=1 maj=1 ng=2 preMut0=0 preMut1=268 staticChain=175172 copiedW=520048 liveW=594355 liveB=596
+PROBE28 gc=17 N=0 maj=0 ng=2 preMut0=0 preMut1=511 staticChain=0 copiedW=59640 liveW=687360 liveB=687
+PROBE28 gc=18 N=0 maj=0 ng=2 preMut0=0 preMut1=263 staticChain=0 copiedW=66640 liveW=703983 liveB=704
+PROBE28 gc=19 N=0 maj=0 ng=2 preMut0=0 preMut1=483 staticChain=0 copiedW=64179 liveW=750690 liveB=751
+PROBE28 gc=20 N=0 maj=0 ng=2 preMut0=0 preMut1=758 staticChain=0 copiedW=79416 liveW=829442 liveB=831
+PROBE28 gc=21 N=0 maj=0 ng=2 preMut0=0 preMut1=263 staticChain=0 copiedW=49930 liveW=837300 liveB=837
+PROBE28 gc=22 N=0 maj=0 ng=2 preMut0=0 preMut1=649 staticChain=0 copiedW=18729 liveW=841413 liveB=839
+PROBE28 gc=23 N=0 maj=0 ng=2 preMut0=0 preMut1=917 staticChain=0 copiedW=15734 liveW=850212 liveB=850
+PROBE28 gc=24 N=0 maj=0 ng=2 preMut0=0 preMut1=341 staticChain=0 copiedW=66590 liveW=915986 liveB=913
+PROBE28 gc=25 N=0 maj=0 ng=2 preMut0=0 preMut1=267 staticChain=0 copiedW=99075 liveW=965780 liveB=963
+PROBE28 gc=26 N=0 maj=0 ng=2 preMut0=0 preMut1=701 staticChain=0 copiedW=64719 liveW=1063180 liveB=1060
+PROBE28 gc=27 N=0 maj=0 ng=2 preMut0=0 preMut1=266 staticChain=0 copiedW=50430 liveW=1075913 liveB=1071
+PROBE28 gc=28 N=0 maj=0 ng=2 preMut0=0 preMut1=334 staticChain=0 copiedW=51086 liveW=1111295 liveB=1106
+PROBE28 gc=29 N=0 maj=0 ng=2 preMut0=0 preMut1=279 staticChain=0 copiedW=82485 liveW=1160247 liveB=1153
+PROBE28 gc=30 N=0 maj=0 ng=2 preMut0=0 preMut1=511 staticChain=0 copiedW=68569 liveW=1251187 liveB=1245
+PROBE28 gc=31 N=0 maj=0 ng=2 preMut0=0 preMut1=303 staticChain=0 copiedW=46344 liveW=1259125 liveB=1252
+PROBE28 gc=32 N=1 maj=1 ng=2 preMut0=0 preMut1=282 staticChain=174921 copiedW=947662 liveW=1240144 liveB=1228
+PROBE28 gc=33 N=0 maj=0 ng=2 preMut0=0 preMut1=721 staticChain=0 copiedW=89944 liveW=1367040 liveB=1357
+PROBE28 gc=34 N=0 maj=0 ng=2 preMut0=0 preMut1=641 staticChain=0 copiedW=138293 liveW=1510903 liveB=1497
+PROBE28 gc=35 N=0 maj=0 ng=2 preMut0=0 preMut1=651 staticChain=0 copiedW=116413 liveW=1582077 liveB=1568
+PROBE28 gc=36 N=0 maj=0 ng=2 preMut0=0 preMut1=558 staticChain=0 copiedW=85633 liveW=1613389 liveB=1596
+PROBE28 gc=37 N=0 maj=0 ng=2 preMut0=0 preMut1=438 staticChain=0 copiedW=50179 liveW=1656052 liveB=1638
+PROBE28 gc=38 N=0 maj=0 ng=2 preMut0=0 preMut1=575 staticChain=0 copiedW=37336 liveW=1708918 liveB=1692
+PROBE28 gc=39 N=0 maj=0 ng=2 preMut0=0 preMut1=428 staticChain=0 copiedW=77549 liveW=1763507 liveB=1746
+PROBE28 gc=40 N=0 maj=0 ng=2 preMut0=0 preMut1=507 staticChain=0 copiedW=53739 liveW=1775971 liveB=1758
+
+Big2.hs:10:43: error:
+    * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+      tcl_env of environment: [aUg :-> Type variable `a' = a :: *,
+                               aUS :-> Identifier[k::Int, NotLetBound],
+                               aUT :-> Identifier[xs::[a], NotLetBound],
+                               rjN :-> Identifier[freqMap::forall a.
+                                                           Ord a =>
+                                                           [a] -> M.Map a Int, TopLevelLet],
+                               rjO :-> Identifier[topK::forall a.
+                                                        Ord a =>
+                                                        Int
+                                                        -> [a] -> [(Int, a)], TopLevelLet {} True],
+                               rjP :-> Identifier[dedup::forall a.
+                                                         Ord a =>
+                                                         [a] -> [a], TopLevelLet {} True],
+                               rjQ :-> Identifier[countOf::forall a.
+                                                           Ord a =>
+                                                           a
+                                                           -> M.Map a Int
+                                                           -> Int, TopLevelLet {} True],
+                               rjR :-> Identifier[shift::Int
+                                                         -> [Int] -> [Int], TopLevelLet {} True],
+                               rjS :-> Identifier[scaleAndShift::Int
+                                                                 -> Int
+                                                                 -> [Int]
+                                                                 -> [Int], TopLevelLet],
+                               rjT :-> Identifier[allPositive::[Int]
+                                                               -> Bool, TopLevelLet {} True],
+                               rjU :-> Identifier[cumsum::forall a.
+                                                          Num a =>
+                                                          [a] -> [a], TopLevelLet {} True]]
+    * In the first argument of `map', namely `swap'
+      In the first argument of `(.)', namely `map swap'
+      In the second argument of `(.)', namely `map swap . M.toList'
+   |
+10 | topK k xs = take k . reverse . sort . map swap . M.toList $ freqMap xs
+   |                                           ^^^^
+PROBE28 gc=41 N=1 maj=1 ng=2 preMut0=0 preMut1=398 staticChain=174366 copiedW=462385 liveW=484958 liveB=484
+GHC_EXIT=1

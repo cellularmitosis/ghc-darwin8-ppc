@@ -191,8 +191,8 @@ emitted.
 - **Debug-RTS-linked `/opt/ghc-stage2/bin/ghc-real-debug` KEPT** on
   pmacg5 (caveat: it changes failure incidence — useful only when
   you want to instrument a *different* failure scenario).
-- **Logs at** [`../../../log/session31/`](../../../log/session31/)
-  (gitignored).
+- **Logs at** [`logs/`](logs/)
+
 - **HANDOFF for session 32** pivots to weak/stable-ptr table walks
   and the env-var perturbation as a debugging primitive.  See
   [`HANDOFF.md`](HANDOFF.md).

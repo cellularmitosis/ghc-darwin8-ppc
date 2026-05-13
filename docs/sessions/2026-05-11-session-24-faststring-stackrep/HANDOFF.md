@@ -110,7 +110,7 @@ bash docs/sessions/2026-05-10-session-23-stage2-poison-probe/scripts/run-poison.
 
 # 4. Collect results
 ssh pmacg5 'cat ~/Library/Logs/CrashReporter/ghc-real.crash.log' \
-  > log/session25/ghc-real.crash.log
+  > docs/sessions/2026-05-11-session-25-pin-aware-poison/logs/ghc-real.crash.log
 # Look for: did the 5/5 SIGSEGV pattern hold?  Or did it stop?
 
 # 5. End-of-session ritual: revert GC.c, rebuild RTS, redeploy clean.
@@ -175,7 +175,7 @@ the post-GC stale addresses on the stack.
   — clean (script's EXIT trap restored).
 - `pmacg5:/opt/ghc-stage2/bin/{ghc,ghc-real}` — clean (matches v0.12.0).
 - New session log: `docs/sessions/2026-05-11-session-24-faststring-stackrep/`
-  + cmm dumps gitignored at `log/session24/cross/`.
+  + cmm dumps at `logs/cross/`.
 
 ## Time estimate for session 25
 

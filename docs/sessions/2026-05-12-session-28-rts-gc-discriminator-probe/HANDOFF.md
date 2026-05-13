@@ -184,7 +184,7 @@ source ../../../scripts/cross-env.sh > /dev/null
 cd ../../..
 bash scripts/deploy-stage2.sh pmacg5
 
-# 3. Run the matrix (writes logs to log/session28/)
+# 3. Run the matrix (writes logs to logs/)
 bash docs/sessions/2026-05-12-session-28-rts-gc-discriminator-probe/scripts/run-probe-matrix.sh \
     pmacg5 5
 bash docs/sessions/2026-05-12-session-28-rts-gc-discriminator-probe/scripts/big2-a1m-test.sh \
@@ -220,7 +220,7 @@ bash scripts/deploy-stage2.sh pmacg5
 - `pmacg5:/opt/ghc-stage2/bin/{ghc,ghc-real}` — clean rebuild+redeploy
   at session-28 end, matches v0.12.0.
 - New session dir: `docs/sessions/2026-05-12-session-28-rts-gc-discriminator-probe/`
-  + run logs gitignored at `log/session28/`.
+  + run logs at `logs/`.
 
 ## Time estimate for session 29
 

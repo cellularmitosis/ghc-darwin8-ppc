@@ -26,7 +26,7 @@ set -uo pipefail
 
 PPC_HOST="${1:-pmacg5}"
 REPO_ROOT="$(cd "$(dirname "$0")/../../../../" && pwd)"
-LOGDIR="$REPO_ROOT/log/session26"
+LOGDIR="$REPO_ROOT/docs/sessions/2026-05-12-session-26-bs-allocator-hunt/logs"
 mkdir -p "$LOGDIR"
 
 GHC_REAL="/opt/ghc-stage2/bin/ghc-real"

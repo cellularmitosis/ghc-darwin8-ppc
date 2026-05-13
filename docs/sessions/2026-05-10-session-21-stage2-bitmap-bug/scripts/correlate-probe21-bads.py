@@ -6,7 +6,7 @@ info= and bitmap_raw=. Subsequent PROBE21BAD lines (until next FRAME) are
 attributed to that frame.
 
 Usage:
-  python3 correlate-probe21-bads.py log/session20/probe20-iter1-vanilla-A1m.log
+  python3 correlate-probe21-bads.py docs/sessions/2026-05-10-session-20-stage2-gc-bug-round2/logs/probe20-iter1-vanilla-A1m.log
 """
 import re, sys
 from collections import Counter

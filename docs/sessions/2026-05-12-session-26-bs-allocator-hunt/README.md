@@ -203,7 +203,7 @@ different kind of corruption.
 - **No source-tree edits this session** persist.  FastString.hs is
   back to upstream.
 - **Stage2 ghc on pmacg5 is clean** (rebuild + redeploy after revert).
-- **Logs at** [`log/session26/`](../../../log/session26/) (gitignored)
+- **Logs at** [`logs/`](logs/)
   capture the PROBE26 runs, the M5plus.hs panic, and the Big.hs
   reruns.
 - **HANDOFF for session 27** scopes re-establishing a repro and the

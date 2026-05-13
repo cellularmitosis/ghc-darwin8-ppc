@@ -118,7 +118,7 @@ So the RTS compiles `BITMAP_BITS(x) = x >> 5` and `BITMAP_SIZE(x)
 ### Step 3 — re-attribute the BAD pay= events
 
 `scripts/correlate-probe21-bads.py
-log/session20/probe20-iter1-vanilla-A1m.log 1` shows:
+docs/sessions/2026-05-10-session-20-stage2-gc-bug-round2/logs/probe20-iter1-vanilla-A1m.log 1` shows:
 
 ```
 Top info tables for BAD pay=1:
@@ -163,7 +163,7 @@ $PPC_GHC --make -c -O2 -ddump-cmm -ddump-stg-final \
 ```
 
 (Captured at
-[`log/session21/catch-cross/catch-O2.dump`](../../../log/session21/catch-cross/catch-O2.dump)
+[`logs/catch-cross/catch-O2.dump`](logs/catch-cross/catch-O2.dump)
 — ~1.1 MB, gitignored).
 
 Counted distinct StackRep patterns by size in the dump.  Size 2:
