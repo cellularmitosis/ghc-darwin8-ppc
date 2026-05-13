@@ -1,0 +1,220 @@
+diff --git a/rts/sm/GC.c b/rts/sm/GC.c
+index d63ca271..1b668e2e 100644
+--- a/rts/sm/GC.c
++++ b/rts/sm/GC.c
+@@ -122,6 +122,36 @@ static W_ g0_pcnt_kept = 30; // percentage of g0 live at last minor GC
+ 
+ static int consec_idle_gcs = 0;
+ 
++/* PROBE31-BEGIN — session-31 per-frame stack-walker probe.
++ *
++ * Session 30's PROBE28+29+30 exhausted aggregate per-closure-type
++ * and per-allocator-path counters.  The bug is single-event at one
++ * address; aggregate counters can't see it.  But sessions 20-24
++ * only verified that STACK-FRAME BITMAP CODEGEN is correct — the
++ * stack-WALKER (rts/sm/Scav.c::scavenge_stack) iteration loop
++ * itself hasn't been instrumented event-by-event.
++ *
++ * PROBE31 adds per-GC counters for scavenge_stack:
++ *   calls           : scavenge_stack invocations.
++ *   frames          : total activation records walked across all calls.
++ *   words           : sum of frame sizes in words (payload only).
++ *   ptrs            : sum of pointer slots evacuated from bitmaps.
++ *   frame_hist[64]  : histogram of info-table types of frames walked.
++ *
++ * Set PROBE31_VERBOSE=1 to additionally emit one PROBE31_CALL line
++ * per scavenge_stack invocation (high volume, useful only when an
++ * aggregate anomaly directs us to inspect a specific GC).
++ */
++W_ probe31_gc_no = 0;
++W_ probe31_scavstack_calls;
++W_ probe31_scavstack_frames;
++W_ probe31_scavstack_words;
++W_ probe31_scavstack_ptrs;
++W_ probe31_frame_hist[64];
++W_ probe31_verbose = 1;  /* hardcoded ON to avoid env-var perturbation */
++W_ probe31_call_idx = 0;
++/* PROBE31-END */
++
+ /* Mut-list stats */
+ #if defined(DEBUG)
+ // For lack of a better option we protect mutlist_scav_stats with oldest_gen->sync
+@@ -297,6 +327,16 @@ GarbageCollect (uint32_t collect_gen,
+   // The time we should report our heap census as occurring at, if necessary.
+   Time mut_time = 0;
+ 
++  /* PROBE31 — bump gc_no, reset per-GC counters before any scavenging.
++   * (Env-var path removed: setting any env var perturbs the bug.)  */
++  probe31_gc_no++;
++  probe31_scavstack_calls = 0;
++  probe31_scavstack_frames = 0;
++  probe31_scavstack_words = 0;
++  probe31_scavstack_ptrs = 0;
++  for (uint32_t pi = 0; pi < 64; pi++) probe31_frame_hist[pi] = 0;
++  probe31_call_idx = 0;
++
+   if (do_heap_census) {
+       RTSStats stats;
+       getRTSStats(&stats);
+@@ -1073,6 +1113,22 @@ GarbageCollect (uint32_t collect_gen,
+   memInventory(DEBUG_gc);
+ #endif
+ 
++  /* PROBE31 — emit per-GC summary BEFORE stat_endGC.  Two lines:
++   * aggregate scavstack counters, plus a frame-type histogram
++   * (only non-zero buckets, indexed by ClosureTypes.h enum).
++   */
++  debugBelch("PROBE31 gc=%lu scavstack calls=%lu frames=%lu words=%lu ptrs=%lu\n",
++             (unsigned long)probe31_gc_no,
++             (unsigned long)probe31_scavstack_calls,
++             (unsigned long)probe31_scavstack_frames,
++             (unsigned long)probe31_scavstack_words,
++             (unsigned long)probe31_scavstack_ptrs);
++  debugBelch("PROBE31 gc=%lu frameHist", (unsigned long)probe31_gc_no);
++  for (uint32_t pi = 0; pi < 64; pi++)
++      if (probe31_frame_hist[pi] != 0)
++          debugBelch(" t%u=%lu", pi, (unsigned long)probe31_frame_hist[pi]);
++  debugBelch("\n");
++
+   // ok, GC over: tell the stats department what happened.
+   stat_endGCWorker(cap, gct);
+   stat_endGC(cap, gct, live_words, copied,
+diff --git a/rts/sm/Scav.c b/rts/sm/Scav.c
+index 414f468e..b7b72ce5 100644
+--- a/rts/sm/Scav.c
++++ b/rts/sm/Scav.c
+@@ -67,6 +67,29 @@
+ 
+ #include <string.h> /* for memset */
+ 
++/* PROBE31-BEGIN — externs for counters defined in rts/sm/GC.c.
++ * Used in scavenge_stack below to count per-call and per-frame stats.
++ */
++extern W_ probe31_gc_no;
++extern W_ probe31_scavstack_calls;
++extern W_ probe31_scavstack_frames;
++extern W_ probe31_scavstack_words;
++extern W_ probe31_scavstack_ptrs;
++extern W_ probe31_frame_hist[64];
++extern W_ probe31_verbose;
++extern W_ probe31_call_idx;
++
++/* Count zero-bits in a small bitmap of length `size` with `bits`.
++ * GHC convention: 0 == ptr, 1 == non-ptr.
++ */
++static inline uint32_t probe31_count_ptrs(uint32_t size, StgWord bits) {
++    uint32_t nonptr = 0;
++    for (uint32_t i = 0; i < size; i++)
++        if (bits & ((StgWord)1 << i)) nonptr++;
++    return size - nonptr;
++}
++/* PROBE31-END */
++
+ static void scavenge_large_bitmap (StgPtr p,
+                                    StgLargeBitmap *large_bitmap,
+                                    StgWord size );
+@@ -1846,12 +1869,30 @@ scavenge_stack(StgPtr p, StgPtr stack_end)
+   StgWord bitmap;
+   StgWord size;
+ 
++  /* PROBE31 — per-call counters. */
++  probe31_scavstack_calls++;
++  W_ p31_this_call_idx = ++probe31_call_idx;
++  W_ p31_this_frames = 0;
++  W_ p31_this_words = 0;
++  W_ p31_this_ptrs = 0;
++  StgPtr p31_call_start = p;
++  StgPtr p31_call_end = stack_end;
++
+   /*
+    * Each time around this loop, we are looking at a chunk of stack
+    * that starts with an activation record.
+    */
+ 
+   while (p < stack_end) {
++    /* PROBE31 — count this frame; categorize by info-type. */
++    probe31_scavstack_frames++;
++    p31_this_frames++;
++    {
++        const StgInfoTable *p31_itbl = get_itbl((StgClosure *)p);
++        uint32_t p31_t = (uint32_t)p31_itbl->type;
++        if (p31_t < 64) probe31_frame_hist[p31_t]++;
++    }
++
+     info  = get_ret_itbl((StgClosure *)p);
+ 
+     switch (info->i.type) {
+@@ -1924,6 +1965,10 @@ scavenge_stack(StgPtr p, StgPtr stack_end)
+     {
+         StgUpdateFrame *frame = (StgUpdateFrame *)p;
+ 
++        /* PROBE31 — UPDATE_FRAME: sizeofW=2 words, 1 ptr (updatee). */
++        p31_this_words += sizeofW(StgUpdateFrame);
++        p31_this_ptrs  += 1;
++        probe31_scavstack_ptrs += 1;
+         evacuate_BLACKHOLE(&frame->updatee);
+         p += sizeofW(StgUpdateFrame);
+         continue;
+@@ -1942,6 +1987,13 @@ scavenge_stack(StgPtr p, StgPtr stack_end)
+         // NOTE: the payload starts immediately after the info-ptr, we
+         // don't have an StgHeader in the same sense as a heap closure.
+         p++;
++        /* PROBE31 — small bitmap: size payload words; ptr count = bitmap zero-bits. */
++        {
++            uint32_t p31_ptrs = probe31_count_ptrs((uint32_t)size, bitmap);
++            p31_this_words += size;
++            p31_this_ptrs  += p31_ptrs;
++            probe31_scavstack_ptrs += p31_ptrs;
++        }
+         p = scavenge_small_bitmap(p, size, bitmap);
+ 
+     follow_srt:
+@@ -1961,6 +2013,9 @@ scavenge_stack(StgPtr p, StgPtr stack_end)
+         p++;
+         size = BCO_BITMAP_SIZE(bco);
+         scavenge_large_bitmap(p, BCO_BITMAP(bco), size);
++        /* PROBE31 — BCO bitmap: size payload words.  Ptr exact count
++         * would require walking the large bitmap; skipped for now.  */
++        p31_this_words += size;
+         p += size;
+         continue;
+     }
+@@ -1973,6 +2028,8 @@ scavenge_stack(StgPtr p, StgPtr stack_end)
+         size = GET_LARGE_BITMAP(&info->i)->size;
+         p++;
+         scavenge_large_bitmap(p, GET_LARGE_BITMAP(&info->i), size);
++        /* PROBE31 — RET_BIG: log payload words.  */
++        p31_this_words += size;
+         p += size;
+         // and don't forget to follow the SRT
+         goto follow_srt;
+@@ -1985,6 +2042,9 @@ scavenge_stack(StgPtr p, StgPtr stack_end)
+ 
+         evacuate(&ret_fun->fun);
+         fun_info = get_fun_itbl(UNTAG_CLOSURE(ret_fun->fun));
++        /* PROBE31 — RET_FUN: 1 ptr (fun) plus arg-block payload.  */
++        p31_this_ptrs += 1;
++        probe31_scavstack_ptrs += 1;
+         p = scavenge_arg_block(fun_info, ret_fun->payload);
+         goto follow_srt;
+     }
+@@ -1993,6 +2053,19 @@ scavenge_stack(StgPtr p, StgPtr stack_end)
+         barf("scavenge_stack: weird activation record found on stack: %d", (int)(info->i.type));
+     }
+   }
++
++  /* PROBE31 — per-call summary if verbose. */
++  probe31_scavstack_words += p31_this_words;
++  if (probe31_verbose) {
++      debugBelch("PROBE31_CALL gc=%lu idx=%lu start=%p end=%p nbytes=%lu frames=%lu words=%lu ptrs=%lu\n",
++                 (unsigned long)probe31_gc_no,
++                 (unsigned long)p31_this_call_idx,
++                 p31_call_start, p31_call_end,
++                 (unsigned long)((StgWord)p31_call_end - (StgWord)p31_call_start),
++                 (unsigned long)p31_this_frames,
++                 (unsigned long)p31_this_words,
++                 (unsigned long)p31_this_ptrs);
++  }
+ }
+ 
+ /*-----------------------------------------------------------------------------
