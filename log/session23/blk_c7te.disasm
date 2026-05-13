@@ -1,0 +1,54 @@
+__blk_c7te:
+01fa47b0	mfspr	r0,lr
+01fa47b4	stw	r31,0xfffc(r1)
+01fa47b8	stw	r0,0x8(r1)
+01fa47bc	stwu	r1,0xffb0(r1)
+01fa47c0	or	r31,r1,r1
+01fa47c4	stw	r29,0x48(r31)
+01fa47c8	stw	r30,0x44(r31)
+01fa47cc	lis	r2,0x8af
+01fa47d0	lwz	r3,0x211c(r2)
+01fa47d4	lwz	r4,0x32c(r3)
+01fa47d8	lwz	r5,0x330(r3)
+01fa47dc	addi	r4,r4,0x8
+01fa47e0	cmplw	r5,r4
+01fa47e4	stw	r4,0x32c(r3)
+01fa47e8	bge	0x1fa4804
+01fa47ec	lwz	r2,0x211c(r2)
+01fa47f0	li	r3,0x8
+01fa47f4	stw	r3,0x348(r2)
+01fa47f8	lis	r2,0x8af
+01fa47fc	lwz	r3,0x259c(r2)
+01fa4800	b	0x1fa485c
+01fa4804	lwz	r30,0x211c(r2)
+01fa4808	lwz	r29,0xc(r3)
+01fa480c	lwz	r2,0x324(r30)
+01fa4810	addi	r3,r29,0x8
+01fa4814	lwz	r4,0xc(r2)
+01fa4818	lwz	r5,0x8(r2)
+01fa481c	bl	_memcpy$stub$island$3
+01fa4820	lis	r3,0x8af
+01fa4824	lwz	r2,0x32c(r30)
+01fa4828	lwz	r3,0x7be0(r3)
+01fa482c	stw	r3,0xfffc(r2)
+01fa4830	lwz	r2,0x32c(r30)
+01fa4834	stw	r29,0x0(r2)
+01fa4838	lwz	r2,0x32c(r30)
+01fa483c	lwz	r3,0x324(r30)
+01fa4840	addi	r2,r2,0xfffd
+01fa4844	stw	r2,0xc(r3)
+01fa4848	lis	r3,0x1fa
+01fa484c	lwz	r2,0x324(r30)
+01fa4850	addi	r3,r3,0x4880
+01fa4854	addi	r2,r2,0xc
+01fa4858	stw	r2,0x324(r30)
+01fa485c	lwz	r30,0x44(r31)
+01fa4860	lwz	r29,0x48(r31)
+01fa4864	addi	r1,r1,0x50
+01fa4868	lwz	r0,0x8(r1)
+01fa486c	lwz	r31,0xfffc(r1)
+01fa4870	mtspr	lr,r0
+01fa4874	blr
+01fa4878	nop
+01fa487c	nop
+__blk_c7tr:

@@ -1,0 +1,70 @@
+diff --git a/compiler/GHC/Core/Opt/Simplify/Env.hs b/compiler/GHC/Core/Opt/Simplify/Env.hs
+index d1b33b02..fc650d40 100644
+--- a/compiler/GHC/Core/Opt/Simplify/Env.hs
++++ b/compiler/GHC/Core/Opt/Simplify/Env.hs
+@@ -5,6 +5,10 @@
+ -}
+ 
+ {-# LANGUAGE CPP #-}
++{-# LANGUAGE MagicHash #-}
++{-# LANGUAGE BangPatterns #-}
++{-# LANGUAGE GHCForeignImportPrim #-}
++{-# LANGUAGE UnliftedFFITypes #-}
+ 
+ module GHC.Core.Opt.Simplify.Env (
+         -- * The simplifier mode
+@@ -76,6 +80,44 @@ import GHC.Types.Unique.FM      ( pprUniqFM )
+ 
+ import Data.List (mapAccumL)
+ 
++-- PROBE33: heap-address + closure-header/payload probe for
++-- refineFromInScope panic.  Reuses aToWordzh from ghc-heap; reads
++-- 4 untagged words at v to capture info-pointer + first 3 payload
++-- words for closure-shape comparison across env-var zones.
++import GHC.Exts (Any, Word#)
++import GHC.Word (Word(..))
++import Foreign.Ptr (Ptr, wordPtrToPtr, plusPtr)
++import Foreign.Storable (peek)
++import System.IO.Unsafe (unsafeDupablePerformIO)
++import qualified Numeric (showHex)
++import Unsafe.Coerce (unsafeCoerce)
++import Data.Bits ((.&.), complement)
++
++foreign import prim "aToWordzh" probe33_aToWord# :: Any -> Word#
++
++probe33Hex :: Word -> String
++probe33Hex w = "0x" ++ Numeric.showHex w ""
++
++-- Dump v's heap address (tagged + untagged) plus 4 words starting
++-- at the untagged address.  Best-effort — if memory is unreadable
++-- the unsafePerformIO catches that and falls back to "?".
++probe33Dump :: a -> String
++probe33Dump x =
++    let !tagged = W# (probe33_aToWord# (unsafeCoerce x :: Any))
++        !untag  = tagged .&. complement 3  -- PPC32 TAG_MASK = 3
++        readAt :: Word -> Int -> Word
++        readAt addr i =
++            unsafeDupablePerformIO
++                (peek (wordPtrToPtr (fromIntegral addr) `plusPtr` (i * 4)
++                        :: Ptr Word))
++        !ws = [readAt untag i | i <- [0 .. 7]]
++        -- If w1 looks like a heap-pointer (a likely indirection target),
++        -- also read 4 words at that address as the "target" closure.
++        showWs label addr xs =
++            label ++ " @" ++ probe33Hex addr ++ " ["
++            ++ unwords (map probe33Hex xs) ++ "]"
++    in showWs "self" untag ws
++
+ {-
+ ************************************************************************
+ *                                                                      *
+@@ -703,7 +745,8 @@ refineFromInScope :: InScopeSet -> Var -> Var
+ refineFromInScope in_scope v
+   | isLocalId v = case lookupInScope in_scope v of
+                   Just v' -> v'
+-                  Nothing -> pprPanic "refineFromInScope" (ppr in_scope $$ ppr v)
++                  Nothing -> pprPanic ("refineFromInScope " ++ probe33Dump v)
++                                       (ppr in_scope $$ ppr v)
+                              -- c.f #19074 for a subtle place where this went wrong
+   | otherwise = v
+ 

@@ -1,0 +1,10 @@
+iter01 rc=0 : OK
+iter02 rc=0 : OK
+iter03 rc=0 : OK
+iter04 rc=1 : ghc-real: panic! (the 'impossible' happened)
+iter05 rc=0 : OK
+iter06 rc=0 : OK
+iter07 rc=0 : OK
+iter08 rc=0 : OK
+iter09 rc=0 : OK
+iter10 rc=0 : OK

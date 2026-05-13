@@ -1,0 +1,46 @@
+==> iter1-A1G  (+RTS -A1G -RTS)
+    log: /Users/cell/claude/ghc-darwin8-ppc/log/session26/probe26-iter1-A1G.log (ssh exit=0)
+    GHC_EXIT line: GHC_EXIT=0
+    PROBE26 lines:           50
+    PROBE26 UNPINNED lines:  0
+0
+    PROBE26 PlainPtr lines:  50
+    PROBE26 MallocPtr lines: 0
+0
+    PROBE26 FinalPtr lines:  0
+0
+    PROBE26 PlainFP lines:   0
+0
+
+==> iter2-A1m  (+RTS -A1m -RTS)
+    log: /Users/cell/claude/ghc-darwin8-ppc/log/session26/probe26-iter2-A1m.log (ssh exit=0)
+    GHC_EXIT line: GHC_EXIT=0
+    PROBE26 lines:           50
+    PROBE26 UNPINNED lines:  0
+0
+    PROBE26 PlainPtr lines:  50
+    PROBE26 MallocPtr lines: 0
+0
+    PROBE26 FinalPtr lines:  0
+0
+    PROBE26 PlainFP lines:   0
+0
+
+==> iter3-A1m  (+RTS -A1m -RTS)
+    log: /Users/cell/claude/ghc-darwin8-ppc/log/session26/probe26-iter3-A1m.log (ssh exit=0)
+    GHC_EXIT line: GHC_EXIT=0
+    PROBE26 lines:           50
+    PROBE26 UNPINNED lines:  0
+0
+    PROBE26 PlainPtr lines:  50
+    PROBE26 MallocPtr lines: 0
+0
+    PROBE26 FinalPtr lines:  0
+0
+    PROBE26 PlainFP lines:   0
+0
+
+==> Aggregate UNPINNED hits across all iters:
+
+==> Tag histogram (across ALL iters, ALL calls):
+ 150 PlainPtr+pinned

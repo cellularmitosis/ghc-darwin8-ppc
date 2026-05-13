@@ -1,0 +1,16 @@
+=== M5.hs iters=5 flags='+RTS -A1m -G1 -RTS' ===
+  iter01 rc=0 gcs=13 : OK
+  iter02 rc=0 gcs=13 : OK
+  iter03 rc=0 gcs=13 : OK
+  iter04 rc=0 gcs=13 : OK
+  iter05 rc=0 gcs=13 : OK
+  SUMMARY: pass=5 fail=0 of 5
+
+=== Big2.hs iters=5 flags='+RTS -A1m -G1 -RTS' ===
+  iter01 rc=1 gcs=17 : ghc-real: panic! (the 'impossible' happened)
+  iter02 rc=1 gcs=17 : ghc-real: panic! (the 'impossible' happened)
+  iter03 rc=1 gcs=17 : ghc-real: panic! (the 'impossible' happened)
+  iter04 rc=1 gcs=17 : ghc-real: panic! (the 'impossible' happened)
+  iter05 rc=1 gcs=17 : ghc-real: panic! (the 'impossible' happened)
+  SUMMARY: pass=0 fail=5 of 5
+

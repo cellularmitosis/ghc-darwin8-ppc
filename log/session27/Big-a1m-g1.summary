@@ -1,0 +1,5 @@
+iter01 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter02 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter03 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter04 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+iter05 rc=1 :     * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
