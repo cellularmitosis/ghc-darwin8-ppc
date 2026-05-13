@@ -1,0 +1,142 @@
+TYPE SIGNATURES
+  freqMap :: forall a. Ord a => [a] -> M.Map a Int
+  scaleAndShift :: Int -> Int -> [Int] -> [Int]
+Dependent modules: []
+Dependent packages: [array-0.5.4.0, base-4.16.4.0,
+                     containers-0.6.5.1, deepseq-1.4.6.1, ghc-bignum-1.2,
+                     ghc-prim-0.8.0]
+
+==================== Typechecker ====================
+Big2.$trModule
+  = GHC.Types.Module
+      (GHC.Types.TrNameS "main"#) (GHC.Types.TrNameS "Big2"#)
+scaleAndShift_a1jI s_aXl n_aXm
+  = map (\ x_aXn -> x_aXn * s_aXl + n_aXm)
+freqMap_a1jR xs_aUi
+  = M.fromListWith (+) [(x_aUR, 1) | x_aUR <- xs_aUi]
+
+
+
+==================== Occurrence analysis ====================
+Big2.$trModule :: GHC.Types.Module
+[LclIdX]
+Big2.$trModule
+  = GHC.Types.Module
+      (GHC.Types.TrNameS "main"#) (GHC.Types.TrNameS "Big2"#)
+
+
+
+
+==================== Desugar (after optimization) ====================
+Result size of Desugar (after optimization)
+  = {terms: 6, types: 1, coercions: 0, joins: 0/0}
+
+-- RHS size: {terms: 5, types: 0, coercions: 0, joins: 0/0}
+Big2.$trModule :: GHC.Types.Module
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [] 70 10}]
+Big2.$trModule
+  = GHC.Types.Module
+      (GHC.Types.TrNameS "main"#) (GHC.Types.TrNameS "Big2"#)
+
+
+
+
+==================== Occurrence analysis ====================
+Big2.$trModule :: GHC.Types.Module
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [] 70 10}]
+Big2.$trModule
+  = GHC.Types.Module
+      (GHC.Types.TrNameS "main"#) (GHC.Types.TrNameS "Big2"#)
+
+
+
+
+==================== Occurrence analysis ====================
+$trModule_s1kw [Occ=OnceL1] :: GHC.Prim.Addr#
+[LclId,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [] 20 0}]
+$trModule_s1kw = "main"#
+
+$trModule_s1kx [Occ=OnceL1] :: GHC.Types.TrName
+[LclId,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [] 10 10}]
+$trModule_s1kx = GHC.Types.TrNameS $trModule_s1kw
+
+$trModule_s1ky [Occ=OnceL1] :: GHC.Prim.Addr#
+[LclId,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [] 20 0}]
+$trModule_s1ky = "Big2"#
+
+$trModule_s1kz [Occ=OnceL1] :: GHC.Types.TrName
+[LclId,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [] 10 10}]
+$trModule_s1kz = GHC.Types.TrNameS $trModule_s1ky
+
+Big2.$trModule :: GHC.Types.Module
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [] 10 10}]
+Big2.$trModule = GHC.Types.Module $trModule_s1kx $trModule_s1kz
+
+
+
+
+==================== Tidy Core ====================
+Result size of Tidy Core
+  = {terms: 14, types: 5, coercions: 0, joins: 0/0}
+
+-- RHS size: {terms: 1, types: 0, coercions: 0, joins: 0/0}
+$trModule1_r1km :: GHC.Prim.Addr#
+[GblId, Unf=OtherCon []]
+$trModule1_r1km = "main"#
+
+-- RHS size: {terms: 2, types: 0, coercions: 0, joins: 0/0}
+$trModule2_r1kA :: GHC.Types.TrName
+[GblId, Unf=OtherCon []]
+$trModule2_r1kA = GHC.Types.TrNameS $trModule1_r1km
+
+-- RHS size: {terms: 1, types: 0, coercions: 0, joins: 0/0}
+$trModule3_r1kB :: GHC.Prim.Addr#
+[GblId, Unf=OtherCon []]
+$trModule3_r1kB = "Big2"#
+
+-- RHS size: {terms: 2, types: 0, coercions: 0, joins: 0/0}
+$trModule4_r1kC :: GHC.Types.TrName
+[GblId, Unf=OtherCon []]
+$trModule4_r1kC = GHC.Types.TrNameS $trModule3_r1kB
+
+-- RHS size: {terms: 3, types: 0, coercions: 0, joins: 0/0}
+Big2.$trModule :: GHC.Types.Module
+[GblId, Unf=OtherCon []]
+Big2.$trModule = GHC.Types.Module $trModule2_r1kA $trModule4_r1kC
+
+
+
+ghc-real: panic! (the 'impossible' happened)
+  (GHC version 9.2.8:
+	depSortStgBinds
+  Found cyclic SCC:
+  [($trModule :: Module
+    [GblId, Unf=OtherCon []] =
+        CCS_DONT_CARE Module! [$trModule2_r1kA $trModule4_r1kC];,
+    {$trModule2_r1kA, $trModule4_r1kC}),
+   ($trModule4_r1kC :: TrName
+    [GblId, Unf=OtherCon []] =
+        CCS_DONT_CARE TrNameS! [$trModule3_r1kB];,
+    {$trModule3_r1kB})]
+  Call stack:
+      CallStack (from HasCallStack):
+        callStackDoc, called at compiler/GHC/Utils/Panic.hs:181:37 in ghc:GHC.Utils.Panic
+        pprPanic, called at compiler/GHC/Stg/DepAnal.hs:144:7 in ghc:GHC.Stg.DepAnal
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+RC=1

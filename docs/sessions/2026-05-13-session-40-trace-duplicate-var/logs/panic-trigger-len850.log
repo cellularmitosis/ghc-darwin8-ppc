@@ -1,0 +1,14 @@
+PROBE40-FAIL call=1 v=$dOrd(0x61001418) scope_size=6 subst_size=0 scope_first20=[wild(0x30000000) k(0x61000e5c) m(0x61000e5d) a(0x610013f6) $dOrd(0x610013f7) countOf(0x720004ce)] subst_keys_first20=[]
+ghc-real: panic! (the 'impossible' happened)
+  (GHC version 9.2.8:
+	refineFromInScope
+  InScope {wild_00 k_aXi m_aXj a_a1kq $dOrd_a1kr countOf}
+  $dOrd_a1kY
+  Call stack:
+      CallStack (from HasCallStack):
+        callStackDoc, called at compiler/GHC/Utils/Panic.hs:181:37 in ghc:GHC.Utils.Panic
+        pprPanic, called at compiler/GHC/Core/Opt/Simplify/Env.hs:770:30 in ghc:GHC.Core.Opt.Simplify.Env
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+RC=1

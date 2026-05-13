@@ -1,0 +1,97 @@
+diff --git a/compiler/GHC/Core/Opt/Simplify/Env.hs b/compiler/GHC/Core/Opt/Simplify/Env.hs
+index d1b33b02..56471af8 100644
+--- a/compiler/GHC/Core/Opt/Simplify/Env.hs
++++ b/compiler/GHC/Core/Opt/Simplify/Env.hs
+@@ -5,6 +5,7 @@
+ -}
+ 
+ {-# LANGUAGE CPP #-}
++{-# LANGUAGE BangPatterns #-}
+ 
+ module GHC.Core.Opt.Simplify.Env (
+         -- * The simplifier mode
+@@ -72,9 +73,66 @@ import GHC.Utils.Outputable
+ import GHC.Utils.Panic
+ import GHC.Utils.Misc
+ import GHC.Utils.Logger
+-import GHC.Types.Unique.FM      ( pprUniqFM )
++import GHC.Types.Unique.FM      ( pprUniqFM, sizeUFM, nonDetKeysUFM )
++import GHC.Types.Unique.Set     ( nonDetEltsUniqSet )
++import GHC.Types.Unique         ( getKey )
++import GHC.Types.Name           ( getOccString )
+ 
+ import Data.List (mapAccumL)
++import Data.IORef        (IORef, newIORef, atomicModifyIORef')
++import qualified Numeric (showHex)
++import System.IO         (hPutStrLn, stderr, hFlush)
++import System.IO.Unsafe  (unsafePerformIO)
++
++-- PROBE40: extend probe38's panic-site dump to also include
++-- seIdSubst's size + first ~20 element Uniques.  Goal: see whether
++-- the SimplEnv at the failing substId/refineFromInScope boundary
++-- has any substitution entries at all, or is "fresh".  If
++-- seIdSubst is small or empty at the panic site, the simplifier is
++-- descending in a way that bypasses simplTopBinds' seIdSubst
++-- population.
++
++{-# NOINLINE probe40Counter #-}
++probe40Counter :: IORef Int
++probe40Counter = unsafePerformIO (newIORef 0)
++
++probe40Hex :: Int -> String
++probe40Hex i
++  | i < 0     = "-0x" ++ Numeric.showHex (negate i) ""
++  | otherwise = "0x" ++ Numeric.showHex i ""
++
++probe40DescribeVar :: Var -> String
++probe40DescribeVar v =
++    getOccString v ++ "(" ++ probe40Hex (getKey (varUnique v)) ++ ")"
++
++-- substId emits this when it's about to call refineFromInScope and
++-- the in-scope set doesn't have v.  (Logged when the lookupInScope
++-- result would be Nothing.)
++probe40DumpSubstFail :: InScopeSet -> SimplIdSubst -> Var -> String
++probe40DumpSubstFail in_scope id_subst v = unsafePerformIO $ do
++    n <- atomicModifyIORef' probe40Counter (\k -> (k+1, k+1))
++    let vu = varUnique v
++        vs = getInScopeVars in_scope
++        sz_scope = sizeVarSet vs
++        sz_subst = sizeUFM id_subst
++        -- First 20 element descriptions of in_scope (truncated)
++        els = take 20 (nonDetEltsUniqSet vs)
++        scope_desc = unwords (map probe40DescribeVar els)
++        -- First 20 keys of id_subst (Uniques as Int)
++        subst_keys = take 20 (nonDetKeysUFM id_subst)
++        subst_keys_desc = unwords (map (probe40Hex . getKey) subst_keys)
++        msg = unwords
++                [ "PROBE40-FAIL"
++                , "call=" ++ show n
++                , "v=" ++ probe40DescribeVar v
++                , "scope_size=" ++ show sz_scope
++                , "subst_size=" ++ show sz_subst
++                , "scope_first20=[" ++ scope_desc ++ "]"
++                , "subst_keys_first20=[" ++ subst_keys_desc ++ "]"
++                ]
++    hPutStrLn stderr msg
++    hFlush stderr
++    return msg
+ 
+ {-
+ ************************************************************************
+@@ -689,9 +747,15 @@ substId :: SimplEnv -> InId -> SimplSR
+ -- Returns DoneEx only on a non-Var expression
+ substId (SimplEnv { seInScope = in_scope, seIdSubst = ids }) v
+   = case lookupVarEnv ids v of  -- Note [Global Ids in the substitution]
+-        Nothing               -> DoneId (refineFromInScope in_scope v)
++        Nothing               -> probe40DumpIfFailing in_scope ids v `seq`
++                                 DoneId (refineFromInScope in_scope v)
+         Just (DoneId v)       -> DoneId (refineFromInScope in_scope v)
+         Just res              -> res    -- DoneEx non-var, or ContEx
++  where
++    probe40DumpIfFailing isc isub var
++      | isLocalId var && not (var `elemInScopeSet` isc)
++          = probe40DumpSubstFail isc isub var `seq` ()
++      | otherwise = ()
+ 
+         -- Get the most up-to-date thing from the in-scope set
+         -- Even though it isn't in the substitution, it may be in

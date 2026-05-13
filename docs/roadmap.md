@@ -499,6 +499,41 @@ much smaller than session 17 left it.  See:
   [`HANDOFF.md`](sessions/2026-05-13-session-39-var-realunique-drift/HANDOFF.md)
   scopes probe40: trace where the duplicate Var is
   constructed in the typechecker/desugarer/specializer pipeline.
+- [`docs/sessions/2026-05-13-session-40-trace-duplicate-var/`](sessions/2026-05-13-session-40-trace-duplicate-var/)
+  — round 22.  **Major new lead:** probe40 (extends probe38's
+  panic-site dump to also report `seIdSubst`'s size and keys
+  at every `substId env v` call where v's in-scope lookup
+  fails) reveals **`seIdSubst` is EMPTY at every
+  refineFromInScope panic**.  The env at the panic site has
+  only `init_in_scope = {wild_00}` plus the binders for the
+  current function being descended into — no top-level
+  binders, no substitutions.  This matches the shape of a
+  freshly-created SimplEnv (`mkSimplEnv mode` output) plus a
+  tiny descent, but `mkSimplEnv` is called only once per
+  simplifier iteration and its output flows into
+  `simplTopBinds` which populates seInScope with all
+  top-level binders via `simplRecBndrs`.  **New hypothesis:**
+  GC corrupts the SimplEnv heap closure's seInScope and
+  seIdSubst fields, resetting them to fresh-env defaults
+  somewhere during descent.  Consistent with heap-layout-
+  sensitive triggering (sessions 28-29) and with probe38's
+  PROBE38-SHRINK never firing (which only catches Haskell-
+  level set replacements; a GC pointer rewrite of the
+  SimplEnv data structure bypasses those).  **Side discovery
+  1:** session 38's `-A16m` clean-compile claim was an
+  artifact of `head -8` truncating output; real clean-compile
+  threshold is `-A256m`.  **Side discovery 2:** with
+  `-dsuppress-uniques`, PPC stage2 `-A256m` Core dump and
+  uranium host `-A1m -G1` Core dump are byte-identical — the
+  pipeline producing the simplifier's input is correct on
+  PPC; the bug is dynamic.  v0.12.0 ships unchanged; probe
+  applied and reverted; stage2 rebuilt+redeployed clean +
+  smoke-test PASS + baseline tests 30 PASS / 4 FAIL_OUTPUT
+  unchanged.  Session-40
+  [`HANDOFF.md`](sessions/2026-05-13-session-40-trace-duplicate-var/HANDOFF.md)
+  scopes probe41: pin a SimplEnv reference in an IORef and
+  periodically check its seInScope/seIdSubst sizes to
+  directly observe the corruption.
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.

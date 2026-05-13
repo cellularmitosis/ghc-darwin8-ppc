@@ -1,0 +1,1010 @@
+TYPE SIGNATURES
+  allPositive :: [Int] -> Bool
+  countOf :: forall a. Ord a => a -> M.Map a Int -> Int
+  cumsum :: forall a. Num a => [a] -> [a]
+  dedup :: forall a. Ord a => [a] -> [a]
+  freqMap :: forall a. Ord a => [a] -> M.Map a Int
+  scaleAndShift :: Int -> Int -> [Int] -> [Int]
+  shift :: Int -> [Int] -> [Int]
+  topK :: forall a. Ord a => Int -> [a] -> [(Int, a)]
+Dependent modules: []
+Dependent packages: [array-0.5.4.0, base-4.16.4.0,
+                     containers-0.6.5.1, deepseq-1.4.6.1, ghc-bignum-1.2,
+                     ghc-prim-0.8.0]
+
+==================== Typechecker ====================
+Big2.$trModule
+  = GHC.Types.Module
+      (GHC.Types.TrNameS "main"#) (GHC.Types.TrNameS "Big2"#)
+cumsum = scanl1 (+)
+allPositive = all (> 0)
+scaleAndShift s n = map (\ x -> x * s + n)
+shift n = map (+ n)
+countOf k m = fromMaybe 0 (M.lookup k m)
+dedup = map head . group . sort
+freqMap xs = M.fromListWith (+) [(x, 1) | x <- xs]
+topK k xs
+  = take k . reverse . sort . map swap . M.toList $ freqMap xs
+  where
+      swap (a, b) = (b, a)
+
+
+
+==================== Occurrence analysis ====================
+Big2.dedup :: forall a. GHC.Classes.Ord a => [a] -> [a]
+[LclIdX]
+Big2.dedup
+  = \ (@a) ($dOrd :: GHC.Classes.Ord a) ->
+      let {
+        $dOrd [Occ=Once1] :: GHC.Classes.Ord a
+        [LclId]
+        $dOrd = $dOrd } in
+      let {
+        $dEq [Occ=Once1] :: GHC.Classes.Eq a
+        [LclId]
+        $dEq = GHC.Classes.$p1Ord @a $dOrd } in
+      let {
+        $dEq [Occ=Once1] :: GHC.Classes.Eq a
+        [LclId]
+        $dEq = $dEq } in
+      GHC.Base..
+        @[[a]]
+        @[a]
+        @[a]
+        (GHC.Base.map @[a] @a (GHC.List.head @a))
+        (GHC.Base..
+           @[a]
+           @[[a]]
+           @[a]
+           (Data.OldList.group @a $dEq)
+           (Data.OldList.sort @a $dOrd))
+
+Big2.countOf
+  :: forall a.
+     GHC.Classes.Ord a =>
+     a -> Data.Map.Internal.Map a GHC.Types.Int -> GHC.Types.Int
+[LclIdX]
+Big2.countOf
+  = \ (@a) ($dOrd [Occ=Once1] :: GHC.Classes.Ord a) ->
+      let {
+        $dOrd [Occ=OnceL1] :: GHC.Classes.Ord a
+        [LclId]
+        $dOrd = $dOrd } in
+      \ (k [Occ=Once1] :: a)
+        (m [Occ=Once1] :: Data.Map.Internal.Map a GHC.Types.Int) ->
+        Data.Maybe.fromMaybe
+          @GHC.Types.Int
+          (GHC.Types.I# 0#)
+          (Data.Map.Internal.lookup @a @GHC.Types.Int $dOrd k m)
+
+Big2.cumsum :: forall a. GHC.Num.Num a => [a] -> [a]
+[LclIdX]
+Big2.cumsum
+  = \ (@a) ($dNum [Occ=Once1] :: GHC.Num.Num a) ->
+      let {
+        $dNum [Occ=Once1] :: GHC.Num.Num a
+        [LclId]
+        $dNum = $dNum } in
+      GHC.List.scanl1 @a (GHC.Num.+ @a $dNum)
+
+Big2.$trModule :: GHC.Types.Module
+[LclIdX]
+Big2.$trModule
+  = GHC.Types.Module
+      (GHC.Types.TrNameS "main"#) (GHC.Types.TrNameS "Big2"#)
+
+$dNum :: GHC.Num.Num GHC.Types.Int
+[LclId]
+$dNum = GHC.Num.$fNumInt
+
+Big2.freqMap
+  :: forall a.
+     GHC.Classes.Ord a =>
+     [a] -> Data.Map.Internal.Map a GHC.Types.Int
+[LclIdX]
+Big2.freqMap
+  = \ (@a) ($dOrd [Occ=Once1] :: GHC.Classes.Ord a) ->
+      let {
+        $dNum [Occ=OnceL1] :: GHC.Num.Num GHC.Types.Int
+        [LclId]
+        $dNum = $dNum } in
+      let {
+        $dOrd [Occ=OnceL1] :: GHC.Classes.Ord a
+        [LclId]
+        $dOrd = $dOrd } in
+      \ (xs [Occ=Once1] :: [a]) ->
+        Data.Map.Strict.Internal.fromListWith
+          @a
+          @GHC.Types.Int
+          $dOrd
+          (GHC.Num.+ @GHC.Types.Int $dNum)
+          (letrec {
+             ds [Occ=LoopBreaker] :: [a] -> [(a, GHC.Types.Int)]
+             [LclId]
+             ds
+               = \ (ds [Occ=Once1!] :: [a]) ->
+                   case ds of {
+                     [] -> GHC.Types.[] @(a, GHC.Types.Int);
+                     : ds [Occ=Once1] ds [Occ=Once1] ->
+                       let {
+                         x [Occ=Once1] :: a
+                         [LclId]
+                         x = ds } in
+                       GHC.Types.: @(a, GHC.Types.Int) (x, GHC.Types.I# 1#) (ds ds)
+                   }; } in
+           ds xs)
+
+$dNum [Occ=OnceL1] :: GHC.Num.Num GHC.Types.Int
+[LclId]
+$dNum = $dNum
+
+$dNum [Occ=OnceL1] :: GHC.Num.Num GHC.Types.Int
+[LclId]
+$dNum = $dNum
+
+Big2.scaleAndShift
+  :: GHC.Types.Int
+     -> GHC.Types.Int -> [GHC.Types.Int] -> [GHC.Types.Int]
+[LclIdX]
+Big2.scaleAndShift
+  = \ (s [Occ=OnceL1] :: GHC.Types.Int)
+      (n [Occ=OnceL1] :: GHC.Types.Int) ->
+      GHC.Base.map
+        @GHC.Types.Int
+        @GHC.Types.Int
+        (\ (x [Occ=Once1] :: GHC.Types.Int) ->
+           GHC.Num.+
+             @GHC.Types.Int $dNum (GHC.Num.* @GHC.Types.Int $dNum x s) n)
+
+$dNum [Occ=OnceL1] :: GHC.Num.Num GHC.Types.Int
+[LclId]
+$dNum = $dNum
+
+Big2.shift :: GHC.Types.Int -> [GHC.Types.Int] -> [GHC.Types.Int]
+[LclIdX]
+Big2.shift
+  = \ (n [Occ=Once1] :: GHC.Types.Int) ->
+      GHC.Base.map
+        @GHC.Types.Int
+        @GHC.Types.Int
+        (GHC.Prim.rightSection
+           @GHC.Types.LiftedRep
+           @GHC.Types.LiftedRep
+           @GHC.Types.LiftedRep
+           @'Many
+           @'Many
+           @GHC.Types.Int
+           @GHC.Types.Int
+           @GHC.Types.Int
+           (GHC.Num.+ @GHC.Types.Int $dNum)
+           n)
+
+$dOrd :: GHC.Classes.Ord GHC.Types.Int
+[LclId]
+$dOrd = GHC.Classes.$fOrdInt
+
+Big2.topK
+  :: forall a.
+     GHC.Classes.Ord a =>
+     GHC.Types.Int -> [a] -> [(GHC.Types.Int, a)]
+[LclIdX]
+Big2.topK
+  = \ (@a) ($dOrd :: GHC.Classes.Ord a) ->
+      let {
+        $dOrd [Occ=OnceL1] :: GHC.Classes.Ord a
+        [LclId]
+        $dOrd = $dOrd } in
+      let {
+        $dOrd [Occ=OnceL1] :: GHC.Classes.Ord (GHC.Types.Int, a)
+        [LclId]
+        $dOrd = GHC.Classes.$fOrd(,) @GHC.Types.Int @a $dOrd $dOrd } in
+      \ (k [Occ=Once1] :: GHC.Types.Int) (xs [Occ=Once1] :: [a]) ->
+        let {
+          swap [Occ=Once1] :: forall {b} {a}. (b, a) -> (a, b)
+          [LclId]
+          swap
+            = \ (@b) (@a) ->
+                let {
+                  swap [Occ=Once1T[0]] :: (b, a) -> (a, b)
+                  [LclId]
+                  swap
+                    = \ (ds [Occ=Once1!] :: (b, a)) ->
+                        case ds of { (a [Occ=Once1], b [Occ=Once1]) -> (b, a) } } in
+                swap } in
+        GHC.Base.$
+          @GHC.Types.LiftedRep
+          @(Data.Map.Internal.Map a GHC.Types.Int)
+          @[(GHC.Types.Int, a)]
+          (GHC.Base..
+             @[(GHC.Types.Int, a)]
+             @[(GHC.Types.Int, a)]
+             @(Data.Map.Internal.Map a GHC.Types.Int)
+             (GHC.List.take @(GHC.Types.Int, a) k)
+             (GHC.Base..
+                @[(GHC.Types.Int, a)]
+                @[(GHC.Types.Int, a)]
+                @(Data.Map.Internal.Map a GHC.Types.Int)
+                (GHC.List.reverse @(GHC.Types.Int, a))
+                (GHC.Base..
+                   @[(GHC.Types.Int, a)]
+                   @[(GHC.Types.Int, a)]
+                   @(Data.Map.Internal.Map a GHC.Types.Int)
+                   (Data.OldList.sort @(GHC.Types.Int, a) $dOrd)
+                   (GHC.Base..
+                      @[(a, GHC.Types.Int)]
+                      @[(GHC.Types.Int, a)]
+                      @(Data.Map.Internal.Map a GHC.Types.Int)
+                      (GHC.Base.map
+                         @(a, GHC.Types.Int) @(GHC.Types.Int, a) (swap @a @GHC.Types.Int))
+                      (Data.Map.Internal.toList @a @GHC.Types.Int)))))
+          (Big2.freqMap @a $dOrd xs)
+
+$dFoldable [Occ=Once1] :: Data.Foldable.Foldable []
+[LclId]
+$dFoldable = Data.Foldable.$fFoldable[]
+
+Big2.allPositive :: [GHC.Types.Int] -> GHC.Types.Bool
+[LclIdX]
+Big2.allPositive
+  = Data.Foldable.all
+      @[]
+      @GHC.Types.Int
+      $dFoldable
+      (GHC.Prim.rightSection
+         @GHC.Types.LiftedRep
+         @GHC.Types.LiftedRep
+         @GHC.Types.LiftedRep
+         @'Many
+         @'Many
+         @GHC.Types.Int
+         @GHC.Types.Int
+         @GHC.Types.Bool
+         (GHC.Classes.> @GHC.Types.Int $dOrd)
+         (GHC.Types.I# 0#))
+
+
+
+
+==================== Desugar (after optimization) ====================
+Result size of Desugar (after optimization)
+  = {terms: 126, types: 238, coercions: 0, joins: 0/5}
+
+-- RHS size: {terms: 11, types: 24, coercions: 0, joins: 0/0}
+dedup :: forall a. Ord a => [a] -> [a]
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [30] 140 0}]
+dedup
+  = \ (@a) ($dOrd :: Ord a) ->
+      . @[[a]]
+        @[a]
+        @[a]
+        (map @[a] @a (head @a))
+        (. @[a]
+           @[[a]]
+           @[a]
+           (group @a (GHC.Classes.$p1Ord @a $dOrd))
+           (sort @a $dOrd))
+
+-- RHS size: {terms: 11, types: 10, coercions: 0, joins: 0/0}
+countOf :: forall a. Ord a => a -> M.Map a Int -> Int
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [0 0 0] 80 0}]
+countOf
+  = \ (@a) ($dOrd :: Ord a) (k :: a) (m :: M.Map a Int) ->
+      fromMaybe @Int (GHC.Types.I# 0#) (M.lookup @a @Int $dOrd k m)
+
+-- RHS size: {terms: 5, types: 5, coercions: 0, joins: 0/0}
+cumsum :: forall a. Num a => [a] -> [a]
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [30] 40 0}]
+cumsum = \ (@a) ($dNum :: Num a) -> scanl1 @a (+ @a $dNum)
+
+-- RHS size: {terms: 5, types: 0, coercions: 0, joins: 0/0}
+Big2.$trModule :: GHC.Types.Module
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [] 70 10}]
+Big2.$trModule
+  = GHC.Types.Module
+      (GHC.Types.TrNameS "main"#) (GHC.Types.TrNameS "Big2"#)
+
+-- RHS size: {terms: 23, types: 29, coercions: 0, joins: 0/1}
+freqMap :: forall a. Ord a => [a] -> M.Map a Int
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [0 0] 170 0}]
+freqMap
+  = \ (@a) ($dOrd :: Ord a) (xs :: [a]) ->
+      M.fromListWith
+        @a
+        @Int
+        $dOrd
+        (+ @Int GHC.Num.$fNumInt)
+        (letrec {
+           ds [Occ=LoopBreaker] :: [a] -> [(a, Int)]
+           [LclId,
+            Unf=Unf{Src=<vanilla>, TopLvl=False, Value=True, ConLike=True,
+                    WorkFree=True, Expandable=True, Guidance=IF_ARGS [30] 70 20}]
+           ds
+             = \ (ds :: [a]) ->
+                 case ds of {
+                   [] -> GHC.Types.[] @(a, Int);
+                   : ds ds -> GHC.Types.: @(a, Int) (ds, GHC.Types.I# 1#) (ds ds)
+                 }; } in
+         ds xs)
+
+-- RHS size: {terms: 11, types: 7, coercions: 0, joins: 0/0}
+scaleAndShift :: Int -> Int -> [Int] -> [Int]
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [0 0] 110 0}]
+scaleAndShift
+  = \ (s :: Int) (n :: Int) ->
+      map
+        @Int
+        @Int
+        (\ (x :: Int) ->
+           + @Int GHC.Num.$fNumInt (* @Int GHC.Num.$fNumInt x s) n)
+
+-- RHS size: {terms: 9, types: 8, coercions: 0, joins: 0/1}
+shift :: Int -> [Int] -> [Int]
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [0] 90 0}]
+shift
+  = \ (n :: Int) ->
+      map
+        @Int
+        @Int
+        (let {
+           v :: Int -> Int -> Int
+           [LclId,
+            Unf=Unf{Src=<vanilla>, TopLvl=False, Value=False, ConLike=False,
+                    WorkFree=False, Expandable=True, Guidance=IF_ARGS [] 20 0}]
+           v = + @Int GHC.Num.$fNumInt } in
+         \ (v :: Int) -> v v n)
+
+-- RHS size: {terms: 30, types: 92, coercions: 0, joins: 0/1}
+topK :: forall a. Ord a => Int -> [a] -> [(Int, a)]
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [0] 330 60}]
+topK
+  = \ (@a) ($dOrd :: Ord a) ->
+      let {
+        $dOrd :: Ord (Int, a)
+        [LclId,
+         Unf=Unf{Src=<vanilla>, TopLvl=False, Value=False, ConLike=False,
+                 WorkFree=False, Expandable=True, Guidance=IF_ARGS [] 30 0}]
+        $dOrd
+          = GHC.Classes.$fOrd(,) @Int @a GHC.Classes.$fOrdInt $dOrd } in
+      \ (k :: Int) (xs :: [a]) ->
+        $ @GHC.Types.LiftedRep
+          @(M.Map a Int)
+          @[(Int, a)]
+          (. @[(Int, a)]
+             @[(Int, a)]
+             @(M.Map a Int)
+             (take @(Int, a) k)
+             (. @[(Int, a)]
+                @[(Int, a)]
+                @(M.Map a Int)
+                (reverse @(Int, a))
+                (. @[(Int, a)]
+                   @[(Int, a)]
+                   @(M.Map a Int)
+                   (sort @(Int, a) $dOrd)
+                   (. @[(a, Int)]
+                      @[(Int, a)]
+                      @(M.Map a Int)
+                      (map
+                         @(a, Int)
+                         @(Int, a)
+                         (\ (ds :: (a, Int)) -> case ds of { (a, b) -> (b, a) }))
+                      (M.toList @a @Int)))))
+          (freqMap @a $dOrd xs)
+
+-- RHS size: {terms: 12, types: 8, coercions: 0, joins: 0/2}
+allPositive :: [Int] -> Bool
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=False, ConLike=False,
+         WorkFree=False, Expandable=False, Guidance=IF_ARGS [] 120 0}]
+allPositive
+  = all
+      @[]
+      @Int
+      Data.Foldable.$fFoldable[]
+      (let {
+         v :: Int -> Int -> Bool
+         [LclId,
+          Unf=Unf{Src=<vanilla>, TopLvl=False, Value=False, ConLike=False,
+                  WorkFree=False, Expandable=True, Guidance=IF_ARGS [] 20 0}]
+         v = > @Int GHC.Classes.$fOrdInt } in
+       let {
+         v :: Int
+         [LclId,
+          Unf=Unf{Src=<vanilla>, TopLvl=False, Value=True, ConLike=True,
+                  WorkFree=True, Expandable=True, Guidance=IF_ARGS [] 10 10}]
+         v = GHC.Types.I# 0# } in
+       \ (v :: Int) -> v v v)
+
+
+
+
+==================== Occurrence analysis ====================
+Big2.dedup :: forall a. GHC.Classes.Ord a => [a] -> [a]
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [30] 140 0}]
+Big2.dedup
+  = \ (@a) ($dOrd :: GHC.Classes.Ord a) ->
+      GHC.Base..
+        @[[a]]
+        @[a]
+        @[a]
+        (GHC.Base.map @[a] @a (GHC.List.head @a))
+        (GHC.Base..
+           @[a]
+           @[[a]]
+           @[a]
+           (Data.OldList.group @a (GHC.Classes.$p1Ord @a $dOrd))
+           (Data.OldList.sort @a $dOrd))
+
+Big2.countOf
+  :: forall a.
+     GHC.Classes.Ord a =>
+     a -> Data.Map.Internal.Map a GHC.Types.Int -> GHC.Types.Int
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [0 0 0] 80 0}]
+Big2.countOf
+  = \ (@a)
+      ($dOrd [Occ=Once1] :: GHC.Classes.Ord a)
+      (k [Occ=Once1] :: a)
+      (m [Occ=Once1] :: Data.Map.Internal.Map a GHC.Types.Int) ->
+      Data.Maybe.fromMaybe
+        @GHC.Types.Int
+        (GHC.Types.I# 0#)
+        (Data.Map.Internal.lookup @a @GHC.Types.Int $dOrd k m)
+
+Big2.cumsum :: forall a. GHC.Num.Num a => [a] -> [a]
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [30] 40 0}]
+Big2.cumsum
+  = \ (@a) ($dNum [Occ=Once1] :: GHC.Num.Num a) ->
+      GHC.List.scanl1 @a (GHC.Num.+ @a $dNum)
+
+Big2.$trModule :: GHC.Types.Module
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [] 70 10}]
+Big2.$trModule
+  = GHC.Types.Module
+      (GHC.Types.TrNameS "main"#) (GHC.Types.TrNameS "Big2"#)
+
+Big2.freqMap
+  :: forall a.
+     GHC.Classes.Ord a =>
+     [a] -> Data.Map.Internal.Map a GHC.Types.Int
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [0 0] 170 0}]
+Big2.freqMap
+  = \ (@a)
+      ($dOrd [Occ=Once1] :: GHC.Classes.Ord a)
+      (xs [Occ=Once1] :: [a]) ->
+      Data.Map.Strict.Internal.fromListWith
+        @a
+        @GHC.Types.Int
+        $dOrd
+        (GHC.Num.+ @GHC.Types.Int GHC.Num.$fNumInt)
+        (letrec {
+           ds [Occ=LoopBreaker] :: [a] -> [(a, GHC.Types.Int)]
+           [LclId,
+            Unf=Unf{Src=<vanilla>, TopLvl=False, Value=True, ConLike=True,
+                    WorkFree=True, Expandable=True, Guidance=IF_ARGS [30] 70 20}]
+           ds
+             = \ (ds [Occ=Once1!] :: [a]) ->
+                 case ds of {
+                   [] -> GHC.Types.[] @(a, GHC.Types.Int);
+                   : ds [Occ=Once1] ds [Occ=Once1] ->
+                     GHC.Types.: @(a, GHC.Types.Int) (ds, GHC.Types.I# 1#) (ds ds)
+                 }; } in
+         ds xs)
+
+Big2.scaleAndShift
+  :: GHC.Types.Int
+     -> GHC.Types.Int -> [GHC.Types.Int] -> [GHC.Types.Int]
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [0 0] 110 0}]
+Big2.scaleAndShift
+  = \ (s [Occ=OnceL1] :: GHC.Types.Int)
+      (n [Occ=OnceL1] :: GHC.Types.Int) ->
+      GHC.Base.map
+        @GHC.Types.Int
+        @GHC.Types.Int
+        (\ (x [Occ=Once1] :: GHC.Types.Int) ->
+           GHC.Num.+
+             @GHC.Types.Int
+             GHC.Num.$fNumInt
+             (GHC.Num.* @GHC.Types.Int GHC.Num.$fNumInt x s)
+             n)
+
+Big2.shift :: GHC.Types.Int -> [GHC.Types.Int] -> [GHC.Types.Int]
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [0] 90 0}]
+Big2.shift
+  = \ (n [Occ=OnceL1] :: GHC.Types.Int) ->
+      GHC.Base.map
+        @GHC.Types.Int
+        @GHC.Types.Int
+        (let {
+           v [Occ=OnceL1!] :: GHC.Types.Int -> GHC.Types.Int -> GHC.Types.Int
+           [LclId,
+            Unf=Unf{Src=<vanilla>, TopLvl=False, Value=False, ConLike=False,
+                    WorkFree=False, Expandable=True, Guidance=IF_ARGS [] 20 0}]
+           v = GHC.Num.+ @GHC.Types.Int GHC.Num.$fNumInt } in
+         \ (v [Occ=Once1] :: GHC.Types.Int) -> v v n)
+
+Big2.topK
+  :: forall a.
+     GHC.Classes.Ord a =>
+     GHC.Types.Int -> [a] -> [(GHC.Types.Int, a)]
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [0] 330 60}]
+Big2.topK
+  = \ (@a) ($dOrd :: GHC.Classes.Ord a) ->
+      let {
+        $dOrd [Occ=OnceL1] :: GHC.Classes.Ord (GHC.Types.Int, a)
+        [LclId,
+         Unf=Unf{Src=<vanilla>, TopLvl=False, Value=False, ConLike=False,
+                 WorkFree=False, Expandable=True, Guidance=IF_ARGS [] 30 0}]
+        $dOrd
+          = GHC.Classes.$fOrd(,)
+              @GHC.Types.Int @a GHC.Classes.$fOrdInt $dOrd } in
+      \ (k [Occ=Once1] :: GHC.Types.Int) (xs [Occ=Once1] :: [a]) ->
+        GHC.Base.$
+          @GHC.Types.LiftedRep
+          @(Data.Map.Internal.Map a GHC.Types.Int)
+          @[(GHC.Types.Int, a)]
+          (GHC.Base..
+             @[(GHC.Types.Int, a)]
+             @[(GHC.Types.Int, a)]
+             @(Data.Map.Internal.Map a GHC.Types.Int)
+             (GHC.List.take @(GHC.Types.Int, a) k)
+             (GHC.Base..
+                @[(GHC.Types.Int, a)]
+                @[(GHC.Types.Int, a)]
+                @(Data.Map.Internal.Map a GHC.Types.Int)
+                (GHC.List.reverse @(GHC.Types.Int, a))
+                (GHC.Base..
+                   @[(GHC.Types.Int, a)]
+                   @[(GHC.Types.Int, a)]
+                   @(Data.Map.Internal.Map a GHC.Types.Int)
+                   (Data.OldList.sort @(GHC.Types.Int, a) $dOrd)
+                   (GHC.Base..
+                      @[(a, GHC.Types.Int)]
+                      @[(GHC.Types.Int, a)]
+                      @(Data.Map.Internal.Map a GHC.Types.Int)
+                      (GHC.Base.map
+                         @(a, GHC.Types.Int)
+                         @(GHC.Types.Int, a)
+                         (\ (ds [Occ=Once1!] :: (a, GHC.Types.Int)) ->
+                            case ds of { (a [Occ=Once1], b [Occ=Once1]) -> (b, a) }))
+                      (Data.Map.Internal.toList @a @GHC.Types.Int)))))
+          (Big2.freqMap @a $dOrd xs)
+
+Big2.allPositive :: [GHC.Types.Int] -> GHC.Types.Bool
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=False, ConLike=False,
+         WorkFree=False, Expandable=False, Guidance=IF_ARGS [] 120 0}]
+Big2.allPositive
+  = Data.Foldable.all
+      @[]
+      @GHC.Types.Int
+      Data.Foldable.$fFoldable[]
+      (let {
+         v [Occ=OnceL1!] :: GHC.Types.Int -> GHC.Types.Int -> GHC.Types.Bool
+         [LclId,
+          Unf=Unf{Src=<vanilla>, TopLvl=False, Value=False, ConLike=False,
+                  WorkFree=False, Expandable=True, Guidance=IF_ARGS [] 20 0}]
+         v = GHC.Classes.> @GHC.Types.Int GHC.Classes.$fOrdInt } in
+       let {
+         v [Occ=OnceL1] :: GHC.Types.Int
+         [LclId,
+          Unf=Unf{Src=<vanilla>, TopLvl=False, Value=True, ConLike=True,
+                  WorkFree=True, Expandable=True, Guidance=IF_ARGS [] 10 10}]
+         v = GHC.Types.I# 0# } in
+       \ (v [Occ=Once1] :: GHC.Types.Int) -> v v v)
+
+
+
+
+==================== Occurrence analysis ====================
+Big2.dedup :: forall a. GHC.Classes.Ord a => [a] -> [a]
+[LclIdX,
+ Arity=1,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [30] 140 0}]
+Big2.dedup
+  = \ (@a) ($dOrd :: GHC.Classes.Ord a) ->
+      GHC.Base..
+        @[[a]]
+        @[a]
+        @[a]
+        (GHC.Base.map @[a] @a (GHC.List.head @a))
+        (GHC.Base..
+           @[a]
+           @[[a]]
+           @[a]
+           (Data.OldList.group @a (GHC.Classes.$p1Ord @a $dOrd))
+           (Data.OldList.sort @a $dOrd))
+
+Big2.countOf
+  :: forall a.
+     GHC.Classes.Ord a =>
+     a -> Data.Map.Internal.Map a GHC.Types.Int -> GHC.Types.Int
+[LclIdX,
+ Arity=3,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [0 0 0] 80 0}]
+Big2.countOf
+  = \ (@a)
+      ($dOrd [Occ=Once1] :: GHC.Classes.Ord a)
+      (k [Occ=Once1] :: a)
+      (m [Occ=Once1] :: Data.Map.Internal.Map a GHC.Types.Int) ->
+      Data.Maybe.fromMaybe
+        @GHC.Types.Int
+        (GHC.Types.I# 0#)
+        (Data.Map.Internal.lookup @a @GHC.Types.Int $dOrd k m)
+
+Big2.cumsum :: forall a. GHC.Num.Num a => [a] -> [a]
+[LclIdX,
+ Arity=1,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [30] 40 0}]
+Big2.cumsum
+  = \ (@a) ($dNum [Occ=Once1] :: GHC.Num.Num a) ->
+      GHC.List.scanl1 @a (GHC.Num.+ @a $dNum)
+
+$trModule [Occ=OnceL1] :: GHC.Prim.Addr#
+[LclId,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [] 20 0}]
+$trModule = "main"#
+
+$trModule [Occ=OnceL1] :: GHC.Types.TrName
+[LclId,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [] 10 10}]
+$trModule = GHC.Types.TrNameS $trModule
+
+$trModule [Occ=OnceL1] :: GHC.Prim.Addr#
+[LclId,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [] 20 0}]
+$trModule = "Big2"#
+
+$trModule [Occ=OnceL1] :: GHC.Types.TrName
+[LclId,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [] 10 10}]
+$trModule = GHC.Types.TrNameS $trModule
+
+Big2.$trModule :: GHC.Types.Module
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [] 10 10}]
+Big2.$trModule = GHC.Types.Module $trModule $trModule
+
+Big2.freqMap
+  :: forall a.
+     GHC.Classes.Ord a =>
+     [a] -> Data.Map.Internal.Map a GHC.Types.Int
+[LclIdX,
+ Arity=2,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [0 0] 170 0}]
+Big2.freqMap
+  = \ (@a)
+      ($dOrd [Occ=Once1] :: GHC.Classes.Ord a)
+      (xs [Occ=Once1] :: [a]) ->
+      Data.Map.Strict.Internal.fromListWith
+        @a
+        @GHC.Types.Int
+        $dOrd
+        (GHC.Num.+ @GHC.Types.Int GHC.Num.$fNumInt)
+        (letrec {
+           ds [Occ=LoopBreaker] :: [a] -> [(a, GHC.Types.Int)]
+           [LclId,
+            Arity=1,
+            Unf=Unf{Src=<vanilla>, TopLvl=False, Value=True, ConLike=True,
+                    WorkFree=True, Expandable=True, Guidance=IF_ARGS [30] 70 20}]
+           ds
+             = \ (ds [Occ=Once1!] :: [a]) ->
+                 case ds of {
+                   [] -> GHC.Types.[] @(a, GHC.Types.Int);
+                   : ds [Occ=Once1] ds [Occ=Once1] ->
+                     GHC.Types.: @(a, GHC.Types.Int) (ds, GHC.Types.I# 1#) (ds ds)
+                 }; } in
+         ds xs)
+
+Big2.scaleAndShift
+  :: GHC.Types.Int
+     -> GHC.Types.Int -> [GHC.Types.Int] -> [GHC.Types.Int]
+[LclIdX,
+ Arity=2,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [0 0] 110 0}]
+Big2.scaleAndShift
+  = \ (s [Occ=OnceL1] :: GHC.Types.Int)
+      (n [Occ=OnceL1] :: GHC.Types.Int) ->
+      GHC.Base.map
+        @GHC.Types.Int
+        @GHC.Types.Int
+        (\ (x [Occ=Once1] :: GHC.Types.Int) ->
+           GHC.Num.+
+             @GHC.Types.Int
+             GHC.Num.$fNumInt
+             (GHC.Num.* @GHC.Types.Int GHC.Num.$fNumInt x s)
+             n)
+
+Big2.shift :: GHC.Types.Int -> [GHC.Types.Int] -> [GHC.Types.Int]
+[LclIdX,
+ Arity=1,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [0] 90 0}]
+Big2.shift
+  = \ (n [Occ=OnceL1] :: GHC.Types.Int) ->
+      GHC.Base.map
+        @GHC.Types.Int
+        @GHC.Types.Int
+        (let {
+           v [Occ=OnceL1!] :: GHC.Types.Int -> GHC.Types.Int -> GHC.Types.Int
+           [LclId,
+            Unf=Unf{Src=<vanilla>, TopLvl=False, Value=False, ConLike=False,
+                    WorkFree=False, Expandable=True, Guidance=IF_ARGS [] 20 0}]
+           v = GHC.Num.+ @GHC.Types.Int GHC.Num.$fNumInt } in
+         \ (v [Occ=Once1] :: GHC.Types.Int) -> v v n)
+
+Big2.topK
+  :: forall a.
+     GHC.Classes.Ord a =>
+     GHC.Types.Int -> [a] -> [(GHC.Types.Int, a)]
+[LclIdX,
+ Arity=1,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=True, ConLike=True,
+         WorkFree=True, Expandable=True, Guidance=IF_ARGS [0] 330 60}]
+Big2.topK
+  = \ (@a) ($dOrd :: GHC.Classes.Ord a) ->
+      let {
+        $dOrd [Occ=OnceL1] :: GHC.Classes.Ord (GHC.Types.Int, a)
+        [LclId,
+         Unf=Unf{Src=<vanilla>, TopLvl=False, Value=False, ConLike=False,
+                 WorkFree=False, Expandable=True, Guidance=IF_ARGS [] 30 0}]
+        $dOrd
+          = GHC.Classes.$fOrd(,)
+              @GHC.Types.Int @a GHC.Classes.$fOrdInt $dOrd } in
+      \ (k [Occ=Once1] :: GHC.Types.Int) (xs [Occ=Once1] :: [a]) ->
+        GHC.Base.$
+          @GHC.Types.LiftedRep
+          @(Data.Map.Internal.Map a GHC.Types.Int)
+          @[(GHC.Types.Int, a)]
+          (GHC.Base..
+             @[(GHC.Types.Int, a)]
+             @[(GHC.Types.Int, a)]
+             @(Data.Map.Internal.Map a GHC.Types.Int)
+             (GHC.List.take @(GHC.Types.Int, a) k)
+             (GHC.Base..
+                @[(GHC.Types.Int, a)]
+                @[(GHC.Types.Int, a)]
+                @(Data.Map.Internal.Map a GHC.Types.Int)
+                (GHC.List.reverse @(GHC.Types.Int, a))
+                (GHC.Base..
+                   @[(GHC.Types.Int, a)]
+                   @[(GHC.Types.Int, a)]
+                   @(Data.Map.Internal.Map a GHC.Types.Int)
+                   (Data.OldList.sort @(GHC.Types.Int, a) $dOrd)
+                   (GHC.Base..
+                      @[(a, GHC.Types.Int)]
+                      @[(GHC.Types.Int, a)]
+                      @(Data.Map.Internal.Map a GHC.Types.Int)
+                      (GHC.Base.map
+                         @(a, GHC.Types.Int)
+                         @(GHC.Types.Int, a)
+                         (\ (ds [Occ=Once1!] :: (a, GHC.Types.Int)) ->
+                            case ds of { (a [Occ=Once1], b [Occ=Once1]) -> (b, a) }))
+                      (Data.Map.Internal.toList @a @GHC.Types.Int)))))
+          (Big2.freqMap @a $dOrd xs)
+
+Big2.allPositive :: [GHC.Types.Int] -> GHC.Types.Bool
+[LclIdX,
+ Unf=Unf{Src=<vanilla>, TopLvl=True, Value=False, ConLike=False,
+         WorkFree=False, Expandable=False, Guidance=IF_ARGS [] 120 0}]
+Big2.allPositive
+  = Data.Foldable.all
+      @[]
+      @GHC.Types.Int
+      Data.Foldable.$fFoldable[]
+      (let {
+         v [Occ=OnceL1!] :: GHC.Types.Int -> GHC.Types.Int -> GHC.Types.Bool
+         [LclId,
+          Unf=Unf{Src=<vanilla>, TopLvl=False, Value=False, ConLike=False,
+                  WorkFree=False, Expandable=True, Guidance=IF_ARGS [] 20 0}]
+         v = GHC.Classes.> @GHC.Types.Int GHC.Classes.$fOrdInt } in
+       let {
+         v [Occ=OnceL1] :: GHC.Types.Int
+         [LclId,
+          Unf=Unf{Src=<vanilla>, TopLvl=False, Value=True, ConLike=True,
+                  WorkFree=True, Expandable=True, Guidance=IF_ARGS [] 10 10}]
+         v = GHC.Types.I# 0# } in
+       \ (v [Occ=Once1] :: GHC.Types.Int) -> v v v)
+
+
+
+
+==================== Tidy Core ====================
+Result size of Tidy Core
+  = {terms: 134, types: 242, coercions: 0, joins: 0/5}
+
+-- RHS size: {terms: 11, types: 24, coercions: 0, joins: 0/0}
+dedup :: forall a. Ord a => [a] -> [a]
+[GblId, Arity=1, Unf=OtherCon []]
+dedup
+  = \ (@a) ($dOrd :: Ord a) ->
+      . @[[a]]
+        @[a]
+        @[a]
+        (map @[a] @a (head @a))
+        (. @[a]
+           @[[a]]
+           @[a]
+           (group @a (GHC.Classes.$p1Ord @a $dOrd))
+           (sort @a $dOrd))
+
+-- RHS size: {terms: 11, types: 10, coercions: 0, joins: 0/0}
+countOf :: forall a. Ord a => a -> M.Map a Int -> Int
+[GblId, Arity=3, Unf=OtherCon []]
+countOf
+  = \ (@a) ($dOrd :: Ord a) (k :: a) (m :: M.Map a Int) ->
+      fromMaybe @Int (GHC.Types.I# 0#) (M.lookup @a @Int $dOrd k m)
+
+-- RHS size: {terms: 5, types: 5, coercions: 0, joins: 0/0}
+cumsum :: forall a. Num a => [a] -> [a]
+[GblId, Arity=1, Unf=OtherCon []]
+cumsum = \ (@a) ($dNum :: Num a) -> scanl1 @a (+ @a $dNum)
+
+-- RHS size: {terms: 1, types: 0, coercions: 0, joins: 0/0}
+$trModule1 :: GHC.Prim.Addr#
+[GblId, Unf=OtherCon []]
+$trModule1 = "main"#
+
+-- RHS size: {terms: 2, types: 0, coercions: 0, joins: 0/0}
+$trModule2 :: GHC.Types.TrName
+[GblId, Unf=OtherCon []]
+$trModule2 = GHC.Types.TrNameS $trModule1
+
+-- RHS size: {terms: 1, types: 0, coercions: 0, joins: 0/0}
+$trModule3 :: GHC.Prim.Addr#
+[GblId, Unf=OtherCon []]
+$trModule3 = "Big2"#
+
+-- RHS size: {terms: 2, types: 0, coercions: 0, joins: 0/0}
+$trModule4 :: GHC.Types.TrName
+[GblId, Unf=OtherCon []]
+$trModule4 = GHC.Types.TrNameS $trModule3
+
+-- RHS size: {terms: 3, types: 0, coercions: 0, joins: 0/0}
+Big2.$trModule :: GHC.Types.Module
+[GblId, Unf=OtherCon []]
+Big2.$trModule = GHC.Types.Module $trModule2 $trModule4
+
+-- RHS size: {terms: 23, types: 29, coercions: 0, joins: 0/1}
+freqMap :: forall a. Ord a => [a] -> M.Map a Int
+[GblId, Arity=2, Unf=OtherCon []]
+freqMap
+  = \ (@a) ($dOrd :: Ord a) (xs :: [a]) ->
+      M.fromListWith
+        @a
+        @Int
+        $dOrd
+        (+ @Int GHC.Num.$fNumInt)
+        (letrec {
+           ds [Occ=LoopBreaker] :: [a] -> [(a, Int)]
+           [LclId, Arity=1, Unf=OtherCon []]
+           ds
+             = \ (ds1 :: [a]) ->
+                 case ds1 of {
+                   [] -> GHC.Types.[] @(a, Int);
+                   : ds3 ds4 -> GHC.Types.: @(a, Int) (ds3, GHC.Types.I# 1#) (ds ds4)
+                 }; } in
+         ds xs)
+
+-- RHS size: {terms: 11, types: 7, coercions: 0, joins: 0/0}
+scaleAndShift :: Int -> Int -> [Int] -> [Int]
+[GblId, Arity=2, Unf=OtherCon []]
+scaleAndShift
+  = \ (s :: Int) (n :: Int) ->
+      map
+        @Int
+        @Int
+        (\ (x :: Int) ->
+           + @Int GHC.Num.$fNumInt (* @Int GHC.Num.$fNumInt x s) n)
+
+-- RHS size: {terms: 9, types: 8, coercions: 0, joins: 0/1}
+shift :: Int -> [Int] -> [Int]
+[GblId, Arity=1, Unf=OtherCon []]
+shift
+  = \ (n :: Int) ->
+      map
+        @Int
+        @Int
+        (let {
+           v :: Int -> Int -> Int
+           [LclId]
+           v = + @Int GHC.Num.$fNumInt } in
+         \ (v1 :: Int) -> v v1 n)
+
+-- RHS size: {terms: 30, types: 92, coercions: 0, joins: 0/1}
+topK :: forall a. Ord a => Int -> [a] -> [(Int, a)]
+[GblId, Arity=1, Unf=OtherCon []]
+topK
+  = \ (@a) ($dOrd :: Ord a) ->
+      let {
+        $dOrd1 :: Ord (Int, a)
+        [LclId]
+        $dOrd1
+          = GHC.Classes.$fOrd(,) @Int @a GHC.Classes.$fOrdInt $dOrd } in
+      \ (k :: Int) (xs :: [a]) ->
+        $ @GHC.Types.LiftedRep
+          @(M.Map a Int)
+          @[(Int, a)]
+          (. @[(Int, a)]
+             @[(Int, a)]
+             @(M.Map a Int)
+             (take @(Int, a) k)
+             (. @[(Int, a)]
+                @[(Int, a)]
+                @(M.Map a Int)
+                (reverse @(Int, a))
+                (. @[(Int, a)]
+                   @[(Int, a)]
+                   @(M.Map a Int)
+                   (sort @(Int, a) $dOrd1)
+                   (. @[(a, Int)]
+                      @[(Int, a)]
+                      @(M.Map a Int)
+                      (map
+                         @(a, Int)
+                         @(Int, a)
+                         (\ (ds :: (a, Int)) -> case ds of { (a1, b) -> (b, a1) }))
+                      (M.toList @a @Int)))))
+          (freqMap @a $dOrd xs)
+
+-- RHS size: {terms: 12, types: 8, coercions: 0, joins: 0/2}
+allPositive :: [Int] -> Bool
+[GblId]
+allPositive
+  = all
+      @[]
+      @Int
+      Data.Foldable.$fFoldable[]
+      (let {
+         v :: Int -> Int -> Bool
+         [LclId]
+         v = > @Int GHC.Classes.$fOrdInt } in
+       let {
+         v1 :: Int
+         [LclId, Unf=OtherCon []]
+         v1 = GHC.Types.I# 0# } in
+       \ (v2 :: Int) -> v v2 v1)
+
+
+
