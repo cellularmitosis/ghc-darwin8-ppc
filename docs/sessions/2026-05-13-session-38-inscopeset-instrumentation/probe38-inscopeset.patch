@@ -1,0 +1,177 @@
+diff --git a/compiler/GHC/Core/Opt/Simplify/Env.hs b/compiler/GHC/Core/Opt/Simplify/Env.hs
+index d1b33b02..2954bd2b 100644
+--- a/compiler/GHC/Core/Opt/Simplify/Env.hs
++++ b/compiler/GHC/Core/Opt/Simplify/Env.hs
+@@ -5,6 +5,7 @@
+ -}
+ 
+ {-# LANGUAGE CPP #-}
++{-# LANGUAGE BangPatterns #-}
+ 
+ module GHC.Core.Opt.Simplify.Env (
+         -- * The simplifier mode
+@@ -73,8 +74,122 @@ import GHC.Utils.Panic
+ import GHC.Utils.Misc
+ import GHC.Utils.Logger
+ import GHC.Types.Unique.FM      ( pprUniqFM )
++import GHC.Types.Unique         ( getKey )
++import GHC.Types.Name           ( getOccString )
+ 
+ import Data.List (mapAccumL)
++import Data.IORef        (IORef, newIORef, atomicModifyIORef')
++import qualified Numeric (showHex)
++import System.IO         (hPutStrLn, stderr, hFlush)
++import System.IO.Unsafe  (unsafePerformIO)
++
++-- PROBE38: InScopeSet instrumentation for the session 37 finding that
++-- `refineFromInScope` panics with a set containing only 3 entries
++-- (`wild_00 v_B1 allPositive`) and missing `$dOrd_a1k0` on PPC32 unreg.
++--
++-- Three diagnostics, all silent on the happy path:
++--
++-- (A) refineFromInScope panic site: emit a single line listing
++--     - call counter
++--     - size of in_scope
++--     - all elements as "name(uniqueKey)"
++--     - v as "name(uniqueKey)"
++--     - whether lookupInScope_Directly (Unique-only lookup) finds v.
++--       If Directly returns Just but the Var-based lookup returned
++--       Nothing, that exposes a Var/Unique mismatch in the UniqFM.
++--     - whether elemInScopeSet on v returns True (it shouldn't, since
++--       we're in the Nothing branch — sanity check).
++--
++-- (B) addNewInScopeIds self-validation: after extending the set,
++--     check that every var in `vs` is now `elemInScopeSet` in the
++--     post-extension set.  If not, the insertion lost an entry —
++--     log it.  Silent on the happy path.
++--
++-- (C) Set-replacement shrinkage detection: at setInScopeFromE,
++--     setInScopeFromF, and setInScopeSet, log only when the new
++--     size is smaller than the old size.  Catches the case where
++--     the simplifier replaces the in-scope set with a smaller one.
++--     Silent on the happy path.
++
++{-# NOINLINE probe38PanicCounter #-}
++probe38PanicCounter :: IORef Int
++probe38PanicCounter = unsafePerformIO (newIORef 0)
++
++{-# NOINLINE probe38LostCounter #-}
++probe38LostCounter :: IORef Int
++probe38LostCounter = unsafePerformIO (newIORef 0)
++
++{-# NOINLINE probe38ShrinkCounter #-}
++probe38ShrinkCounter :: IORef Int
++probe38ShrinkCounter = unsafePerformIO (newIORef 0)
++
++probe38Hex :: Int -> String
++probe38Hex i
++  | i < 0     = "-0x" ++ Numeric.showHex (negate i) ""
++  | otherwise = "0x" ++ Numeric.showHex i ""
++
++probe38DescribeVar :: Var -> String
++probe38DescribeVar v =
++    getOccString v ++ "(" ++ probe38Hex (getKey (varUnique v)) ++ ")"
++
++probe38PanicDump :: InScopeSet -> Var -> String
++probe38PanicDump in_scope v = unsafePerformIO $ do
++    n <- atomicModifyIORef' probe38PanicCounter (\k -> (k+1, k+1))
++    let vu       = varUnique v
++        vs       = getInScopeVars in_scope
++        sz       = sizeVarSet vs
++        els      = nonDetEltsUniqSet vs
++        elDescs  = map probe38DescribeVar els
++        direct   = lookupInScope_Directly in_scope vu
++        directStr= case direct of
++                     Just w  -> "Just(" ++ probe38DescribeVar w ++ ")"
++                     Nothing -> "Nothing"
++        elemS    = elemInScopeSet v in_scope
++        msg = unwords
++                [ "PROBE38-PANIC"
++                , "call=" ++ show n
++                , "size=" ++ show sz
++                , "v=" ++ probe38DescribeVar v
++                , "direct=" ++ directStr
++                , "elemInScope=" ++ show elemS
++                , "elements=[" ++ unwords elDescs ++ "]"
++                ]
++    hPutStrLn stderr msg
++    hFlush stderr
++    return msg
++
++probe38ValidateAdd :: [Var] -> InScopeSet -> ()
++probe38ValidateAdd vs in_scope1 = unsafePerformIO $ do
++    let missing = [ x | x <- vs, not (x `elemInScopeSet` in_scope1) ]
++    case missing of
++      [] -> return ()
++      _  -> do
++        n <- atomicModifyIORef' probe38LostCounter (\k -> (k+1, k+1))
++        let sz1 = sizeVarSet (getInScopeVars in_scope1)
++        hPutStrLn stderr $ unwords
++            [ "PROBE38-ADDLOST"
++            , "evt=" ++ show n
++            , "newsize=" ++ show sz1
++            , "lost=[" ++ unwords (map probe38DescribeVar missing) ++ "]"
++            ]
++        hFlush stderr
++
++probe38ValidateShrink :: String -> InScopeSet -> InScopeSet -> ()
++probe38ValidateShrink site old_is new_is = unsafePerformIO $ do
++    let s0 = sizeVarSet (getInScopeVars old_is)
++        s1 = sizeVarSet (getInScopeVars new_is)
++    if s1 >= s0
++      then return ()
++      else do
++        n <- atomicModifyIORef' probe38ShrinkCounter (\k -> (k+1, k+1))
++        hPutStrLn stderr $ unwords
++            [ "PROBE38-SHRINK"
++            , "site=" ++ site
++            , "evt=" ++ show n
++            , "from=" ++ show s0
++            , "to=" ++ show s1
++            ]
++        hFlush stderr
+ 
+ {-
+ ************************************************************************
+@@ -354,14 +469,20 @@ getInScope :: SimplEnv -> InScopeSet
+ getInScope env = seInScope env
+ 
+ setInScopeSet :: SimplEnv -> InScopeSet -> SimplEnv
+-setInScopeSet env in_scope = env {seInScope = in_scope}
++setInScopeSet env in_scope =
++    probe38ValidateShrink "setInScopeSet" (seInScope env) in_scope `seq`
++    env {seInScope = in_scope}
+ 
+ setInScopeFromE :: SimplEnv -> SimplEnv -> SimplEnv
+ -- See Note [Setting the right in-scope set]
+-setInScopeFromE rhs_env here_env = rhs_env { seInScope = seInScope here_env }
++setInScopeFromE rhs_env here_env =
++    probe38ValidateShrink "setInScopeFromE" (seInScope rhs_env) (seInScope here_env) `seq`
++    rhs_env { seInScope = seInScope here_env }
+ 
+ setInScopeFromF :: SimplEnv -> SimplFloats -> SimplEnv
+-setInScopeFromF env floats = env { seInScope = sfInScope floats }
++setInScopeFromF env floats =
++    probe38ValidateShrink "setInScopeFromF" (seInScope env) (sfInScope floats) `seq`
++    env { seInScope = sfInScope floats }
+ 
+ addNewInScopeIds :: SimplEnv -> [CoreBndr] -> SimplEnv
+         -- The new Ids are guaranteed to be freshly allocated
+@@ -369,6 +490,7 @@ addNewInScopeIds env@(SimplEnv { seInScope = in_scope, seIdSubst = id_subst }) v
+ -- See Note [Bangs in the Simplifier]
+   = let !in_scope1 = in_scope `extendInScopeSetList` vs
+         !id_subst1 = id_subst `delVarEnvList` vs
++        !_validate = probe38ValidateAdd vs in_scope1
+     in
+     env { seInScope = in_scope1,
+           seIdSubst = id_subst1 }
+@@ -703,7 +825,8 @@ refineFromInScope :: InScopeSet -> Var -> Var
+ refineFromInScope in_scope v
+   | isLocalId v = case lookupInScope in_scope v of
+                   Just v' -> v'
+-                  Nothing -> pprPanic "refineFromInScope" (ppr in_scope $$ ppr v)
++                  Nothing -> pprPanic ("refineFromInScope " ++ probe38PanicDump in_scope v)
++                                       (ppr in_scope $$ ppr v)
+                              -- c.f #19074 for a subtle place where this went wrong
+   | otherwise = v
+ 

@@ -1,0 +1,14 @@
+ghc-real: panic! (the 'impossible' happened)
+  (GHC version 9.2.8:
+PROBE38-PANIC call=1 size=3 v=$dOrd(0x610013dc) direct=Nothing elemInScope=False elements=[wild(0x30000000) v(0x42000001) allPositive(0x720004d1)]
+	refineFromInScope PROBE38-PANIC call=1 size=3 v=$dOrd(0x610013dc) direct=Nothing elemInScope=False elements=[wild(0x30000000) v(0x42000001) allPositive(0x720004d1)]
+  InScope {wild_00 v_B1 allPositive}
+  $dOrd_a1k0
+  Call stack:
+      CallStack (from HasCallStack):
+        callStackDoc, called at compiler/GHC/Utils/Panic.hs:181:37 in ghc:GHC.Utils.Panic
+        pprPanic, called at compiler/GHC/Core/Opt/Simplify/Env.hs:829:30 in ghc:GHC.Core.Opt.Simplify.Env
+
+Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug
+
+RC=1

@@ -1,0 +1,6 @@
+=== run 1 ===
+PROBE38-PANIC call=1 size=6 v=$dOrd(0x61001418) direct=Nothing elemInScope=False elements=[wild(0x30000000) k(0x61000e5c) m(0x61000e5d) a(0x610013f6) $dOrd(0x610013f7) countOf(0x720004ce)]
+=== run 2 ===
+PROBE38-PANIC call=1 size=6 v=$dOrd(0x61001418) direct=Nothing elemInScope=False elements=[wild(0x30000000) k(0x61000e5c) m(0x61000e5d) a(0x610013f6) $dOrd(0x610013f7) countOf(0x720004ce)]
+=== run 3 ===
+PROBE38-PANIC call=1 size=6 v=$dOrd(0x61001418) direct=Nothing elemInScope=False elements=[wild(0x30000000) k(0x61000e5c) m(0x61000e5d) a(0x610013f6) $dOrd(0x610013f7) countOf(0x720004ce)]

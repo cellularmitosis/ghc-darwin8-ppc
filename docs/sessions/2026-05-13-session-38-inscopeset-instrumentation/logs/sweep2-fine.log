@@ -1,0 +1,17 @@
+len=825   addlost=0   shrink=0   panic=ghc-real: panic! (the 'impossible' happened)
+  PROBE38-PANIC call=1 size=6 v=$dOrd(0x61001418) direct=Nothing elemInScope=False elements=[wild(0x30000000) k(0x61000e5c) m(0x61000e5d) a(0x610013f6) $dOrd(0x610013f7) countOf(0x720004ce)]
+len=850   addlost=0   shrink=0   panic=ghc-real: panic! (the 'impossible' happened)
+  PROBE38-PANIC call=1 size=6 v=$dOrd(0x61001418) direct=Nothing elemInScope=False elements=[wild(0x30000000) k(0x61000e5c) m(0x61000e5d) a(0x610013f6) $dOrd(0x610013f7) countOf(0x720004ce)]
+len=875   addlost=0   shrink=0   panic=ghc-real: panic! (the 'impossible' happened)
+  PROBE38-PANIC call=1 size=6 v=$dOrd(0x61001418) direct=Nothing elemInScope=False elements=[wild(0x30000000) k(0x61000e5c) m(0x61000e5d) a(0x610013f6) $dOrd(0x610013f7) countOf(0x720004ce)]
+len=900   addlost=0   shrink=0   panic=ghc-real: panic! (the 'impossible' happened)
+  PROBE38-PANIC call=1 size=6 v=$dOrd(0x61001418) direct=Nothing elemInScope=False elements=[wild(0x30000000) k(0x61000e5c) m(0x61000e5d) a(0x610013f6) $dOrd(0x610013f7) countOf(0x720004ce)]
+len=925   addlost=0   shrink=0   panic=ghc-real: panic! (the 'impossible' happened)
+  PROBE38-PANIC call=1 size=6 v=$dOrd(0x61001418) direct=Nothing elemInScope=False elements=[wild(0x30000000) k(0x61000e5c) m(0x61000e5d) a(0x610013f6) $dOrd(0x610013f7) countOf(0x720004ce)]
+len=1650  addlost=0   shrink=0   panic=ghc-real: panic! (the 'impossible' happened)
+  PROBE38-PANIC call=1 size=3 v=$dOrd(0x610013dc) direct=Nothing elemInScope=False elements=[wild(0x30000000) v(0x42000001) allPositive(0x720004d1)]
+len=1675  addlost=0   shrink=0   panic=ghc-real: panic! (the 'impossible' happened)
+  PROBE38-PANIC call=1 size=3 v=$dOrd(0x610013dc) direct=Nothing elemInScope=False elements=[wild(0x30000000) v(0x42000001) allPositive(0x720004d1)]
+len=1700  addlost=0   shrink=0   panic=ghc-real: panic! (the 'impossible' happened)
+  PROBE38-PANIC call=1 size=3 v=$dOrd(0x610013dc) direct=Nothing elemInScope=False elements=[wild(0x30000000) v(0x42000001) allPositive(0x720004d1)]
+SWEEP_EXIT=0

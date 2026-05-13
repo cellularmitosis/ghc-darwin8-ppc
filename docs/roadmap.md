@@ -406,6 +406,66 @@ much smaller than session 17 left it.  See:
   info-table), reading `rts/Updates.cmm` + `rts/Updates.h` for the
   BLACKHOLE→IND swap, and experimenting with disabled lazy
   blackholing.
+- [`docs/sessions/2026-05-13-session-37-indirectee-and-update-path/`](sessions/2026-05-13-session-37-indirectee-and-update-path/)
+  — round 19.  **MAJOR REFRAME** — probe37 (probe36 extended with
+  a follow-through to `word[1] & ~3`) dissolves session 36's
+  framing.  Reading `rts/Updates.h:48-67`'s `updateWithIndirection`
+  macro reveals the canonical post-evaluation state of an updated
+  thunk IS `word[0] = stg_BLACKHOLE_info` + `word[1] = tagged
+  result pointer`; `stg_IND_info` does not appear in this path
+  (it's reserved for GC old-generation indirection short-circuit).
+  `nm` resolves the indirectee's `word[0]` to
+  **`_ghc_GHCziTypesziVar_Id_con_info` exactly** — v's evaluation
+  produced a fully-formed Id constructor closure with sensible
+  Name/Unique/Type fields.  **The actual bug surfaces in the panic
+  message body**: `InScope {wild_00 v_B1 allPositive}` — only 3
+  entries in a simplifier scope that should have many more,
+  missing the `$dOrd_a1k0` typeclass dictionary the simplifier is
+  trying to look up.  At len=850 the panic shifts to
+  `depSortStgBinds` "Found cyclic SCC" on `$trModule3_r1lT` and
+  `$trModule4_r1lU` whose printed FVs (`{}` and `{$trModule3_r1lT}`
+  respectively) do NOT form a cycle — different victim, same
+  underlying corruption.  This is consistent with session 28's
+  "one bug, multiple victim data structures, all UniqMap-backed"
+  framing and **dissolves sessions 33-36's closure-shape probe
+  trail as a wild goose chase**.  The bug is GC-of-UniqMap-data-
+  structures, not thunk-update on PPC unreg.  v0.12.0 ships
+  unchanged; probe applied for measurement and reverted at session
+  end; stage2 on pmacg5 rebuilt+redeployed clean.  Session-37
+  [`HANDOFF.md`](sessions/2026-05-13-session-37-indirectee-and-update-path/HANDOFF.md)
+  scopes instrumenting `addNewInScopeIds` / `setInScopeFromE` /
+  `setInScopeFromF` in `Simplify/Env.hs` to find where InScopeSet
+  entries are lost during simplifier descent.
+- [`docs/sessions/2026-05-13-session-38-inscopeset-instrumentation/`](sessions/2026-05-13-session-38-inscopeset-instrumentation/)
+  — round 20.  **MAJOR REFINEMENT to session 28's framing.**
+  Probe38 was the silent-on-happy-path InScopeSet instrumentation
+  scoped by session 37's HANDOFF.  Three diagnostics: panic-site
+  full dump at `refineFromInScope`, post-extension self-validation
+  at `addNewInScopeIds`, shrink detection at all three
+  `setInScope*` variants.  Built clean, deployed, swept across
+  env-lens 600..2000 step 25 (8 panics).  **`PROBE38-ADDLOST` and
+  `PROBE38-SHRINK` never fire** — insertion is correct, replacement
+  never reduces the set's size.  The InScopeSet at the panic site
+  contains **coherent** Var entries, but the panic's missing var
+  has the **same OccName as an in-scope Var with a different raw
+  Unique** — e.g. at env-lens 825..925, in-scope has
+  `$dOrd(0x610013f7)` while the expression's `$dOrd` has raw
+  Unique `0x61001418` (delta=33).  Three runs at len=850 produce
+  identical Uniques (deterministic given heap layout).  Nursery
+  sweep `-A1m`..`-A32m` at len=850 shows the victim Var rotates
+  with `-A`: $dOrd, $dEq, ds_d1lr (let-binding), $dFoldable, etc.
+  — **not dictionary-specific**.  **`-A16m` produces a clean
+  compile of Big2.hs at len=850.**  Refined framing: **the bug is
+  GC corrupting the `realUnique :: FastInt#` field of Var heap
+  closures on PPC32 unreg.**  The various UniqMap-backed "victim"
+  structures are all innocent.  v0.12.0 ships unchanged; probe
+  applied and reverted; stage2 rebuilt+redeployed clean +
+  smoke-test PASS + baseline tests 30 PASS / 4 FAIL_OUTPUT
+  unchanged.  Session-38
+  [`HANDOFF.md`](sessions/2026-05-13-session-38-inscopeset-instrumentation/HANDOFF.md)
+  scopes probe39: tracking a specific Var's realUnique field
+  across the pipeline via `anyToAddr#` + IORef drift detector to
+  directly confirm or rule out GC-of-Var.realUnique corruption.
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.

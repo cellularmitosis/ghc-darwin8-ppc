@@ -1,0 +1,53 @@
+Padding=     848 bytes
+=== nursery=A1m ===
+ghc-real: panic! (the 'impossible' happened)
+  (GHC version 9.2.8:
+PROBE38-PANIC call=1 size=6 v=$dOrd(0x61001418) direct=Nothing elemInScope=False elements=[wild(0x30000000) k(0x61000e5c) m(0x61000e5d) a(0x610013f6) $dOrd(0x610013f7) countOf(0x720004ce)]
+	refineFromInScope PROBE38-PANIC call=1 size=6 v=$dOrd(0x61001418) direct=Nothing elemInScope=False elements=[wild(0x30000000) k(0x61000e5c) m(0x61000e5d) a(0x610013f6) $dOrd(0x610013f7) countOf(0x720004ce)]
+  InScope {wild_00 k_aXi m_aXj a_a1kq $dOrd_a1kr countOf}
+  $dOrd_a1kY
+  Call stack:
+      CallStack (from HasCallStack):
+RC=0
+=== nursery=A2m ===
+ghc-real: panic! (the 'impossible' happened)
+  (GHC version 9.2.8:
+PROBE38-PANIC call=1 size=9 v=$dEq(0x610013f2) direct=Nothing elemInScope=False elements=[wild(0x30000000) a(0x610013cb) $dOrd(0x610013cc) dedup(0x720004cd) $trModule(0x720013ae) $trModule(0x73001410) $trModule(0x73001411) $trModule(0x73001412) $trModule(0x73001413)]
+	refineFromInScope PROBE38-PANIC call=1 size=9 v=$dEq(0x610013f2) direct=Nothing elemInScope=False elements=[wild(0x30000000) a(0x610013cb) $dOrd(0x610013cc) dedup(0x720004cd) $trModule(0x720013ae) $trModule(0x73001410) $trModule(0x73001411) $trModule(0x73001412) $trModule(0x73001413)]
+  InScope {wild_00 a_a1jJ $dOrd_a1jK dedup $trModule $trModule_s1kQ
+           $trModule_s1kR $trModule_s1kS $trModule_s1kT}
+  $dEq_a1km
+  Call stack:
+RC=0
+=== nursery=A4m ===
+
+Big2.hs:10:43: error:
+    * GHC internal error: `swap' is not in scope during type checking, but it passed the renamer
+      tcl_env of environment: [aUg :-> Type variable `a' = a :: *,
+                               aUS :-> Identifier[k::Int, NotLetBound],
+                               aUT :-> Identifier[xs::[a], NotLetBound],
+                               rjN :-> Identifier[freqMap::forall a.
+                                                           Ord a =>
+RC=0
+=== nursery=A8m ===
+ghc-real: panic! (the 'impossible' happened)
+  (GHC version 9.2.8:
+PROBE38-PANIC call=1 size=10 v=ds(0x64001435) direct=Nothing elemInScope=False elements=[wild(0x30000000) xs(0x61000da2) a(0x61001409) $dOrd(0x6100140a) freqMap(0x720004cb) $trModule(0x720013e5) $trModule(0x73001439) $trModule(0x7300143a) $trModule(0x7300143b) $trModule(0x7300143c)]
+	refineFromInScope PROBE38-PANIC call=1 size=10 v=ds(0x64001435) direct=Nothing elemInScope=False elements=[wild(0x30000000) xs(0x61000da2) a(0x61001409) $dOrd(0x6100140a) freqMap(0x720004cb) $trModule(0x720013e5) $trModule(0x73001439) $trModule(0x7300143a) $trModule(0x7300143b) $trModule(0x7300143c)]
+  InScope {wild_00 xs_aUi a_a1kJ $dOrd_a1kK freqMap $trModule
+           $trModule_s1lv $trModule_s1lw $trModule_s1lx $trModule_s1ly}
+  ds_d1lr
+  Call stack:
+RC=0
+=== nursery=A16m ===
+RC=0
+=== nursery=A32m ===
+ghc-real: panic! (the 'impossible' happened)
+  (GHC version 9.2.8:
+PROBE38-PANIC call=1 size=2 v=$dFoldable(0x610013d2) direct=Nothing elemInScope=False elements=[wild(0x30000000) allPositive(0x720004d1)]
+	refineFromInScope PROBE38-PANIC call=1 size=2 v=$dFoldable(0x610013d2) direct=Nothing elemInScope=False elements=[wild(0x30000000) allPositive(0x720004d1)]
+  InScope {wild_00 allPositive}
+  $dFoldable_a1jQ
+  Call stack:
+      CallStack (from HasCallStack):
+RC=0
