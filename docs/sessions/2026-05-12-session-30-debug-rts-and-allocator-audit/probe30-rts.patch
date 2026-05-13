@@ -1,0 +1,475 @@
+diff --git a/rts/sm/Evac.c b/rts/sm/Evac.c
+index 64018f4c..839561e4 100644
+--- a/rts/sm/Evac.c
++++ b/rts/sm/Evac.c
+@@ -30,6 +30,41 @@
+ #include "NonMoving.h"
+ #include "CheckUnload.h" // n_unloaded_objects and markObjectCode
+ 
++/* PROBE29-BEGIN — see rts/sm/GC.c for the definitions.
++ *   probe29_evac_fresh[type]: closures freshly copied to to-space
++ *     this GC, indexed by source-closure type.
++ *   probe29_evac_fwd_hits: count of evacuate() calls that short-
++ *     circuited on a forwarding pointer (already evacuated).
++ */
++extern W_ probe29_evac_fresh[64];
++extern W_ probe29_evac_fwd_hits;
++/* PROBE29-END */
++
++/* PROBE30-BEGIN — externs for counters defined in rts/sm/GC.c.
++ * Bumped in alloc_in_moving_heap (this file) and evacuate_large.
++ */
++extern W_ probe30_aim_calls;
++extern W_ probe30_aim_pre_overflow;
++extern W_ probe30_evac_large_calls;
++extern W_ probe30_size_hist[12];
++
++/* PROBE30 — log2-ish bucketing helper for the size histogram. */
++static inline uint32_t probe30_size_bucket(uint32_t size) {
++    if (size <= 1) return 0;
++    if (size == 2) return 1;
++    if (size <= 4) return 2;
++    if (size <= 8) return 3;
++    if (size <= 16) return 4;
++    if (size <= 32) return 5;
++    if (size <= 64) return 6;
++    if (size <= 128) return 7;
++    if (size <= 256) return 8;
++    if (size <= 512) return 9;
++    if (size <= 1024) return 10;
++    return 11;
++}
++/* PROBE30-END */
++
+ #if defined(THREADED_RTS) && !defined(PARALLEL_GC)
+ #define evacuate(p) evacuate1(p)
+ #define evacuate_BLACKHOLE(p) evacuate_BLACKHOLE1(p)
+@@ -102,12 +137,20 @@ alloc_in_moving_heap (uint32_t size, uint32_t gen_no)
+ {
+     gen_workspace *ws = &gct->gens[gen_no];  // zero memory references here
+ 
++    /* PROBE30 — count every aim call, plus a size-class histogram bump. */
++    probe30_aim_calls++;
++    probe30_size_hist[probe30_size_bucket(size)]++;
++
+     /* chain a new block onto the to-space for the destination gen if
+      * necessary.
+      */
+     StgPtr to = ws->todo_free;
+     ws->todo_free += size;
+     if (ws->todo_free > ws->todo_lim) {
++        /* PROBE30 — pre-bump crossed todo_lim, so todo_block_full
++         * will fire.  Used together with PROBE30's tbf counters in
++         * GCUtils.c to break down extend-vs-push-new path.  */
++        probe30_aim_pre_overflow++;
+         to = todo_block_full(size, ws);
+     }
+     ASSERT(ws->todo_free >= ws->todo_bd->free && ws->todo_free <= ws->todo_lim);
+@@ -400,6 +443,12 @@ evacuate_large(StgPtr p)
+   uint32_t gen_no, new_gen_no;
+   gen_workspace *ws;
+ 
++  /* PROBE30 — count every BF_LARGE evacuation.  Counts BEFORE the
++   * "already evacuated" shortcut so we see every dispatch, not only
++   * fresh evacuations.  Adjust analysis accordingly.
++   */
++  probe30_evac_large_calls++;
++
+   bd = Bdescr(p);
+   gen = RELAXED_LOAD(&bd->gen);
+   gen_no = RELAXED_LOAD(&bd->gen_no);
+@@ -809,6 +858,7 @@ loop:
+   info = ACQUIRE_LOAD(&q->header.info);
+   if (IS_FORWARDING_PTR(info))
+   {
++    probe29_evac_fwd_hits++;  /* PROBE29 */
+     /* Already evacuated, just return the forwarding address.
+      * HOWEVER: if the requested destination generation (gct->evac_gen) is
+      * older than the actual generation (because the object was
+@@ -839,6 +889,16 @@ loop:
+       return;
+   }
+ 
++  /* PROBE29 — bump per-source-type counter for fresh-evacuate dispatch.
++   * Placed before the switch so it sees every type, including paths
++   * that goto loop (WHITEHOLE) — those will retry and re-bump, but
++   * that's a rare path and the over-count is bounded.
++   */
++  {
++      uint32_t pt = (uint32_t)INFO_PTR_TO_STRUCT(info)->type;
++      if (pt < 64) probe29_evac_fresh[pt]++;
++  }
++
+   switch (INFO_PTR_TO_STRUCT(info)->type) {
+ 
+   case WHITEHOLE:
+diff --git a/rts/sm/GC.c b/rts/sm/GC.c
+index d63ca271..1afe8fae 100644
+--- a/rts/sm/GC.c
++++ b/rts/sm/GC.c
+@@ -122,6 +122,99 @@ static W_ g0_pcnt_kept = 30; // percentage of g0 live at last minor GC
+ 
+ static int consec_idle_gcs = 0;
+ 
++/* PROBE28-BEGIN — session-28 discriminator probe state.
++ *
++ * Goal: distinguish "one bug, two victim data structures" vs "two
++ * separate bugs" for the stage2 GC corruption (cf. session 27's
++ * findings.md).  RTS-side only — does not touch Haskell allocation
++ * paths, so it should not perturb the M5.hs / Big2.hs panic rates
++ * the way session-26's PROBE26 did.
++ *
++ * Snapshots taken pre-GC and combined with end-of-GC stats are
++ * printed once per call to GarbageCollect() via debugBelch().
++ */
++#define PROBE28_MAX_GENS 8
++static StgWord64 probe28_gc_no = 0;
++static W_ probe28_pre_mut[PROBE28_MAX_GENS];
++/* PROBE28-END */
++
++/* PROBE29-BEGIN — session-29 per-closure-type histogram.
++ *
++ * The probe28 data showed mut_list / static_objects scavenge paths
++ * are not at fault — same load both ways, only Big2 crashes.
++ * Remaining suspect: scavenge_block / evacuate dispatch by closure
++ * type.  This histogram bumps a counter per closure scavenged in
++ * rts/sm/Scav.c::scavenge_block, plus per-closure-type fresh-
++ * evacuate and forwarding-pointer-hit counters from rts/sm/Evac.c.
++ *
++ * Counters are reset at the start of each GarbageCollect() call and
++ * emitted as part of the post-GC summary debugBelch line.
++ *
++ * Indexed by info->type (which is 0..N_CLOSURE_TYPES-1 == 0..63).
++ * Non-static so Scav.c and Evac.c can see them via `extern`.
++ */
++W_ probe29_type_hist[64];
++W_ probe29_evac_fresh[64];
++W_ probe29_evac_fwd_hits;
++/* PROBE29-END */
++
++/* PROBE30-BEGIN — session-30 allocator-state + size-class probe.
++ *
++ * Sessions 28-29 ruled out per-closure-type scavenge bugs (filename-
++ * sensitivity shows the trigger is heap-layout dependent, not
++ * type-X-mishandling).  Remaining suspect direction (per session 29
++ * HANDOFF): the to-space bump allocator in Evac.c::alloc_in_moving_heap
++ * + GCUtils.c::todo_block_full + alloc_todo_block, where exact heap
++ * geometry / block-boundary crossings could trip a PPC32-specific bug.
++ *
++ * Counters:
++ *   probe30_aim_calls            : alloc_in_moving_heap invocations.
++ *   probe30_aim_pre_overflow     : aim invocations where the pre-bump
++ *                                   crossed todo_lim (=> todo_block_full).
++ *   probe30_tbf_can_extend       : todo_block_full hits where the
++ *                                   block had room AND wasn't urgent
++ *                                   to push (in-place extension).
++ *   probe30_tbf_push_new         : todo_block_full hits that pushed
++ *                                   the current block + allocated new.
++ *   probe30_tbf_freed_empty      : push-new path freed an empty block
++ *                                   (closure spans > 1 block edge).
++ *   probe30_atb_part_reuse       : alloc_todo_block grabbed a part_list block.
++ *   probe30_atb_alloc_group      : alloc_todo_block did allocGroup_sync
++ *                                   (closure size > BLOCK_SIZE_W).
++ *   probe30_atb_alloc_blocks     : alloc_todo_block did allocBlocks_sync
++ *                                   (refilled gct->free_blocks).
++ *   probe30_atb_free_blocks      : alloc_todo_block grabbed from gct->free_blocks.
++ *   probe30_evac_large_calls     : evacuate_large invocations (BF_LARGE path).
++ *   probe30_size_hist[12]        : log2-ish bucketed size histogram
++ *                                   of every size param passed to
++ *                                   alloc_in_moving_heap.
++ *                                   Buckets:
++ *                                     0:  size == 1
++ *                                     1:  size == 2
++ *                                     2:  size 3..4
++ *                                     3:  size 5..8
++ *                                     4:  size 9..16
++ *                                     5:  size 17..32
++ *                                     6:  size 33..64
++ *                                     7:  size 65..128
++ *                                     8:  size 129..256
++ *                                     9:  size 257..512
++ *                                    10:  size 513..1024
++ *                                    11:  size > 1024 (= "big object")
++ */
++W_ probe30_aim_calls;
++W_ probe30_aim_pre_overflow;
++W_ probe30_tbf_can_extend;
++W_ probe30_tbf_push_new;
++W_ probe30_tbf_freed_empty;
++W_ probe30_atb_part_reuse;
++W_ probe30_atb_alloc_group;
++W_ probe30_atb_alloc_blocks;
++W_ probe30_atb_free_blocks;
++W_ probe30_evac_large_calls;
++W_ probe30_size_hist[12];
++/* PROBE30-END */
++
+ /* Mut-list stats */
+ #if defined(DEBUG)
+ // For lack of a better option we protect mutlist_scav_stats with oldest_gen->sync
+@@ -456,6 +549,56 @@ GarbageCollect (uint32_t collect_gen,
+   // and put them on the g0->large_object list.
+   collect_pinned_object_blocks();
+ 
++  /* PROBE28-BEGIN — snapshot pre-GC mut_list occupancy per gen, summed
++   * across capabilities.  Must run BEFORE prepare_collected_gen() (which
++   * throws away mut_lists for collected gens) and BEFORE
++   * prepare_uncollected_gen() / stash_mut_list() (which moves the list
++   * to saved_mut_lists and installs a fresh empty block).
++   */
++  probe28_gc_no++;
++  {
++      uint32_t pg_ng = RtsFlags.GcFlags.generations;
++      if (pg_ng > PROBE28_MAX_GENS) pg_ng = PROBE28_MAX_GENS;
++      for (uint32_t gg = 0; gg < PROBE28_MAX_GENS; gg++) {
++          probe28_pre_mut[gg] = 0;
++      }
++      for (uint32_t gg = 0; gg < pg_ng; gg++) {
++          W_ s = 0;
++          for (uint32_t c = 0; c < getNumCapabilities(); c++) {
++              s += countOccupied(capabilities[c]->mut_lists[gg]);
++          }
++          probe28_pre_mut[gg] = s;
++      }
++  }
++  /* PROBE28-END */
++
++  /* PROBE29-BEGIN — reset the per-closure-type histograms at the
++   * start of every GC so each emitted summary line reflects this
++   * GC only.
++   */
++  for (uint32_t tt = 0; tt < 64; tt++) {
++      probe29_type_hist[tt] = 0;
++      probe29_evac_fresh[tt] = 0;
++  }
++  probe29_evac_fwd_hits = 0;
++  /* PROBE29-END */
++
++  /* PROBE30-BEGIN — reset allocator-state counters at GC start */
++  probe30_aim_calls = 0;
++  probe30_aim_pre_overflow = 0;
++  probe30_tbf_can_extend = 0;
++  probe30_tbf_push_new = 0;
++  probe30_tbf_freed_empty = 0;
++  probe30_atb_part_reuse = 0;
++  probe30_atb_alloc_group = 0;
++  probe30_atb_alloc_blocks = 0;
++  probe30_atb_free_blocks = 0;
++  probe30_evac_large_calls = 0;
++  for (uint32_t bb = 0; bb < 12; bb++) {
++      probe30_size_hist[bb] = 0;
++  }
++  /* PROBE30-END */
++
+   // Initialise all the generations that we're collecting.
+   for (g = 0; g <= N; g++) {
+       prepare_collected_gen(&generations[g]);
+@@ -1073,6 +1216,92 @@ GarbageCollect (uint32_t collect_gen,
+   memInventory(DEBUG_gc);
+ #endif
+ 
++  /* PROBE28-BEGIN — emit per-GC summary line.  Pre-GC mut_list sizes
++   * were captured at the top of GarbageCollect into probe28_pre_mut.
++   * Walk gct->scavenged_static_objects (via STATIC_LINK) to get the
++   * static-objects chain length scavenged this GC.  Safety cap at 1M
++   * iterations.
++   */
++  {
++      uint32_t pg_ng = RtsFlags.GcFlags.generations;
++      if (pg_ng > PROBE28_MAX_GENS) pg_ng = PROBE28_MAX_GENS;
++      W_ static_chain = 0;
++      StgClosure *sp = gct->scavenged_static_objects;
++      while (sp != END_OF_STATIC_OBJECT_LIST && static_chain < 1000000) {
++          StgClosure *up = UNTAG_STATIC_LIST_PTR(sp);
++          const StgInfoTable *info = get_itbl(up);
++          StgClosure **link = STATIC_LINK(info, up);
++          sp = (StgClosure *)RELAXED_LOAD(link);
++          static_chain++;
++      }
++      debugBelch("PROBE28 gc=%llu N=%u maj=%d ng=%u",
++                 (unsigned long long)probe28_gc_no, N, (int)major_gc, pg_ng);
++      for (uint32_t gg = 0; gg < pg_ng; gg++) {
++          debugBelch(" preMut%u=%lu", gg, (unsigned long)probe28_pre_mut[gg]);
++      }
++      debugBelch(" staticChain=%lu copiedW=%lu liveW=%lu liveB=%lu\n",
++                 (unsigned long)static_chain,
++                 (unsigned long)copied,
++                 (unsigned long)live_words,
++                 (unsigned long)live_blocks);
++  }
++  /* PROBE28-END */
++
++  /* PROBE29-BEGIN — emit per-closure-type histograms.  One line each
++   * for the scavenge_block dispatch histogram and the evacuate
++   * fresh-copy histogram, plus the forwarding-pointer hit count.
++   * Both lines are tagged with the same gc=<n> so they can be
++   * grouped post-hoc.  Skip zero buckets to keep the line short.
++   */
++  {
++      debugBelch("PROBE29 gc=%llu scav fwdHits=%lu",
++                 (unsigned long long)probe28_gc_no,
++                 (unsigned long)probe29_evac_fwd_hits);
++      for (uint32_t tt = 0; tt < 64; tt++) {
++          if (probe29_type_hist[tt] != 0) {
++              debugBelch(" t%u=%lu",
++                         tt, (unsigned long)probe29_type_hist[tt]);
++          }
++      }
++      debugBelch("\n");
++      debugBelch("PROBE29 gc=%llu evac",
++                 (unsigned long long)probe28_gc_no);
++      for (uint32_t tt = 0; tt < 64; tt++) {
++          if (probe29_evac_fresh[tt] != 0) {
++              debugBelch(" e%u=%lu",
++                         tt, (unsigned long)probe29_evac_fresh[tt]);
++          }
++      }
++      debugBelch("\n");
++  }
++  /* PROBE29-END */
++
++  /* PROBE30-BEGIN — emit one allocator-state line per GC, then a
++   * second line with the size-class histogram (skip zero buckets).
++   */
++  debugBelch("PROBE30 gc=%llu aim=%lu aimPre=%lu tbfExt=%lu tbfNew=%lu tbfFreedEmpty=%lu atbPart=%lu atbGrp=%lu atbBlks=%lu atbFree=%lu evacLarge=%lu\n",
++             (unsigned long long)probe28_gc_no,
++             (unsigned long)probe30_aim_calls,
++             (unsigned long)probe30_aim_pre_overflow,
++             (unsigned long)probe30_tbf_can_extend,
++             (unsigned long)probe30_tbf_push_new,
++             (unsigned long)probe30_tbf_freed_empty,
++             (unsigned long)probe30_atb_part_reuse,
++             (unsigned long)probe30_atb_alloc_group,
++             (unsigned long)probe30_atb_alloc_blocks,
++             (unsigned long)probe30_atb_free_blocks,
++             (unsigned long)probe30_evac_large_calls);
++  debugBelch("PROBE30 gc=%llu sizeHist",
++             (unsigned long long)probe28_gc_no);
++  for (uint32_t bb = 0; bb < 12; bb++) {
++      if (probe30_size_hist[bb] != 0) {
++          debugBelch(" s%u=%lu",
++                     bb, (unsigned long)probe30_size_hist[bb]);
++      }
++  }
++  debugBelch("\n");
++  /* PROBE30-END */
++
+   // ok, GC over: tell the stats department what happened.
+   stat_endGCWorker(cap, gct);
+   stat_endGC(cap, gct, live_words, copied,
+diff --git a/rts/sm/GCUtils.c b/rts/sm/GCUtils.c
+index 52ea27f2..b81517c7 100644
+--- a/rts/sm/GCUtils.c
++++ b/rts/sm/GCUtils.c
+@@ -30,6 +30,19 @@
+ SpinLock gc_alloc_block_sync;
+ #endif
+ 
++/* PROBE30-BEGIN — externs for allocator-state counters defined in
++ * rts/sm/GC.c.  Bumped in todo_block_full and alloc_todo_block to
++ * discriminate which path the allocator takes per GC.
++ */
++extern W_ probe30_tbf_can_extend;
++extern W_ probe30_tbf_push_new;
++extern W_ probe30_tbf_freed_empty;
++extern W_ probe30_atb_part_reuse;
++extern W_ probe30_atb_alloc_group;
++extern W_ probe30_atb_alloc_blocks;
++extern W_ probe30_atb_free_blocks;
++/* PROBE30-END */
++
+ static void push_todo_block(bdescr *bd, gen_workspace *ws);
+ 
+ bdescr* allocGroup_sync(uint32_t n)
+@@ -273,6 +286,9 @@ todo_block_full (uint32_t size, gen_workspace *ws)
+ 
+     if (!urgent_to_push && can_extend)
+     {
++        /* PROBE30 — in-place extension hit. */
++        probe30_tbf_can_extend++;
++
+         ws->todo_lim = stg_min(bd->start + bd->blocks * BLOCK_SIZE_W,
+                                ws->todo_lim + stg_max(WORK_UNIT_WORDS,size));
+         debugTrace(DEBUG_gc, "increasing limit for %p to %p",
+@@ -283,6 +299,11 @@ todo_block_full (uint32_t size, gen_workspace *ws)
+         return p;
+     }
+ 
++    /* PROBE30 — push-out-and-alloc-new path (covers the rest of the
++     * function below).
++     */
++    probe30_tbf_push_new++;
++
+     gct->copied += ws->todo_free - RELAXED_LOAD(&bd->free);
+     RELAXED_STORE(&bd->free, ws->todo_free);
+ 
+@@ -303,6 +324,9 @@ todo_block_full (uint32_t size, gen_workspace *ws)
+                 // object.  However, if the object we're copying is
+                 // larger than a block, then we might have an empty
+                 // block here.
++                /* PROBE30 — empty-block freed path; only fires when
++                 * the current object is larger than a block.  */
++                probe30_tbf_freed_empty++;
+                 freeGroup_sync(bd);
+             } else {
+                 push_scanned_block(bd, ws);
+@@ -336,6 +360,8 @@ alloc_todo_block (gen_workspace *ws, uint32_t size)
+     if (bd != NULL &&
+         bd->start + bd->blocks * BLOCK_SIZE_W - bd->free > (int)size)
+     {
++        /* PROBE30 — reusing a partially-filled block from ws->part_list. */
++        probe30_atb_part_reuse++;
+         ws->part_list = bd->link;
+         ws->n_part_blocks -= bd->blocks;
+         ws->n_part_words -= bd->free - bd->start;
+@@ -343,13 +369,22 @@ alloc_todo_block (gen_workspace *ws, uint32_t size)
+     else
+     {
+         if (size > BLOCK_SIZE_W) {
++            /* PROBE30 — big-object path: closure needs a multi-block
++             * group.  Triggers Note [big objects] handling.
++             */
++            probe30_atb_alloc_group++;
+             bd = allocGroup_sync((W_)BLOCK_ROUND_UP(size*sizeof(W_))
+                                  / BLOCK_SIZE);
+         } else {
+             if (gct->free_blocks) {
++                /* PROBE30 — fresh block grabbed from gct->free_blocks
++                 * (the pre-allocated pool from a previous fill).  */
++                probe30_atb_free_blocks++;
+                 bd = gct->free_blocks;
+                 gct->free_blocks = bd->link;
+             } else {
++                /* PROBE30 — pool was empty, refilled via allocBlocks_sync. */
++                probe30_atb_alloc_blocks++;
+                 allocBlocks_sync(16, &bd);
+                 gct->free_blocks = bd->link;
+             }
+diff --git a/rts/sm/Scav.c b/rts/sm/Scav.c
+index 414f468e..1a052e4e 100644
+--- a/rts/sm/Scav.c
++++ b/rts/sm/Scav.c
+@@ -67,6 +67,13 @@
+ 
+ #include <string.h> /* for memset */
+ 
++/* PROBE29-BEGIN — see rts/sm/GC.c for the definition.  Bumped per
++ * closure scavenged in scavenge_block to identify which closure
++ * type appears in Big2's failing GC but not in M5 -G1's passing GCs.
++ */
++extern W_ probe29_type_hist[64];
++/* PROBE29-END */
++
+ static void scavenge_large_bitmap (StgPtr p,
+                                    StgLargeBitmap *large_bitmap,
+                                    StgWord size );
+@@ -457,6 +464,9 @@ scavenge_block (bdescr *bd)
+     ASSERT(LOOKS_LIKE_CLOSURE_PTR(p));
+     info = get_itbl((StgClosure *)p);
+ 
++    /* PROBE29 — bump histogram per closure scavenged */
++    if ((uint32_t)info->type < 64) probe29_type_hist[info->type]++;
++
+     ASSERT(gct->thunk_selector_depth == 0);
+ 
+     q = p;
