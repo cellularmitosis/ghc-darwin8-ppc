@@ -1,6 +1,6 @@
 # Session 45 commits
 
-- _TBD: backfill SHA after `git commit`._  Session 45: probe45
+- 2982e0f Session 45: probe45
   adds 7 granular length hooks inside `HsToCore.deSugar`:
   `tcg_binds`, `binds_cvr`, `core_prs_initial`,
   `core_prs_patched`, `all_prs_in_initDs`,
