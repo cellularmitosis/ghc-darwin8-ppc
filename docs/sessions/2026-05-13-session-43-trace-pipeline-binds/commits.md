@@ -1,6 +1,6 @@
 # Session 43 commits
 
-- _TBD: backfill SHA after `git commit`._  Session 43: probe43
+- 7ef00d9 Session 43: probe43
   traces `mg_binds` length through the Core optimization
   pipeline.  Two iterations: v1 hooks `runCorePasses` entry and
   each `do_pass` before/after; v2 adds a hook at `core2core`
