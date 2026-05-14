@@ -1,0 +1,67 @@
+diff --git a/compiler/GHC/Tc/Module.hs b/compiler/GHC/Tc/Module.hs
+index a4fb1ec5..387495bb 100644
+--- a/compiler/GHC/Tc/Module.hs
++++ b/compiler/GHC/Tc/Module.hs
+@@ -175,9 +175,30 @@ import Data.Data ( Data )
+ import qualified Data.Set as S
+ import Control.DeepSeq
+ import Control.Monad
++import Data.IORef        (IORef, newIORef, atomicModifyIORef')
++import System.IO         (hPutStrLn, stderr, hFlush)
++import System.IO.Unsafe  (unsafePerformIO)
+ 
+ #include "HsVersions.h"
+ 
++-- PROBE47: trace tcg_binds count inside the typechecker.
++
++{-# NOINLINE probe47Counter #-}
++probe47Counter :: IORef Int
++probe47Counter = unsafePerformIO (newIORef 0)
++
++probe47Log :: String -> TcGblEnv -> ()
++probe47Log site tc_env = unsafePerformIO $ do
++    k <- atomicModifyIORef' probe47Counter (\c -> (c+1, c+1))
++    let n = lengthBag (tcg_binds tc_env)
++    hPutStrLn stderr $ unwords
++      [ "PROBE47-TC"
++      , "evt=" ++ show k
++      , "site=" ++ site
++      , "n=" ++ show n
++      ]
++    hFlush stderr
++
+ {-
+ ************************************************************************
+ *                                                                      *
+@@ -282,6 +303,7 @@ tcRnModuleTcRnM hsc_env mod_sum
+         ; -- OK now finally rename the imports
+           tcg_env <- {-# SCC "tcRnImports" #-}
+                      tcRnImports hsc_env all_imports
++        ; let !_p47_imp = probe47Log "after_tcRnImports" tcg_env
+ 
+        ;  -- Don't need to rename the Haddock documentation,
+           -- it's not parsed by GHC anymore.
+@@ -313,6 +335,7 @@ tcRnModuleTcRnM hsc_env mod_sum
+                               }
+                             else {-# SCC "tcRnSrcDecls" #-}
+                                  tcRnSrcDecls explicit_mod_hdr export_ies local_decls
++               ; let !_p47_srcdecls = probe47Log "after_tcRnSrcDecls" tcg_env
+ 
+                ; whenM (goptM Opt_DoCoreLinting) $
+                  lintGblEnv (hsc_logger hsc_env) (hsc_dflags hsc_env) tcg_env
+@@ -321,6 +344,7 @@ tcRnModuleTcRnM hsc_env mod_sum
+                  $ do { -- Compare hi-boot iface (if any) with the real thing
+                         -- Must be done after processing the exports
+                         tcg_env <- checkHiBootIface tcg_env boot_info
++                      ; let !_p47_boot = probe47Log "after_checkHiBootIface" tcg_env
+                       ; -- The new type env is already available to stuff
+                         -- slurped from interface files, via
+                         -- GHC.Tc.Utils.Env.setGlobalTypeEnv. It's important that this
+@@ -340,6 +364,7 @@ tcRnModuleTcRnM hsc_env mod_sum
+                         $ do { tcg_env <- runTypecheckerPlugin mod_sum tcg_env
+                              ; -- Dump output and return
+                                tcDump tcg_env
++                             ; let !_p47 = probe47Log "tcRnModuleTcRnM_exit" tcg_env
+                              ; return tcg_env
+                              }
+                       }

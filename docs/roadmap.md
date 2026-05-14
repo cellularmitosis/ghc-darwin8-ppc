@@ -685,6 +685,26 @@ much smaller than session 17 left it.  See:
   scopes probe47: hook `tcRnModule` / `tcRnModule'` return
   points in `GHC/Tc/Module.hs` to narrow further within the
   typechecker.
+- [`docs/sessions/2026-05-13-session-47-tc-rnmodule/`](sessions/2026-05-13-session-47-tc-rnmodule/)
+  — round 29.  **Corruption narrowed to WITHIN `tcRnSrcDecls`.**
+  Probe47 hooks 4 points inside `tcRnModuleTcRnM`:
+  `after_tcRnImports`, `after_tcRnSrcDecls`,
+  `after_checkHiBootIface`, `tcRnModuleTcRnM_exit`.
+  **Findings:** Clean: 0/9/9/9.  Failing len=600: 0/5/5/5.
+  Failing len=1650: 0/2/2/2.  `tcRnImports` doesn't populate
+  tcg_binds (always 0 after it).  **`tcRnSrcDecls` is where
+  tcg_binds becomes truncated** — clean produces 9, failing
+  produces 2-5.  Subsequent steps preserve the count.  The
+  truncation is WITHIN `tcRnSrcDecls` — the main typechecker
+  pass.  Its body has many sub-steps: `tc_rn_src_decls`,
+  `simplifyTop`, `zonkTopDecls`, etc.  v0.12.0 ships unchanged;
+  probe applied and reverted; stage2 rebuilt+redeployed clean
+  + smoke-test PASS + baseline tests 30 PASS / 4 FAIL_OUTPUT
+  (clean run, session 46's flakiness wasn't deterministic).
+  Session-47
+  [`HANDOFF.md`](sessions/2026-05-13-session-47-tc-rnmodule/HANDOFF.md)
+  scopes probe48: drill inside `tcRnSrcDecls` to identify the
+  specific sub-step that truncates the binders list.
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.
