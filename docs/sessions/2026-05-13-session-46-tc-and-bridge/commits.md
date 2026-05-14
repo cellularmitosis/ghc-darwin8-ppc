@@ -1,6 +1,6 @@
 # Session 46 commits
 
-- _TBD: backfill SHA after `git commit`._  Session 46: probe46
+- 4bd6d7d Session 46: probe46
   hooks 3 points in `compiler/GHC/Driver/Main.hs` —
   `hsc_typecheck_exit` (just before `hsc_typecheck` returns),
   `hscDesugar_entry` (in the wrapper), and
