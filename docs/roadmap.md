@@ -591,6 +591,32 @@ much smaller than session 17 left it.  See:
   CONSTR_2_0 closures (the [InBind] cons cells).  Likely
   candidate: `rts/sm/Evac.c::copy_tag` on PPC32 unreg.
 
+- [`docs/sessions/2026-05-13-session-43-trace-pipeline-binds/`](sessions/2026-05-13-session-43-trace-pipeline-binds/)
+  — round 25.  **Corruption locus narrowed.**  Probe43 traces
+  `mg_binds` length through the Core pipeline: hooks at
+  `core2core` entry, `runCorePasses` entry, and each Core
+  pass.  **Findings:** Clean compile (-A256m): CORE2CORE=9,
+  INITIAL=9, Simplifier 9→13.  Failing len=600: CORE2CORE=1,
+  INITIAL=1, panic.  Failing len=850: CORE2CORE=2, INITIAL=2,
+  Simplifier 2→5, panic.  Failing len=1650: CORE2CORE=2,
+  INITIAL=2, Simplifier 2→0 `*** DROPPED`, **RC=0 (silent
+  miscompile)**.  **Key localization:** CORE2CORE count equals
+  INITIAL count in every run — no drop between core2core entry
+  and runCorePasses.  The `[InBind]` truncation happens
+  **BEFORE `core2core`'s entry** — in the desugarer's output,
+  in HscMain bridge code between desugarer and core2core, or
+  via GC corrupting the heap-allocated `[InBind]` list while
+  ModGuts sits in memory between phases.  Silent miscompile
+  band extends: len=1650 is now a second silent-miscompile
+  env-len (after session 42's 850-1000).  v0.12.0 ships
+  unchanged; probe applied and reverted; stage2
+  rebuilt+redeployed clean + smoke-test PASS + baseline tests
+  30 PASS / 4 FAIL_OUTPUT unchanged.  Session-43
+  [`HANDOFF.md`](sessions/2026-05-13-session-43-trace-pipeline-binds/HANDOFF.md)
+  scopes probe44: hook the desugarer's output
+  (`HsToCore.deSugar`) to localize whether the truncation is
+  IN the desugarer or in HscMain bridge code.
+
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.
 

@@ -1,0 +1,106 @@
+diff --git a/compiler/GHC/Core/Opt/Pipeline.hs b/compiler/GHC/Core/Opt/Pipeline.hs
+index 34f283f7..fd894488 100644
+--- a/compiler/GHC/Core/Opt/Pipeline.hs
++++ b/compiler/GHC/Core/Opt/Pipeline.hs
+@@ -5,6 +5,7 @@
+ -}
+ 
+ {-# LANGUAGE CPP #-}
++{-# LANGUAGE BangPatterns #-}
+ 
+ module GHC.Core.Opt.Pipeline ( core2core, simplifyExpr ) where
+ 
+@@ -90,7 +91,8 @@ core2core hsc_env guts@(ModGuts { mg_module  = mod
+                                 , mg_loc     = loc
+                                 , mg_deps    = deps
+                                 , mg_rdr_env = rdr_env })
+-  = do { let builtin_passes = getCoreToDo logger dflags
++  = do { let !_probe43_c2c = probe43LogCore2CoreEntry (length (mg_binds guts))
++       ; let builtin_passes = getCoreToDo logger dflags
+              orph_mods = mkModuleSet (mod : dep_orphs deps)
+              uniq_mask = 's'
+        ;
+@@ -463,7 +465,8 @@ This extra run of the simplifier has a cost, but this is only with -O2.
+ 
+ runCorePasses :: [CoreToDo] -> ModGuts -> CoreM ModGuts
+ runCorePasses passes guts
+-  = foldM do_pass guts passes
++  = let !_probe43 = probe43LogInitial (length (mg_binds guts))
++    in foldM do_pass guts passes
+   where
+     do_pass guts CoreDoNothing = return guts
+     do_pass guts (CoreDoPasses ps) = runCorePasses ps guts
+@@ -472,7 +475,11 @@ runCorePasses passes guts
+       logger <- getLogger
+       withTiming logger dflags (ppr pass <+> brackets (ppr mod))
+                    (const ()) $ do
++            let !_pname = showSDoc dflags (ppr pass)
++                !n_before = length (mg_binds guts)
+             guts' <- lintAnnots (ppr pass) (doCorePass pass) guts
++            let !n_after = length (mg_binds guts')
++                !_probe43 = probe43LogPass _pname n_before n_after
+             endPass pass (mg_binds guts') (mg_rules guts')
+             return guts'
+ 
+diff --git a/compiler/GHC/Core/Opt/Simplify/Env.hs b/compiler/GHC/Core/Opt/Simplify/Env.hs
+index d1b33b02..ba0803b9 100644
+--- a/compiler/GHC/Core/Opt/Simplify/Env.hs
++++ b/compiler/GHC/Core/Opt/Simplify/Env.hs
+@@ -5,8 +5,10 @@
+ -}
+ 
+ {-# LANGUAGE CPP #-}
++{-# LANGUAGE BangPatterns #-}
+ 
+ module GHC.Core.Opt.Simplify.Env (
++        probe43LogPass, probe43LogInitial, probe43LogCore2CoreEntry,
+         -- * The simplifier mode
+         setMode, getMode, updMode, seDynFlags, seUnfoldingOpts, seLogger,
+ 
+@@ -75,6 +77,46 @@ import GHC.Utils.Logger
+ import GHC.Types.Unique.FM      ( pprUniqFM )
+ 
+ import Data.List (mapAccumL)
++import Data.IORef        (IORef, newIORef, atomicModifyIORef')
++import System.IO         (hPutStrLn, stderr, hFlush)
++import System.IO.Unsafe  (unsafePerformIO)
++
++-- PROBE43: trace mg_binds count through the Core pipeline to
++-- find WHICH pass causes the truncation observed by probe42.
++--
++-- Hypothesis from session 42: GC corrupts the [InBind] cons-list
++-- spine.  Probe43 logs `length (mg_binds guts)` at the entry of
++-- runCorePasses and after each pass, so we can pinpoint which
++-- pass is responsible.
++
++{-# NOINLINE probe43Counter #-}
++probe43Counter :: IORef Int
++probe43Counter = unsafePerformIO (newIORef 0)
++
++probe43LogInitial :: Int -> ()
++probe43LogInitial n = unsafePerformIO $ do
++    k <- atomicModifyIORef' probe43Counter (\c -> (c+1, c+1))
++    hPutStrLn stderr $ "PROBE43-INITIAL evt=" ++ show k ++ " mg_binds=" ++ show n
++    hFlush stderr
++
++probe43LogCore2CoreEntry :: Int -> ()
++probe43LogCore2CoreEntry n = unsafePerformIO $ do
++    k <- atomicModifyIORef' probe43Counter (\c -> (c+1, c+1))
++    hPutStrLn stderr $ "PROBE43-CORE2CORE evt=" ++ show k ++ " mg_binds=" ++ show n
++    hFlush stderr
++
++probe43LogPass :: String -> Int -> Int -> ()
++probe43LogPass pass_name n_before n_after = unsafePerformIO $ do
++    k <- atomicModifyIORef' probe43Counter (\c -> (c+1, c+1))
++    let drop_marker = if n_after < n_before then " *** DROPPED" else ""
++    hPutStrLn stderr $ unwords
++      [ "PROBE43-PASS"
++      , "evt=" ++ show k
++      , "pass=" ++ pass_name
++      , "before=" ++ show n_before
++      , "after=" ++ show n_after
++      ] ++ drop_marker
++    hFlush stderr
+ 
+ {-
+ ************************************************************************
