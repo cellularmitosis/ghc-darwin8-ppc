@@ -662,6 +662,29 @@ much smaller than session 17 left it.  See:
   (`GHC.Tc.Module`) and HscMain's `hscDesugar` bridge
   (`GHC.Driver.Main`) to localize the truncation to
   typechecker, bridge code, or GC-in-transit.
+- [`docs/sessions/2026-05-13-session-46-tc-and-bridge/`](sessions/2026-05-13-session-46-tc-and-bridge/)
+  — round 28.  **Corruption locus narrowed to within the
+  typechecker.**  Probe46 hooks `hsc_typecheck_exit`,
+  `hscDesugar_entry`, `hscDesugarPrime_entry` in
+  `Driver/Main.hs`.  All log `lengthBag (tcg_binds tc_env)`.
+  **Findings:** Clean: 9/9 at hsc_typecheck_exit /
+  hscDesugar'_entry.  Failing len=600: 3/3.  Failing len=1650:
+  5/5.  `hscDesugar_entry` never fires (Big2.hs uses
+  `hscDesugar'` directly).  The typechecker's output is
+  already truncated at `hsc_typecheck` exit; the bridge
+  preserves the count.  Corruption is **AT or BEFORE the
+  typechecker's `return`** — within `tcRnModule'`, or via GC
+  corrupting the heap Bag during typechecking.  **New
+  observation:** baseline test battery now flakes — different
+  test fails compile each run (26_threaded_rts, 01_int_arith).
+  Sessions 37-45 had stable 30 PASS / 4 FAIL_OUTPUT; now
+  FAIL_COMPILE appears intermittently.  Downstream symptom of
+  the same GC bug.  v0.12.0 ships unchanged; probe applied
+  and reverted; stage2 rebuilt+redeployed clean.  Session-46
+  [`HANDOFF.md`](sessions/2026-05-13-session-46-tc-and-bridge/HANDOFF.md)
+  scopes probe47: hook `tcRnModule` / `tcRnModule'` return
+  points in `GHC/Tc/Module.hs` to narrow further within the
+  typechecker.
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.

@@ -1,0 +1,68 @@
+diff --git a/compiler/GHC/Driver/Main.hs b/compiler/GHC/Driver/Main.hs
+index 4dde0700..fccefdcc 100644
+--- a/compiler/GHC/Driver/Main.hs
++++ b/compiler/GHC/Driver/Main.hs
+@@ -151,6 +151,7 @@ import GHC.Parser.Lexer as Lexer
+ import GHC.Tc.Module
+ import GHC.Tc.Utils.Monad
+ import GHC.Tc.Utils.Zonk    ( ZonkFlexi (DefaultFlexi) )
++import GHC.Tc.Types         ( tcg_binds )
+ 
+ import GHC.Stg.Syntax
+ import GHC.Stg.FVs      ( annTopBindingsFreeVars )
+@@ -223,7 +224,8 @@ import Control.Monad
+ import Data.IORef
+ import System.FilePath as FilePath
+ import System.Directory
+-import System.IO (fixIO)
++import System.IO (fixIO, hPutStrLn, stderr, hFlush)
++import System.IO.Unsafe (unsafePerformIO)
+ import qualified Data.Set as S
+ import Data.Set (Set)
+ import Data.Functor
+@@ -510,6 +512,23 @@ checkBidirectionFormatChars start_loc sb
+ -- -----------------------------------------------------------------------------
+ -- | If the renamed source has been kept, extract it. Dump it if requested.
+ 
++-- PROBE46: trace tcg_binds count between typechecker and desugarer.
++
++{-# NOINLINE probe46Counter #-}
++probe46Counter :: IORef Int
++probe46Counter = unsafePerformIO (newIORef 0)
++
++probe46LogTcgBinds :: String -> TcGblEnv -> ()
++probe46LogTcgBinds site tc_env = unsafePerformIO $ do
++    k <- atomicModifyIORef' probe46Counter (\c -> (c+1, c+1))
++    let n = lengthBag (tcg_binds tc_env)
++    hPutStrLn stderr $ unwords
++      [ "PROBE46-TCGBINDS"
++      , "evt=" ++ show k
++      , "site=" ++ site
++      , "n=" ++ show n
++      ]
++    hFlush stderr
+ 
+ extract_renamed_stuff :: ModSummary -> TcGblEnv -> Hsc RenamedStuff
+ extract_renamed_stuff mod_summary tc_result = do
+@@ -593,6 +612,7 @@ hsc_typecheck keep_rn mod_summary mb_rdr_module = do
+     -- TODO are we extracting anything when we merely instantiate a signature?
+     -- If not, try to move this into the "else" case above.
+     rn_info <- extract_renamed_stuff mod_summary tc_result
++    let !_p46_tc_exit = probe46LogTcgBinds "hsc_typecheck_exit" tc_result
+     return (tc_result, rn_info)
+ 
+ -- wrapper around tcRnModule to handle safe haskell extras
+@@ -657,10 +677,12 @@ tcRnModule' sum save_rn_syntax mod = do
+ -- | Convert a typechecked module to Core
+ hscDesugar :: HscEnv -> ModSummary -> TcGblEnv -> IO ModGuts
+ hscDesugar hsc_env mod_summary tc_result =
+-    runHsc hsc_env $ hscDesugar' (ms_location mod_summary) tc_result
++    let !_p46_hscD = probe46LogTcgBinds "hscDesugar_entry" tc_result
++    in runHsc hsc_env $ hscDesugar' (ms_location mod_summary) tc_result
+ 
+ hscDesugar' :: ModLocation -> TcGblEnv -> Hsc ModGuts
+ hscDesugar' mod_location tc_result = do
++    let !_p46_hscDp = probe46LogTcgBinds "hscDesugarPrime_entry" tc_result
+     hsc_env <- getHscEnv
+     r <- ioMsgMaybe $
+       {-# SCC "deSugar" #-}
