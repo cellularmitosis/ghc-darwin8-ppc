@@ -1,6 +1,6 @@
 # Session 44 commits
 
-- _TBD: backfill SHA after `git commit`._  Session 44: probe44
+- d6b03a1 Session 44: probe44
   hooks `HsToCore.deSugar` just before its return to log three
   list lengths — `final_prs` (desugarer's main output, before
   simpleOptPgm), `ds_binds` (after simpleOptPgm), and
