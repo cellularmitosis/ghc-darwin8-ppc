@@ -638,6 +638,30 @@ much smaller than session 17 left it.  See:
   [`HANDOFF.md`](sessions/2026-05-13-session-44-hook-desugarer/HANDOFF.md)
   scopes probe45: hook MORE granularly inside `deSugar`
   (length at each stage) to pinpoint the exact truncation step.
+- [`docs/sessions/2026-05-13-session-45-granular-desugar/`](sessions/2026-05-13-session-45-granular-desugar/)
+  — round 27.  **Desugarer ruled INNOCENT.**  Probe45 adds 7
+  granular length hooks inside `HsToCore.deSugar` (tcg_binds,
+  binds_cvr, core_prs_initial, core_prs_patched,
+  all_prs_in_initDs, all_prs_outside_initDs, final_prs).
+  **EVERY step preserves the count exactly** — clean compile
+  shows 9/9/9/9/9/9/9; failing runs show 3/3/3/3/3/3/3,
+  5/5/5/.../5, or 6/6/6/.../6.  The desugarer does not modify
+  the binders list.  **The truncation has ALREADY happened by
+  the time `tcg_binds` arrives at deSugar.**  Corruption is
+  in: typechecker output, HscMain's `hscDesugar` bridge, or
+  GC corrupting the heap-allocated `Bag (LHsBindLR GhcTc
+  GhcTc)` during transit.  Note that `Bag.TwoBags` is a
+  CONSTR_2_0 closure (2 pointer fields), structurally identical
+  to `[a]` cons cells — the same GC bug that corrupts cons-list
+  spines would also corrupt TwoBags closures.  v0.12.0 ships
+  unchanged; probe applied and reverted; stage2
+  rebuilt+redeployed clean + smoke-test PASS + baseline tests
+  30 PASS / 4 FAIL_OUTPUT unchanged.  Session-45
+  [`HANDOFF.md`](sessions/2026-05-13-session-45-granular-desugar/HANDOFF.md)
+  scopes probe46: hook the typechecker's TcGblEnv construction
+  (`GHC.Tc.Module`) and HscMain's `hscDesugar` bridge
+  (`GHC.Driver.Main`) to localize the truncation to
+  typechecker, bridge code, or GC-in-transit.
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.

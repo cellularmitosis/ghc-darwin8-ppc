@@ -1,0 +1,84 @@
+diff --git a/compiler/GHC/HsToCore.hs b/compiler/GHC/HsToCore.hs
+index c95595a4..bcbeef9e 100644
+--- a/compiler/GHC/HsToCore.hs
++++ b/compiler/GHC/HsToCore.hs
+@@ -1,5 +1,6 @@
+ {-# LANGUAGE CPP          #-}
+ {-# LANGUAGE TypeFamilies #-}
++{-# LANGUAGE BangPatterns #-}
+ 
+ {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
+ 
+@@ -91,6 +92,27 @@ import Data.List (partition)
+ import Data.IORef
+ import Control.Monad( when )
+ import GHC.Driver.Plugins ( LoadedPlugin(..) )
++import GHC.Data.Bag      (lengthBag)
++import System.IO         (hPutStrLn, stderr, hFlush)
++import System.IO.Unsafe  (unsafePerformIO)
++
++-- PROBE45: granular per-step length logger inside deSugar.
++-- Pinpoints WHICH step truncates the binds list.
++
++{-# NOINLINE probe45Counter #-}
++probe45Counter :: IORef Int
++probe45Counter = unsafePerformIO (newIORef 0)
++
++probe45LogStep :: String -> Int -> ()
++probe45LogStep step_name n = unsafePerformIO $ do
++    k <- atomicModifyIORef' probe45Counter (\c -> (c+1, c+1))
++    hPutStrLn stderr $ unwords
++      [ "PROBE45-STEP"
++      , "evt=" ++ show k
++      , "step=" ++ step_name
++      , "n=" ++ show n
++      ]
++    hFlush stderr
+ 
+ {-
+ ************************************************************************
+@@ -139,6 +161,7 @@ deSugar hsc_env
+   = do { let dflags = hsc_dflags hsc_env
+              logger = hsc_logger hsc_env
+              print_unqual = mkPrintUnqualified (hsc_unit_env hsc_env) rdr_env
++        ; let !_p45_tcgbinds = probe45LogStep "tcg_binds" (lengthBag binds)
+         ; withTiming logger dflags
+                      (text "Desugar"<+>brackets (ppr mod))
+                      (const ()) $
+@@ -152,18 +175,23 @@ deSugar hsc_env
+                               then addTicksToBinds hsc_env mod mod_loc
+                                        export_set (typeEnvTyCons type_env) binds
+                               else return (binds, hpcInfo, Nothing)
++        ; let !_p45_cvr = probe45LogStep "binds_cvr" (lengthBag binds_cvr)
+         ; (msgs, mb_res) <- initDs hsc_env tcg_env $
+                        do { ds_ev_binds <- dsEvBinds ev_binds
+                           ; core_prs <- dsTopLHsBinds binds_cvr
++                          ; let !_p45_core1 = probe45LogStep "core_prs_initial" (length (fromOL core_prs))
+                           ; core_prs <- patchMagicDefns core_prs
++                          ; let !_p45_core2 = probe45LogStep "core_prs_patched" (length (fromOL core_prs))
+                           ; (spec_prs, spec_rules) <- dsImpSpecs imp_specs
+                           ; (ds_fords, foreign_prs) <- dsForeigns fords
+                           ; ds_rules <- mapMaybeM dsRule rules
+                           ; let hpc_init
+                                   | gopt Opt_Hpc dflags = hpcInitCode (hsc_dflags hsc_env) mod ds_hpc_info
+                                   | otherwise = mempty
++                          ; let !all_prs_init = foreign_prs `appOL` core_prs `appOL` spec_prs
++                                !_p45_all = probe45LogStep "all_prs_in_initDs" (length (fromOL all_prs_init))
+                           ; return ( ds_ev_binds
+-                                   , foreign_prs `appOL` core_prs `appOL` spec_prs
++                                   , all_prs_init
+                                    , spec_rules ++ ds_rules
+                                    , ds_fords `appendStubC` hpc_init) }
+ 
+@@ -173,9 +201,11 @@ deSugar hsc_env
+ 
+      do {       -- Add export flags to bindings
+           keep_alive <- readIORef keep_var
++        ; let !_p45_all_out = probe45LogStep "all_prs_outside_initDs" (length (fromOL all_prs))
+         ; let (rules_for_locals, rules_for_imps) = partition isLocalRule all_rules
+               final_prs = addExportFlagsAndRules bcknd export_set keep_alive
+                                                  rules_for_locals (fromOL all_prs)
++              !_p45_final = probe45LogStep "final_prs" (length final_prs)
+ 
+               final_pgm = combineEvBinds ds_ev_binds final_prs
+         -- Notice that we put the whole lot in a big Rec, even the foreign binds
