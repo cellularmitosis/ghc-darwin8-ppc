@@ -1,6 +1,6 @@
 # Session 48 commits
 
-- TBD-SHA Session 48: probe48
+- 58fc94b Session 48: probe48
   hooks 10 points across `tcRnSrcDecls`, `tc_rn_src_decls`,
   and `tcTopSrcDecls` in `compiler/GHC/Tc/Module.hs`.  Three
   iterations (v1 / v2 / v2.5 / v3 cumulative).
