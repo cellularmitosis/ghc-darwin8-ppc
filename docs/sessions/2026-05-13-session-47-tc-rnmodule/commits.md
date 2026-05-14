@@ -1,6 +1,6 @@
 # Session 47 commits
 
-- _TBD: backfill SHA after `git commit`._  Session 47: probe47
+- 3a881a0 Session 47: probe47
   hooks 4 points inside `tcRnModuleTcRnM` in
   `compiler/GHC/Tc/Module.hs`: `after_tcRnImports`,
   `after_tcRnSrcDecls`, `after_checkHiBootIface`, and
