@@ -1,0 +1,44 @@
+=== probe48-v3 trigger run (post-redeploy) ===
+Thu May 14 01:39:25 CDT 2026
+
+=== clean (-A256m) ===
+PROBE48 evt=1 site=after_rnTopSrcDecls n=0
+PROBE48 evt=2 site=after_tcTyClsInstDecls n=0
+PROBE48 evt=3 site=after_tcTopBinds_val_binds n=8
+PROBE48 evt=4 site=after_tcTopBinds_deriv_binds n=8
+PROBE48 evt=5 site=after_tcTopSrcDecls n=8
+PROBE48 evt=6 site=after_tc_rn_src_decls n=8
+PROBE48 evt=7 site=after_mkTypeableBinds n=9
+PROBE48 evt=8 site=after_zonkTcGblEnv_binds_prime n=9
+PROBE48 evt=9 site=tcg_env_prime_final n=9
+PROBE48 evt=10 site=binds_mf_after_zonk_main n=0
+RC=0
+
+=== failing len=600 ===
+PROBE48 evt=1 site=after_rnTopSrcDecls n=0
+PROBE48 evt=2 site=after_tcTyClsInstDecls n=0
+PROBE48 evt=3 site=after_tcTopBinds_val_binds n=2
+PROBE48 evt=4 site=after_tcTopBinds_deriv_binds n=2
+PROBE48 evt=5 site=after_tcTopSrcDecls n=2
+PROBE48 evt=6 site=after_tc_rn_src_decls n=2
+PROBE48 evt=7 site=after_mkTypeableBinds n=3
+PROBE48 evt=8 site=after_zonkTcGblEnv_binds_prime n=3
+PROBE48 evt=9 site=tcg_env_prime_final n=3
+PROBE48 evt=10 site=binds_mf_after_zonk_main n=0
+RC=0
+
+=== failing len=1650 ===
+PROBE48 evt=1 site=after_rnTopSrcDecls n=0
+PROBE48 evt=2 site=after_tcTyClsInstDecls n=0
+PROBE48 evt=3 site=after_tcTopBinds_val_binds n=3
+PROBE48 evt=4 site=after_tcTopBinds_deriv_binds n=3
+PROBE48 evt=5 site=after_tcTopSrcDecls n=3
+PROBE48 evt=6 site=after_tc_rn_src_decls n=3
+PROBE48 evt=7 site=after_mkTypeableBinds n=4
+PROBE48 evt=8 site=after_zonkTcGblEnv_binds_prime n=4
+PROBE48 evt=9 site=tcg_env_prime_final n=4
+PROBE48 evt=10 site=binds_mf_after_zonk_main n=0
+RC=0
+
+=== done ===
+Thu May 14 01:39:33 CDT 2026

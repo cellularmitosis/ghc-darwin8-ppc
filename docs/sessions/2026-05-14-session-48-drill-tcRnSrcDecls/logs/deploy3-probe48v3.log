@@ -1,0 +1,5 @@
+==> [1/5] cross-compile ghc-bin (ghc/Main.hs)
+[1 of 1] Compiling Main             ( /Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/ghc/Main.hs, /tmp/stage2-build/Main.o )
+Linking /tmp/stage2-build/ghc-stage2 ...
+ld: warning: object file compiled with -mlong-branch which is no longer needed. To remove this warning, recompile without -mlong-branch: /Developer/SDKs/MacOSX10.4u.sdk/usr/lib/crt1.o
+ld: warning: duplicate dylib /opt/gcc14/lib/libgcc_s.1.dylib

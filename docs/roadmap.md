@@ -1,6 +1,6 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-04-29 session 16.
+Last reviewed: 2026-05-14 session 48.
 
 ## What's done (baseline)
 
@@ -705,6 +705,34 @@ much smaller than session 17 left it.  See:
   [`HANDOFF.md`](sessions/2026-05-13-session-47-tc-rnmodule/HANDOFF.md)
   scopes probe48: drill inside `tcRnSrcDecls` to identify the
   specific sub-step that truncates the binders list.
+- [`docs/sessions/2026-05-14-session-48-drill-tcRnSrcDecls/`](sessions/2026-05-14-session-48-drill-tcRnSrcDecls/)
+  — round 30.  **Corruption narrowed to INSIDE
+  `tcTopBinds val_binds val_sigs`.**  Probe48-v3 hooks 10
+  points across `tcRnSrcDecls` / `tc_rn_src_decls` /
+  `tcTopSrcDecls` in `compiler/GHC/Tc/Module.hs`.  Iterations
+  v1 (single hook after `tc_rn_src_decls`) → v2 (added
+  `mkTypeableBinds`, zonk, env'_final, binds_mf) → v2.5 (added
+  `rnTopSrcDecls`, `tcTopSrcDecls` split) → v3 (added
+  `tcTyClsInstDecls`, `tcTopBinds val_binds`,
+  `tcTopBinds deriv_binds` inside `tcTopSrcDecls`).
+  **Findings:** Clean: 0/0/**8**/8/8/8/9/9/9/0.  Failing
+  len=600: 0/0/**2**/2/2/2/3/3/3/0.  Failing len=1650:
+  0/0/**3**/3/3/3/4/4/4/0.  Both failing runs are silent
+  miscompiles (RC=0).  `rnTopSrcDecls` and `tcTyClsInstDecls`
+  produce 0 binders.  **`tcTopBinds val_binds val_sigs`**
+  (defined in `compiler/GHC/Tc/Gen/Bind.hs`) **is where
+  tcg_binds becomes truncated** — clean produces 8, failing
+  produces 2-3.  Subsequent steps preserve the count (modulo
+  +1 from `mkTypeableBinds`'s synthesized `$trModule`).
+  v0.12.0 ships unchanged; probe applied and reverted; stage2
+  rebuilt+redeployed clean + smoke-test PASS + baseline tests
+  30 PASS / 4 FAIL_OUTPUT (same known-flaky as session 47).
+  Session-48
+  [`HANDOFF.md`](sessions/2026-05-14-session-48-drill-tcRnSrcDecls/HANDOFF.md)
+  scopes probe49: drill inside `tcTopBinds` (in
+  `GHC.Tc.Gen.Bind`) — add per-binder logging to determine
+  whether the input list is short or the in-progress bag is
+  being lopped wholesale.
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.
