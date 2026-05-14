@@ -616,6 +616,28 @@ much smaller than session 17 left it.  See:
   scopes probe44: hook the desugarer's output
   (`HsToCore.deSugar`) to localize whether the truncation is
   IN the desugarer or in HscMain bridge code.
+- [`docs/sessions/2026-05-13-session-44-hook-desugarer/`](sessions/2026-05-13-session-44-hook-desugarer/)
+  — round 26.  **Corruption narrowed to WITHIN or BEFORE the
+  desugarer.**  Probe44 hooks `HsToCore.deSugar` just before
+  it returns, logging `final_prs` (desugarer output),
+  `ds_binds` (post-simpleOptPgm), and `mg_binds` (in ModGuts).
+  **Findings:** Clean: 9/9/9.  Failing len=600: 3/0/0 (silent
+  miscompile).  Failing len=850: 6/4/4 (panic).  Failing
+  len=1650: 5/3/3 (panic).  **`final_prs` is already truncated
+  in failing runs** — the desugarer's main computation
+  produces 3-6 binders instead of 9.  `simpleOptPgm` then
+  drops binders further (legitimate DCE on broken input).
+  Truncation candidates: typechecker's `tcg_binds`,
+  `addTicksToBinds`, `dsTopLHsBinds`, `patchMagicDefns`,
+  `dsImpSpecs`, `dsForeigns`, `dsRule`, OrdList ops, or
+  `addExportFlagsAndRules`.  Most consistent with GC
+  corrupting a heap-allocated cons-list spine.  v0.12.0 ships
+  unchanged; probe applied and reverted; stage2
+  rebuilt+redeployed clean + smoke-test PASS + baseline tests
+  30 PASS / 4 FAIL_OUTPUT unchanged.  Session-44
+  [`HANDOFF.md`](sessions/2026-05-13-session-44-hook-desugarer/HANDOFF.md)
+  scopes probe45: hook MORE granularly inside `deSugar`
+  (length at each stage) to pinpoint the exact truncation step.
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.

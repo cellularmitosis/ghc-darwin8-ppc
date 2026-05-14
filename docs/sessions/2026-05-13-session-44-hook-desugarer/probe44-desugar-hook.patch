@@ -1,0 +1,54 @@
+diff --git a/compiler/GHC/HsToCore.hs b/compiler/GHC/HsToCore.hs
+index c95595a4..44668f66 100644
+--- a/compiler/GHC/HsToCore.hs
++++ b/compiler/GHC/HsToCore.hs
+@@ -1,5 +1,6 @@
+ {-# LANGUAGE CPP          #-}
+ {-# LANGUAGE TypeFamilies #-}
++{-# LANGUAGE BangPatterns #-}
+ 
+ {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
+ 
+@@ -91,6 +92,32 @@ import Data.List (partition)
+ import Data.IORef
+ import Control.Monad( when )
+ import GHC.Driver.Plugins ( LoadedPlugin(..) )
++import System.IO         (hPutStrLn, stderr, hFlush)
++import System.IO.Unsafe  (unsafePerformIO)
++
++-- PROBE44: trace mg_binds count at the desugarer's exit.
++-- Hypothesis from session 43: the [InBind] truncation happens
++-- BEFORE core2core entry.  Probe44 logs final_prs length (the
++-- desugarer's main output before simpleOptPgm), ds_binds length
++-- (after simpleOptPgm runs), and the final mg_binds length
++-- stored in ModGuts.
++
++{-# NOINLINE probe44Counter #-}
++probe44Counter :: IORef Int
++probe44Counter = unsafePerformIO (newIORef 0)
++
++probe44LogDeSugarReturn :: Int -> Int -> Int -> ()
++probe44LogDeSugarReturn n_final_prs n_ds_binds n_mg_binds =
++    unsafePerformIO $ do
++      k <- atomicModifyIORef' probe44Counter (\c -> (c+1, c+1))
++      hPutStrLn stderr $ unwords
++        [ "PROBE44-DESUGAR-RETURN"
++        , "evt=" ++ show k
++        , "final_prs=" ++ show n_final_prs
++        , "ds_binds=" ++ show n_ds_binds
++        , "mg_binds=" ++ show n_mg_binds
++        ]
++      hFlush stderr
+ 
+ {-
+ ************************************************************************
+@@ -247,6 +274,9 @@ deSugar hsc_env
+                 mg_decl_docs    = decl_docs,
+                 mg_arg_docs     = arg_docs
+               }
++        ; let !_probe44 = probe44LogDeSugarReturn
++                            (length final_prs) (length ds_binds)
++                            (length (mg_binds mod_guts))
+         ; return (msgs, Just mod_guts)
+         }}}}
+ 
