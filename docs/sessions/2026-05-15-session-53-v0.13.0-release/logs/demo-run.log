@@ -1,0 +1,28 @@
+==> 1. Write Big2.hs on Tiger
+
+==> 2. Compile Big2.hs 5x with the default RTS (no -A1G workaround).
+    Pre-fix every run produced a 152-byte empty .o file.
+    Post-fix every run produces a fully-populated 46340-byte .o file.
+iter 1: Big2.o = 46340 bytes
+iter 2: Big2.o = 46340 bytes
+iter 3: Big2.o = 46340 bytes
+iter 4: Big2.o = 46340 bytes
+iter 5: Big2.o = 46340 bytes
+
+==> 3. Also compile with -A1m -G1 (the small-nursery / single-gen
+    flag combo that previously deterministically reproduced the bug).
+Big2.o = 46340 bytes (-A1m -G1)
+
+==> 4. Stage2-compile a real executable that calls Big2's functions
+[2 of 2] Compiling Main             ( Big2Main.hs, Big2Main.o )
+Linking Big2Main ...
+ld: warning: object file compiled with -mlong-branch which is no longer needed. To remove this warning, recompile without -mlong-branch: /Developer/SDKs/MacOSX10.4u.sdk/usr/lib/crt1.o
+ld: warning: duplicate dylib /opt/gcc14/lib/libgcc_s.1.dylib
+topK 3 (chars):   [(11,' '),(5,'o'),(4,'e')]
+dedup words:      ["brown","dog","fox","jumps","lazy","over","quick","the"]
+countOf 'o' xs:   5
+shift 10 [1..5]:  [11,12,13,14,15]
+cumsum [1..5]:    [1,3,6,10,15]
+allPositive [..]: True
+
+v0.13.0 demo done.  The 32-session-old empty-.o bug is dead.

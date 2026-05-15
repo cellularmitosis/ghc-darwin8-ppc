@@ -9,7 +9,7 @@ to say "the runtime Mach-O loader works"; it is another to ship a
 Tiger-running Haskell program that uses it to load and call into a
 freshly cross-compiled `.o`.
 
-## What's here (v0.12.0)
+## What's here (v0.13.0)
 
 | File | Demonstrates | Added in |
 |---|---|---|
@@ -29,6 +29,7 @@ freshly cross-compiled `.o`.
 | [`v0.10.0-mandel-prof.hs`](v0.10.0-mandel-prof.hs) | **Cost-centre + heap profiling on Tiger.**  Mandelbrot printer compiled with `-O -prof -fprof-auto` runs natively on Tiger and emits a real `.prof` cost-centre report + `.hp` heap-profile file.  Unblocked by [LLVM-7 r4](https://github.com/cellularmitosis/llvm-darwin8-ppc/releases/tag/v7.1.1-r4) (BUG-003 fix to PPC asm printer) plus two Tiger compatibility shims (`__MAC_OS_X_VERSION_MIN_REQUIRED` macro definition + a `strnlen` shim in `rts/RtsUtils.c`). | [v0.10.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.10.0) |
 | [`v0.11.0-stage2-native.sh`](v0.11.0-stage2-native.sh) | **Native ghc on Tiger.**  Stage2 ghc binary running on a real PowerMac G5 compiles a `Hello` and a `Data.Map.Strict` word-count program, prints expected output for both.  No host involvement.  GC bug worked around with the `ghc-stage2-wrapper.sh` script that adds `+RTS -A1G -RTS` (see [session 17 GC-BUG-FOUND](../docs/sessions/2026-04-29-session-17-stage2-O0-experiment/GC-BUG-FOUND.md)).  Closes [roadmap B](../docs/roadmap.md). | [v0.11.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.11.0) |
 | [`v0.12.0-llvm8-swap.sh`](v0.12.0-llvm8-swap.sh) | **Cross-toolchain on LLVM-8.**  Same v0.11.0 demo recipe, but the cross-clang that compiled the underlying GHC RTS / libraries / stage2 ghc-bin is now LLVM-8.0.1 (with the sister project's BUG-010 patch — PPC32 Darwin "power" struct alignment field-cap restored).  Prints clang's version banner up front to confirm; user-program output is unchanged from v0.11.0.  Closes [roadmap G](../docs/roadmap.md). | [v0.12.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.12.0) |
+| [`v0.13.0-bool-bug-fix.sh`](v0.13.0-bool-bug-fix.sh) | **The 32-session-old "stage2 emits empty `.o`" bug is dead.**  Writes Big2.hs (a 30-LOC `Data.Map.Strict` + `Data.List` program — the reproducer that's been the reference test case since session 27) to Tiger and compiles it 5× with the patched stage2 — pre-fix, every iteration produced a 152-byte empty `.o`; post-fix, every iteration produces a fully-populated 46340-byte `.o`.  Then `--make`s a Big2Main executable, runs it on Tiger, and prints the output of Big2's functions — proving stage2's output is functionally correct, not just non-empty.  Root cause: an 11-line big-endian-only bug in upstream `libraries/array/Data/Array/Base.hs`'s `STUArray Bool` `newArray` ([patch 0016](../patches/0016-array-stuarray-bool-word-aligned-init.patch), [session 52](../docs/sessions/2026-05-15-session-52-stuarray-scope/)).  Closes [roadmap B](../docs/roadmap.md). | [v0.13.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.13.0) |
 
 ## Building & running
 

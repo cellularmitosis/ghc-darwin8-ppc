@@ -1,6 +1,6 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-05-15 session 51.
+Last reviewed: 2026-05-15 session 53.
 
 ## What's done (baseline)
 
@@ -139,17 +139,54 @@ Demo: [`demos/v0.8.0-th-splice.hs`](../demos/v0.8.0-th-splice.hs).
 REPL is now reachable.  Not yet wired up; future session.  TH
 end-to-end via `-fexternal-interpreter` already works (v0.8.0).
 
-### B. Stage2 native `ghc` — 🟡 working with workaround (v0.11.0)
+### ~~B. Stage2 native `ghc`~~ ✅ done (v0.13.0)
 
-**The dragon was a GC bug.**  After ruling out (session 17):
+**The 32-session GC bug investigation resolved in
+[session 52](sessions/2026-05-15-session-52-stuarray-scope/).**
+It was never an RTS GC bug.  It was a single 11-line upstream library
+bug in `libraries/array/Data/Array/Base.hs`'s `MArray (STUArray s)
+Bool (ST s)` instance — `newArray` zeroes `bOOL_SCALE n =
+ceil(n/8)` bytes via `setByteArray#` but `unsafeRead`/`unsafeWrite`
+access via `readWordArray#` (a full machine word).  For sub-word
+sizes the trailing partial-word bytes are uninitialised; on big-
+endian, the bit for element 0 lives in memory byte 3 (LSB) while
+`setByteArray#` writes byte 0 (MSB), so every read returns garbage.
+`Data.Graph.scc` uses `STUArray Int Bool` for its visited set; a
+corrupt visited set drops vertices, the renamer drops bindings, and
+the compiler emits empty `.o` files.  Fix:
+[patch 0016](../patches/0016-array-stuarray-bool-word-aligned-init.patch).
+
+✅ **v0.13.0** ships:
+- Patched array library in both stage1 cross-bindist and stage2
+  native bindist.
+- Stage2 native ghc compiles real programs under default RTS, no
+  `+RTS -A1G` needed.
+- Demo: [`demos/v0.13.0-bool-bug-fix.sh`](../demos/v0.13.0-bool-bug-fix.sh)
+  re-runs the Big2.hs reproducer that fired the 152-byte empty `.o`
+  symptom for 10 sessions; now produces a 46340-byte real `.o`
+  under both default RTS and `-A1m -G1`.
+- The `scripts/ghc-stage2-wrapper.sh` script still exists for
+  backwards compatibility but its `-A1G` flag is no longer needed.
+
+The bug is an **upstream GHC issue** — the same code is in current
+GHC HEAD.  See *H. Upstream MR* below.
+
+#### Historical record of the 32-session bisection
+
+The investigation that ultimately landed on patch 0016 is documented
+across 33 numbered rounds.  Kept as-is for the historical record:
+
+#### Earlier prior framing (now superseded by session 52)
+
+The dragon was *thought* to be a GC bug.  After ruling out (session 17):
 - Optimiser passes (session 14's `simpleOptPgm` hypothesis).
 - LLVM-7 PPC backend (rebuilt without `-fllvm`, same bug).
 - User-level Bag/UniqSupply/atomic primitives (probes all PASS).
 
-`+RTS -A1G -RTS` makes stage2 work: the giant allocation area
+`+RTS -A1G -RTS` made stage2 work: the giant allocation area
 keeps small compiles inside one block, no GC fires, no bug.
 
-✅ **v0.11.0** ships:
+✅ **v0.11.0** shipped (now superseded by v0.13.0):
 - `scripts/ghc-stage2-wrapper.sh` — one-line wrapper that adds
   `+RTS -A1G -RTS` so users don't have to think about it.
 - `scripts/deploy-stage2.sh` — cross-build + deploy + smoke-test
@@ -158,8 +195,10 @@ keeps small compiles inside one block, no GC fires, no bug.
   compiles `Hello.hs` and a `Data.Map.Strict` word-count program
   on Tiger and runs both end-to-end.
 
-❌ **Underlying GC bug not yet fixed** but the search space is
-much smaller than session 17 left it.  See:
+✅ **Underlying bug now fixed** by [patch 0016](../patches/0016-array-stuarray-bool-word-aligned-init.patch)
+landed in v0.13.0 ([session 52](sessions/2026-05-15-session-52-stuarray-scope/)).
+The sessions below document the multi-round bisection that led
+there:
 
 - [`docs/sessions/2026-04-29-session-17-stage2-O0-experiment/GC-BUG-FOUND.md`](sessions/2026-04-29-session-17-stage2-O0-experiment/GC-BUG-FOUND.md)
   — original write-up: panic catalogue per input shape, the `-A`
@@ -828,6 +867,44 @@ Fixing the actual GC bug is still likely multi-session work.
 ### ~~E. Upstream contribution~~ on hold (user request)
 
 Paused until we're further down the road.
+
+### H. Upstream MR for the `STUArray Bool` big-endian fix — pending
+
+[Patch 0016](../patches/0016-array-stuarray-bool-word-aligned-init.patch)
+shipped in v0.13.0 ([session 52](sessions/2026-05-15-session-52-stuarray-scope/))
+fixes a real upstream GHC bug — the same broken code is in current
+[`gitlab.haskell.org/ghc/packages/array`'s master branch's
+`Data/Array/Base.hs`](https://gitlab.haskell.org/ghc/packages/array/-/blob/master/Data/Array/Base.hs)
+(confirmed in session 53).
+
+Open work to land this upstream:
+
+1. **Portable repro.**  Our current minimal repro (`newArray False
+   :: ST s (STUArray s Int Bool)` of sub-word size) needs PPC32
+   unreg or another big-endian target.  Options to make it
+   reproducible on a Tier-1 target:
+   - Add a CPP flag to `Base.hs` that forces `bOOL_SCALE` to also
+     be little-endian-broken (e.g. shift the partial bytes to the
+     wrong end), exposing the same byte-mismatch on LE.
+   - Instrument `setByteArray#` in a debug RTS to fill *unwritten*
+     bytes with `0xFF` (a sentinel value); the bug shows up
+     immediately on any target.
+   - Use a qemu-emulated PPC32 (or s390x) target in GHC CI.
+2. **`unsafeNewArray_` consideration.**  Our patch fixes both
+   `newArray` and `unsafeNewArray_` to use `bOOL_WORD_SCALE` for
+   allocation size, but does *not* add a `setByteArray#` zeroing
+   call to `unsafeNewArray_`.  That means users of `unsafeNewArray_`
+   Bool still face the read-modify-write problem on the first
+   `unsafeWrite` per word (see [session-52 finding F7](sessions/2026-05-15-session-52-stuarray-scope/findings.md#f7-same-bug-affects-unsafenewarray_)).
+   The upstream MR should probably also add a `setByteArray#` call
+   to `unsafeNewArray_` for Bool with a comment explaining why
+   bool is special, even though it costs a memset on the "unsafe"
+   path.  In practice virtually all users go through `newArray
+   False` / `newArray_` so this is a low-impact change.
+3. **Open the GHC issue / MR.**  Suggested title: "STUArray Bool:
+   `newArray` under-zeroes the trailing partial word, causing
+   garbage reads on big-endian (and on any LE size that doesn't
+   align to a word)."
 
 ### ~~G. Cross-toolchain: LLVM-7 r4 → LLVM-8 swap~~ ✅ done (v0.12.0)
 

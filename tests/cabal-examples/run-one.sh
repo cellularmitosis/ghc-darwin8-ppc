@@ -43,7 +43,7 @@ cabal --store-dir=./.cabal-store \
       --with-compiler=$STAGE1 \
       --with-hsc2hs=$HSC2HS \
       --builddir=./dist \
-      "${EXTRA_FLAGS[@]}" 2>&1 | tail -5
+      ${EXTRA_FLAGS[@]+"${EXTRA_FLAGS[@]}"} 2>&1 | tail -5
 
 # Find the executable.  Restrict to PPC Mach-O so we don't pick up
 # stray host-side helpers (e.g. autoconf's `config.status`, which is

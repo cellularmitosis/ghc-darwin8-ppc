@@ -32,15 +32,27 @@ running Tigerbrew's gcc14, because our local cross-ld doesn't speak
 Tiger's crt1.
 
 Latest release:
-[**v0.12.0**](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.12.0)
-— **cross-toolchain swapped to LLVM-8** 🔧.  The cross-clang we use
-to compile GHC's C output (via the unreg-C path) is now LLVM-8.0.1
-with the sister project's BUG-010 fix (PPC32 Darwin "power"
-alignment field-cap restored).  Functionally identical to v0.11.0
-for end users.  Stage1 build is ~3× faster (16m52s vs 48m46s).
-See [session 18](docs/sessions/2026-05-09-session-18-llvm8-toolchain-swap/).
-Plus all of v0.11.0's stage2 native ghc, v0.10.0's profiling,
-v0.9.0's HTTPS, etc.
+[**v0.13.0**](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.13.0)
+— **stage2 native ghc compiles real programs without the `-A1G`
+workaround** 🪄.  The 32-session-old "stage2 panics on anything
+non-trivial / emits 152-byte empty `.o` files" bug is **fixed** by
+a single 11-line patch to GHC's `libraries/array/Data/Array/Base.hs`
+([patch 0016](patches/0016-array-stuarray-bool-word-aligned-init.patch)).
+`STUArray Bool`'s `newArray` was allocating and zeroing
+`ceil(n/8)` bytes via `setByteArray#` but its `unsafeRead` /
+`unsafeWrite` access the array via `readWordArray#` /
+`writeWordArray#` (a full machine word).  For sub-word sizes the
+trailing partial-word bytes were uninitialised; on big-endian, the
+bit for element 0 lives in memory byte 3 (LSB) but `setByteArray#`
+writes byte 0 (MSB), so every read of an `STUArray Bool` of
+size < `SIZEOF_HSWORD * 8` returned garbage.  `Data.Graph.scc` uses
+`STUArray Int Bool` for its "visited" set; the bug dropped vertices
+out of the renamer's dependency analysis, which dropped bindings,
+which produced empty `.o` files.  Real upstream GHC bug — the same
+code is in current GHC HEAD.  See
+[session 52](docs/sessions/2026-05-15-session-52-stuarray-scope/).
+Plus all of v0.12.0's LLVM-8 swap, v0.11.0's stage2 native ghc,
+v0.10.0's profiling, v0.9.0's HTTPS, etc.
 
 ## Implementation status
 
@@ -55,7 +67,7 @@ approximates, or explicitly stubs.  Updated as each release lands.
 | Final link (Tiger crt1 / dyld) | ✅ Working | `ppc-ld-tiger.sh` ssh's to `$PPC_HOST` for the link step (Tigerbrew gcc14 + ld there).  Wrapped transparently by the cross-cc. |
 | Bindist tarball | ✅ Working | `ghc-9.2.8-stage1-cross-to-ppc-darwin8.tar.xz` (~123 MB) on every GitHub release.  Includes `install.sh`, `cross-scripts/`, `lib/bin/ghc-iserv` (since v0.7.0). |
 | `install.sh --prefix --ppc-host` | ✅ Working | One-command install (since [v0.3.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.3.0)).  Detects cctools/clang/SDK from canonical locations, writes `lib/settings`, recaches ghc-pkg, smoke-tests. |
-| Stage2 native ghc | 🟡 Working with workaround | [v0.11.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.11.0).  ~210 MB ppc-native `ghc` binary that compiles Haskell to PPC Mach-O on Tiger.  Wrapped with `+RTS -A1G -RTS` (`scripts/ghc-stage2-wrapper.sh`) to work around an unfixed PPC-Darwin RTS GC bug — major GC during a compile corrupts the typechecker's `Bag`-based binding store.  Workaround means Tiger-side compiles use ~1 GB RAM; not a blocker on G5s.  See [session 17 GC-BUG-FOUND](docs/sessions/2026-04-29-session-17-stage2-O0-experiment/GC-BUG-FOUND.md).  Deploy with `scripts/deploy-stage2.sh`. |
+| Stage2 native ghc | ✅ Working | [v0.13.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.13.0).  ~210 MB ppc-native `ghc` binary that compiles Haskell to PPC Mach-O on Tiger.  The `+RTS -A1G -RTS` workaround shipped in v0.11.0 / v0.12.0 is no longer needed: the bug it dodged was a single big-endian library bug in `libraries/array/Data/Array/Base.hs`'s `STUArray Bool` `newArray` ([patch 0016](patches/0016-array-stuarray-bool-word-aligned-init.patch), root-caused in [session 52](docs/sessions/2026-05-15-session-52-stuarray-scope/) after 11 sessions of bisection).  Deploy with `scripts/deploy-stage2.sh`.  The wrapper still ships for backwards compatibility but defaults to no extra RTS flags. |
 
 ### Language & libraries (verified on Tiger)
 
@@ -184,8 +196,9 @@ instead.
 - [`docs/sessions/`](docs/sessions/) — per-session narratives
   (README + findings + commits).  See
   [`docs/sessions/README.md`](docs/sessions/README.md).
-- [`patches/`](patches/) — 12 patches to GHC 9.2.8 source
-  re-enabling PPC/Darwin bits.
+- [`patches/`](patches/) — 16 patches to GHC 9.2.8 source
+  re-enabling PPC/Darwin bits, including [patch 0016](patches/0016-array-stuarray-bool-word-aligned-init.patch)
+  for the big-endian `STUArray Bool` bug.
 - [`scripts/`](scripts/) — `cross-env.sh`, `ppc-cc` wrapper,
   `ppc-ld-tiger` SSH shim, `runghc-tiger`, `pgmi-shim.sh`,
   `tiger-config.site` (autoconf overrides), install-name shims,
@@ -216,6 +229,7 @@ instead.
 | [v0.10.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.10.0) | 2026-04-29 | **Profiling works on Tiger** 📊 (LLVM-7 r4 BUG-003 fix + Tiger compat shims for `__MAC_OS_X_VERSION_MIN_REQUIRED` + `strnlen`). |
 | [v0.11.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.11.0) | 2026-04-30 | **Stage2 native ghc works on Tiger** 🐯 (GC bug worked around with `+RTS -A1G -RTS`; `scripts/ghc-stage2-wrapper.sh` + `scripts/deploy-stage2.sh`). |
 | [v0.12.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.12.0) | 2026-05-09 | **Cross-toolchain swap LLVM-7 → LLVM-8** 🔧 (sister-project's BUG-010 patch restored the PPC32 Darwin "power" alignment field-cap that LLVM-8 dropped; stage1 builds 3× faster). |
+| [v0.13.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.13.0) | 2026-05-15 | **`STUArray Bool` big-endian root cause fixed** 🪄 (11-line patch to `libraries/array/Data/Array/Base.hs`; stage2 native ghc compiles real programs without the `-A1G` workaround.  Real upstream GHC bug — same code in current HEAD).  Closes the 32-session "stage2 produces empty .o" investigation. |
 
 ## Licence
 

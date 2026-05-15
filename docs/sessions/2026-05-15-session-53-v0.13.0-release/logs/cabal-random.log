@@ -1,0 +1,9 @@
+== Building random ==
+Preprocessing executable 'random-example' for random-example-0.1...
+Building executable 'random-example' for random-example-0.1...
+Linking ./dist/build/ppc-osx/ghc-9.2.8/random-example-0.1/x/random-example/build/random-example/random-example ...
+ld: warning: object file compiled with -mlong-branch which is no longer needed. To remove this warning, recompile without -mlong-branch: /Developer/SDKs/MacOSX10.4u.sdk/usr/lib/crt1.o
+ld: warning: duplicate dylib /opt/gcc14/lib/libgcc_s.1.dylib
+
+== Running dist/build/ppc-osx/ghc-9.2.8/random-example-0.1/x/random-example/build/random-example/random-example on pmacg5 ==
+random int 1..100 with seed 42: 49

@@ -1,0 +1,40 @@
+  34_weak_refs                             PASS
+  35_stm_retry_orelse                      PASS
+
+=== Summary ===
+PASS:         30 - 02_double_literal 03_double_runtime 04_float_literal 05_word_sizes 06_integer_bignum 07_char_string 08_list_ops 09_maybe_either 10_adt_deriving 11_typeclasses 12_show_read 13_io_file 15_exceptions 16_ioref_mvar 17_bits 18_bytestring 19_text 20_laziness 21_typeable 22_array 23_forkio 26_threaded_rts 27_stm 29_data_time 30_long_running 31_mvar_stress 32_posix_signals 33_env_map 34_weak_refs 35_stm_retry_orelse
+FAIL_COMPILE: 0 - 
+FAIL_RUN:     0 - 
+FAIL_OUTPUT:  4 - 01_int_arith 14_env_args 24_ffi 25_numeric_boundaries
+
+=== Output diffs (FAIL_OUTPUT) ===
+--- 01_int_arith ---
+7,8c7,8
+< minBound :: Int = -9223372036854775808
+< maxBound :: Int = 9223372036854775807
+---
+> minBound :: Int = -2147483648
+> maxBound :: Int = 2147483647
+
+--- 14_env_args ---
+2c2
+< getProgName = 14_env_args-host
+---
+> getProgName = ghc-test-bin
+
+--- 24_ffi ---
+1c1
+< getpid = 74402
+---
+> getpid = 1972
+
+--- 25_numeric_boundaries ---
+1,3c1,3
+< maxBound Int = 9223372036854775807
+< maxBound + 1 = -9223372036854775808
+< minBound - 1 = 9223372036854775807
+---
+> maxBound Int = 2147483647
+> maxBound + 1 = -2147483648
+> minBound - 1 = 2147483647
+
