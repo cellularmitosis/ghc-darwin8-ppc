@@ -1,0 +1,87 @@
+diff --git a/compiler/GHC/Rename/Bind.hs b/compiler/GHC/Rename/Bind.hs
+index f0dad944..834affcb 100644
+--- a/compiler/GHC/Rename/Bind.hs
++++ b/compiler/GHC/Rename/Bind.hs
+@@ -70,6 +70,31 @@ import Control.Monad
+ import Data.Foldable      ( toList )
+ import Data.List          ( partition, sortBy )
+ import Data.List.NonEmpty ( NonEmpty(..) )
++import Data.IORef        (IORef, newIORef, atomicModifyIORef')
++import System.IO         (hPutStrLn, stderr, hFlush)
++import System.IO.Unsafe  (unsafePerformIO)
++
++-- PROBE50: drill the renamer's value-binding pass to find
++-- where the [(RecFlag, LHsBinds GhcRn)] becomes truncated
++-- before reaching tcTopBinds.
++
++{-# NOINLINE probe50Counter #-}
++probe50Counter :: IORef Int
++probe50Counter = unsafePerformIO (newIORef 0)
++
++probe50Log :: String -> Int -> ()
++probe50Log site n = unsafePerformIO $ do
++    k <- atomicModifyIORef' probe50Counter (\c -> (c+1, c+1))
++    hPutStrLn stderr $ unwords
++      [ "PROBE50"
++      , "evt=" ++ show k
++      , "site=" ++ site
++      , "n=" ++ show n
++      ]
++    hFlush stderr
++
++probe50TotalBinders :: [(RecFlag, LHsBinds p)] -> Int
++probe50TotalBinders = sum . map (lengthBag . snd)
+ 
+ {-
+ -- ToDo: Put the annotations into the monad, so that they arrive in the proper
+@@ -283,7 +308,9 @@ rnValBindsLHS :: NameMaker
+               -> HsValBinds GhcPs
+               -> RnM (HsValBindsLR GhcRn GhcPs)
+ rnValBindsLHS topP (ValBinds x mbinds sigs)
+-  = do { mbinds' <- mapBagM (wrapLocMA (rnBindLHS topP doc)) mbinds
++  = do { let !_p50_lhs_in = probe50Log "rnValBindsLHS_in_mbinds" (lengthBag mbinds)
++       ; mbinds' <- mapBagM (wrapLocMA (rnBindLHS topP doc)) mbinds
++       ; let !_p50_lhs_out = probe50Log "rnValBindsLHS_after_mapBagM" (lengthBag mbinds')
+        ; return $ ValBinds x mbinds' sigs }
+   where
+     bndrs = collectHsBindsBinders CollNoDictBinders mbinds
+@@ -300,9 +327,13 @@ rnValBindsRHS :: HsSigCtxt
+               -> RnM (HsValBinds GhcRn, DefUses)
+ 
+ rnValBindsRHS ctxt (ValBinds _ mbinds sigs)
+-  = do { (sigs', sig_fvs) <- renameSigs ctxt sigs
++  = do { let !_p50_rhs_in = probe50Log "rnValBindsRHS_in_mbinds" (lengthBag mbinds)
++       ; (sigs', sig_fvs) <- renameSigs ctxt sigs
+        ; binds_w_dus <- mapBagM (rnLBind (mkScopedTvFn sigs')) mbinds
++       ; let !_p50_rhs_bag = probe50Log "rnValBindsRHS_after_mapBagM_binds_w_dus" (lengthBag binds_w_dus)
+        ; let !(anal_binds, anal_dus) = depAnalBinds binds_w_dus
++       ; let !_p50_rhs_grps = probe50Log "rnValBindsRHS_after_depAnal_groups" (length anal_binds)
++       ; let !_p50_rhs_tot = probe50Log "rnValBindsRHS_after_depAnal_total"  (probe50TotalBinders anal_binds)
+ 
+        ; let patsyn_fvs = foldr (unionNameSet . psb_ext) emptyNameSet $
+                           getPatSynBinds anal_binds
+@@ -572,14 +603,17 @@ depAnalBinds :: Bag (LHsBind GhcRn, [Name], Uses)
+ -- Dependency analysis; this is important so that
+ -- unused-binding reporting is accurate
+ depAnalBinds binds_w_dus
+-  = (map get_binds sccs, toOL $ map get_du sccs)
++  = let !_p50_da_bag = probe50Log "depAnalBinds_bag_in"   (lengthBag binds_w_dus)
++        !the_list   = bagToList binds_w_dus
++        !_p50_da_lst = probe50Log "depAnalBinds_list_len" (length the_list)
++        !the_sccs   = depAnal (\(_, defs, _) -> defs)
++                              (\(_, _, uses) -> nonDetEltsUniqSet uses)
++                              -- It's OK to use nonDetEltsUniqSet here as explained in
++                              -- Note [depAnal determinism] in GHC.Types.Name.Env.
++                              the_list
++        !_p50_da_sccs = probe50Log "depAnalBinds_sccs_len" (length the_sccs)
++    in (map get_binds the_sccs, toOL $ map get_du the_sccs)
+   where
+-    sccs = depAnal (\(_, defs, _) -> defs)
+-                   (\(_, _, uses) -> nonDetEltsUniqSet uses)
+-                   -- It's OK to use nonDetEltsUniqSet here as explained in
+-                   -- Note [depAnal determinism] in GHC.Types.Name.Env.
+-                   (bagToList binds_w_dus)
+-
+     get_binds (AcyclicSCC (bind, _, _)) = (NonRecursive, unitBag bind)
+     get_binds (CyclicSCC  binds_w_dus)  = (Recursive, listToBag [b | (b,_,_) <- binds_w_dus])
+ 

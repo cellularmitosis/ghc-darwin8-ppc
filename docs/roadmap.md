@@ -1,6 +1,6 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-05-15 session 49.
+Last reviewed: 2026-05-15 session 50.
 
 ## What's done (baseline)
 
@@ -764,6 +764,34 @@ much smaller than session 17 left it.  See:
   scopes probe50: drill inside `rnValBindsRHS` — hook
   `lengthBag mbinds` at entry, `lengthBag binds_w_dus` after
   `mapBagM rnLBind`, `length anal_binds` after `depAnalBinds`.
+- [`docs/sessions/2026-05-15-session-50-drill-rnValBindsRHS/`](sessions/2026-05-15-session-50-drill-rnValBindsRHS/)
+  — round 32.  **Locus pinned to `Data.Graph.scc` in the Haskell
+  base library.**  Four probe iterations totalling 17 hook sites
+  across `compiler/GHC/Rename/Bind.hs`,
+  `compiler/GHC/Types/Name/Env.hs`, and
+  `compiler/GHC/Data/Graph/Directed.hs`.  v1 (6 hooks in Bind.hs)
+  → `mapBagM rnLBind` correct (8 entries) but `depAnalBinds`
+  drops the count to 3.  v2 (3 hooks in `depAnalBinds`) →
+  `bagToList` correct (8 elements) but `depAnal` returns 3 SCCs.
+  v3 (4 hooks in `depAnal`) → `zip` / `mk_node` / `key_map`
+  correct (graph_nodes=8) but
+  `stronglyConnCompFromEdgedVerticesUniq` drops to 2.  v4 (4
+  hooks in Directed.hs) → `graphFromEdgedVertices` correct
+  (numbered_nodes=8), but `forest = scc (gr_int_graph graph)`
+  returns only 3 trees.  **`Data.Graph.scc` from Haskell base is
+  the bug.**  Dramatic data point: in the nested `swap` binding
+  case, `scc` returns 0 trees from a 1-vertex graph.  Consistent
+  with session 42's CONSTR_2_0 GC corruption (Tree Vertex and
+  [Tree Vertex] cons cells are both CONSTR_2_0).  v0.12.0 ships
+  unchanged; probe applied and reverted; stage2 rebuilt+redeployed
+  clean + smoke-test PASS + baseline tests 30 PASS / 4 FAIL_OUTPUT.
+  Session-50
+  [`HANDOFF.md`](sessions/2026-05-15-session-50-drill-rnValBindsRHS/HANDOFF.md)
+  scopes probe51: isolate `Data.Graph.scc` in a standalone
+  Haskell test program (load a known graph, call scc, print
+  result, run on pmacg5 with -A1m -G1) to confirm a minimal
+  repro independent of GHC's compiler internals; then drill
+  `scc`'s internal DFS / transpose / SCC-derivation steps.
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.

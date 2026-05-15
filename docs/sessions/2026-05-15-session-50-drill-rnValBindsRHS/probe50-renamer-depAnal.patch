@@ -1,0 +1,197 @@
+diff --git a/compiler/GHC/Data/Graph/Directed.hs b/compiler/GHC/Data/Graph/Directed.hs
+index 7a17f23e..c4404c52 100644
+--- a/compiler/GHC/Data/Graph/Directed.hs
++++ b/compiler/GHC/Data/Graph/Directed.hs
+@@ -64,6 +64,29 @@ import Data.Tree
+ import GHC.Types.Unique
+ import GHC.Types.Unique.FM
+ 
++import Data.IORef        (IORef, newIORef, atomicModifyIORef')
++import System.IO         (hPutStrLn, stderr, hFlush)
++import System.IO.Unsafe  (unsafePerformIO)
++
++-- PROBE50 (continued): drill INSIDE
++-- stronglyConnCompFromEdgedVerticesUniq to find where the
++-- SCC computation drops nodes.
++
++{-# NOINLINE probe50DigraphCounter #-}
++probe50DigraphCounter :: IORef Int
++probe50DigraphCounter = unsafePerformIO (newIORef 0)
++
++probe50DGLog :: String -> Int -> ()
++probe50DGLog site n = unsafePerformIO $ do
++    k <- atomicModifyIORef' probe50DigraphCounter (\c -> (c+1, c+1))
++    hPutStrLn stderr $ unwords
++      [ "PROBE50DG"
++      , "evt=" ++ show k
++      , "site=" ++ site
++      , "n=" ++ show n
++      ]
++    hFlush stderr
++
+ {-
+ ************************************************************************
+ *                                                                      *
+@@ -121,9 +144,13 @@ graphFromEdgedVertices
+                                         -- out-list to contain keys which aren't
+                                         -- a vertex key, they are ignored
+         -> Graph (Node key payload)
+-graphFromEdgedVertices _reduceFn []            = emptyGraph
++graphFromEdgedVertices _reduceFn []            =
++  let !_p50dg_e = probe50DGLog "graphFromEdgedVertices_empty_input" 0
++  in emptyGraph
+ graphFromEdgedVertices reduceFn edged_vertices =
+-  Graph graph vertex_fn (key_vertex . key_extractor)
++  let !_p50dg_in = probe50DGLog "graphFromEdgedVertices_in_nodes" (length edged_vertices)
++      !_p50dg_nn = probe50DGLog "graphFromEdgedVertices_numbered_nodes" (length numbered_nodes)
++  in Graph graph vertex_fn (key_vertex . key_extractor)
+   where key_extractor = node_key
+         (bounds, vertex_fn, key_vertex, numbered_nodes) =
+           reduceFn edged_vertices key_extractor
+@@ -288,7 +315,11 @@ We use the order of nodes to normalize the order of edges.
+ -}
+ 
+ stronglyConnCompG :: Graph node -> [SCC node]
+-stronglyConnCompG graph = decodeSccs graph forest
++stronglyConnCompG graph =
++  let !_p50dg_fl = probe50DGLog "stronglyConnCompG_forest_len" (length forest)
++      !result    = decodeSccs graph forest
++      !_p50dg_rs = probe50DGLog "stronglyConnCompG_result_len" (length result)
++  in result
+   where forest = {-# SCC "Digraph.scc" #-} scc (gr_int_graph graph)
+ 
+ decodeSccs :: Graph node -> Forest Vertex -> [SCC node]
+diff --git a/compiler/GHC/Rename/Bind.hs b/compiler/GHC/Rename/Bind.hs
+index f0dad944..834affcb 100644
+--- a/compiler/GHC/Rename/Bind.hs
++++ b/compiler/GHC/Rename/Bind.hs
+@@ -70,6 +70,31 @@ import Control.Monad
+ import Data.Foldable      ( toList )
+ import Data.List          ( partition, sortBy )
+ import Data.List.NonEmpty ( NonEmpty(..) )
++import Data.IORef        (IORef, newIORef, atomicModifyIORef')
++import System.IO         (hPutStrLn, stderr, hFlush)
++import System.IO.Unsafe  (unsafePerformIO)
++
++-- PROBE50: drill the renamer's value-binding pass to find
++-- where the [(RecFlag, LHsBinds GhcRn)] becomes truncated
++-- before reaching tcTopBinds.
++
++{-# NOINLINE probe50Counter #-}
++probe50Counter :: IORef Int
++probe50Counter = unsafePerformIO (newIORef 0)
++
++probe50Log :: String -> Int -> ()
++probe50Log site n = unsafePerformIO $ do
++    k <- atomicModifyIORef' probe50Counter (\c -> (c+1, c+1))
++    hPutStrLn stderr $ unwords
++      [ "PROBE50"
++      , "evt=" ++ show k
++      , "site=" ++ site
++      , "n=" ++ show n
++      ]
++    hFlush stderr
++
++probe50TotalBinders :: [(RecFlag, LHsBinds p)] -> Int
++probe50TotalBinders = sum . map (lengthBag . snd)
+ 
+ {-
+ -- ToDo: Put the annotations into the monad, so that they arrive in the proper
+@@ -283,7 +308,9 @@ rnValBindsLHS :: NameMaker
+               -> HsValBinds GhcPs
+               -> RnM (HsValBindsLR GhcRn GhcPs)
+ rnValBindsLHS topP (ValBinds x mbinds sigs)
+-  = do { mbinds' <- mapBagM (wrapLocMA (rnBindLHS topP doc)) mbinds
++  = do { let !_p50_lhs_in = probe50Log "rnValBindsLHS_in_mbinds" (lengthBag mbinds)
++       ; mbinds' <- mapBagM (wrapLocMA (rnBindLHS topP doc)) mbinds
++       ; let !_p50_lhs_out = probe50Log "rnValBindsLHS_after_mapBagM" (lengthBag mbinds')
+        ; return $ ValBinds x mbinds' sigs }
+   where
+     bndrs = collectHsBindsBinders CollNoDictBinders mbinds
+@@ -300,9 +327,13 @@ rnValBindsRHS :: HsSigCtxt
+               -> RnM (HsValBinds GhcRn, DefUses)
+ 
+ rnValBindsRHS ctxt (ValBinds _ mbinds sigs)
+-  = do { (sigs', sig_fvs) <- renameSigs ctxt sigs
++  = do { let !_p50_rhs_in = probe50Log "rnValBindsRHS_in_mbinds" (lengthBag mbinds)
++       ; (sigs', sig_fvs) <- renameSigs ctxt sigs
+        ; binds_w_dus <- mapBagM (rnLBind (mkScopedTvFn sigs')) mbinds
++       ; let !_p50_rhs_bag = probe50Log "rnValBindsRHS_after_mapBagM_binds_w_dus" (lengthBag binds_w_dus)
+        ; let !(anal_binds, anal_dus) = depAnalBinds binds_w_dus
++       ; let !_p50_rhs_grps = probe50Log "rnValBindsRHS_after_depAnal_groups" (length anal_binds)
++       ; let !_p50_rhs_tot = probe50Log "rnValBindsRHS_after_depAnal_total"  (probe50TotalBinders anal_binds)
+ 
+        ; let patsyn_fvs = foldr (unionNameSet . psb_ext) emptyNameSet $
+                           getPatSynBinds anal_binds
+@@ -572,14 +603,17 @@ depAnalBinds :: Bag (LHsBind GhcRn, [Name], Uses)
+ -- Dependency analysis; this is important so that
+ -- unused-binding reporting is accurate
+ depAnalBinds binds_w_dus
+-  = (map get_binds sccs, toOL $ map get_du sccs)
++  = let !_p50_da_bag = probe50Log "depAnalBinds_bag_in"   (lengthBag binds_w_dus)
++        !the_list   = bagToList binds_w_dus
++        !_p50_da_lst = probe50Log "depAnalBinds_list_len" (length the_list)
++        !the_sccs   = depAnal (\(_, defs, _) -> defs)
++                              (\(_, _, uses) -> nonDetEltsUniqSet uses)
++                              -- It's OK to use nonDetEltsUniqSet here as explained in
++                              -- Note [depAnal determinism] in GHC.Types.Name.Env.
++                              the_list
++        !_p50_da_sccs = probe50Log "depAnalBinds_sccs_len" (length the_sccs)
++    in (map get_binds the_sccs, toOL $ map get_du the_sccs)
+   where
+-    sccs = depAnal (\(_, defs, _) -> defs)
+-                   (\(_, _, uses) -> nonDetEltsUniqSet uses)
+-                   -- It's OK to use nonDetEltsUniqSet here as explained in
+-                   -- Note [depAnal determinism] in GHC.Types.Name.Env.
+-                   (bagToList binds_w_dus)
+-
+     get_binds (AcyclicSCC (bind, _, _)) = (NonRecursive, unitBag bind)
+     get_binds (CyclicSCC  binds_w_dus)  = (Recursive, listToBag [b | (b,_,_) <- binds_w_dus])
+ 
+diff --git a/compiler/GHC/Types/Name/Env.hs b/compiler/GHC/Types/Name/Env.hs
+index 509ea5f7..f84f2157 100644
+--- a/compiler/GHC/Types/Name/Env.hs
++++ b/compiler/GHC/Types/Name/Env.hs
+@@ -45,6 +45,28 @@ import GHC.Types.Unique.FM
+ import GHC.Types.Unique.DFM
+ import GHC.Data.Maybe
+ 
++import Data.IORef        (IORef, newIORef, atomicModifyIORef')
++import System.IO         (hPutStrLn, stderr, hFlush)
++import System.IO.Unsafe  (unsafePerformIO)
++
++-- PROBE50 (continued): drill INSIDE depAnal to find the
++-- step where N input nodes become fewer SCCs.
++
++{-# NOINLINE probe50NameEnvCounter #-}
++probe50NameEnvCounter :: IORef Int
++probe50NameEnvCounter = unsafePerformIO (newIORef 0)
++
++probe50NEnvLog :: String -> Int -> ()
++probe50NEnvLog site n = unsafePerformIO $ do
++    k <- atomicModifyIORef' probe50NameEnvCounter (\c -> (c+1, c+1))
++    hPutStrLn stderr $ unwords
++      [ "PROBE50NE"
++      , "evt=" ++ show k
++      , "site=" ++ site
++      , "n=" ++ show n
++      ]
++    hFlush stderr
++
+ {-
+ ************************************************************************
+ *                                                                      *
+@@ -73,7 +95,12 @@ depAnal :: forall node.
+ --
+ -- The get_defs and get_uses functions are called only once per node
+ depAnal get_defs get_uses nodes
+-  = stronglyConnCompFromEdgedVerticesUniq graph_nodes
++  = let !_p50ne_in = probe50NEnvLog "depAnal_nodes_in"      (length nodes)
++        !_p50ne_kn = probe50NEnvLog "depAnal_keyed_nodes"   (length keyed_nodes)
++        !_p50ne_gn = probe50NEnvLog "depAnal_graph_nodes"   (length graph_nodes)
++        !result    = stronglyConnCompFromEdgedVerticesUniq graph_nodes
++        !_p50ne_rs = probe50NEnvLog "depAnal_scc_result"    (length result)
++    in result
+   where
+     graph_nodes = (map mk_node keyed_nodes) :: [Node Int node]
+     keyed_nodes = nodes `zip` [(1::Int)..]
