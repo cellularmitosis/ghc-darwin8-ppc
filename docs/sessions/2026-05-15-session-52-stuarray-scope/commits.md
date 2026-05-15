@@ -1,6 +1,6 @@
 # Session 52 commits
 
-- _SHA backfilled after commit lands._ — Session 52: **ROOT CAUSE
+- `e7380f7` — Session 52: **ROOT CAUSE
   IDENTIFIED, FIXED, AND DEPLOYED**.  The 32-session-old "compiler
   produces empty .o files" bug is a single upstream library bug in
   `libraries/array/Data/Array/Base.hs`'s
