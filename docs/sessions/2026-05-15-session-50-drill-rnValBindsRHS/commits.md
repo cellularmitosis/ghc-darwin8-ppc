@@ -2,7 +2,7 @@
 
 (SHA backfilled after commit lands.)
 
-- `<TBD>` — Session 50: probe50 in four iterations narrowed the
+- `e072c93` — Session 50: probe50 in four iterations narrowed the
   truncation locus from `rnValBindsRHS` (renamer) down to
   `Data.Graph.scc` in the Haskell base library.  v1 hooked
   `rnValBindsLHS` / `rnValBindsRHS`; v2 drilled `depAnalBinds`;
