@@ -2,7 +2,7 @@
 
 (SHA backfilled after commit lands.)
 
-- `<TBD>` — Session 49: probe49-v1 (13 hooks in
+- `4b61e7d` — Session 49: probe49-v1 (13 hooks in
   `compiler/GHC/Tc/Gen/Bind.hs`) shows the input list arriving at
   `tcTopBinds` is already truncated to 2-3 binders.  Corruption is
   UPSTREAM of the typechecker — in the renamer
