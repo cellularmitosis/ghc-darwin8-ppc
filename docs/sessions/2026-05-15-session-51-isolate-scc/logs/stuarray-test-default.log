@@ -1,0 +1,11 @@
+iter=1493 trueCount=2 bools=[False,False,False,False,True,False,False,True]
+iter=1495 trueCount=1 bools=[False,True,False,False,False,False,False,False]
+iter=1496 trueCount=2 bools=[False,False,False,True,False,False,False,True]
+iter=1497 trueCount=4 bools=[False,False,True,True,True,False,True,False]
+iter=1498 trueCount=4 bools=[False,False,False,True,True,True,True,False]
+iter=1499 trueCount=2 bools=[True,True,False,False,False,False,False,False]
+iter=1500 trueCount=2 bools=[False,False,False,True,False,False,False,True]
+iter=1501 trueCount=2 bools=[True,False,True,False,False,False,False,False]
+iter=1502 trueCount=6 bools=[True,False,True,False,True,True,True,True]
+iter=1503 trueCount=3 bools=[False,False,False,True,False,True,True,False]
+done iters=10001 bad=8431

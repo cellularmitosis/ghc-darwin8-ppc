@@ -1,6 +1,6 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-05-15 session 50.
+Last reviewed: 2026-05-15 session 51.
 
 ## What's done (baseline)
 
@@ -792,6 +792,28 @@ much smaller than session 17 left it.  See:
   result, run on pmacg5 with -A1m -G1) to confirm a minimal
   repro independent of GHC's compiler internals; then drill
   `scc`'s internal DFS / transpose / SCC-derivation steps.
+- [`docs/sessions/2026-05-15-session-51-isolate-scc/`](sessions/2026-05-15-session-51-isolate-scc/)
+  — round 33.  **TRUE MINIMAL REPRO of the 32-session GC bug.**
+  Five test iterations, each stripping the test smaller while
+  keeping the bug reproducible.  Final repro: a 3-line standalone
+  Haskell program calling
+  `newArray False :: ST s (STUArray s Int Bool)` followed by
+  `readArray`.  On pmacg5: 84-87% iterations produce arrays with
+  spurious True bits, despite being newly-allocated and initialized
+  to False.  Host uranium: 0% — confirms PPC32-unreg-specific.  The
+  bug is in GHC's RTS byte-array allocation/zeroing, not in any
+  compiler code.  Reproduces under DEFAULT RTS (not just -A1m -G1).
+  This explains every probe finding from sessions 42-50: session
+  50's `scc` returns wrong forests because `chop`'s `STUArray Bool`
+  is corrupt; session 42's "compiler emits 152-byte empty .o" symptom
+  traces back to this same root cause.  v0.12.0 ships unchanged;
+  no GHC source modifications this session; baseline tests 30 PASS /
+  4 FAIL_OUTPUT.  Session-51
+  [`HANDOFF.md`](sessions/2026-05-15-session-51-isolate-scc/HANDOFF.md)
+  scopes probe52: test other unboxed STUArray types (Int8, Word8,
+  Int, Word, Char), test pinned arrays, test without burnGC (no
+  GC pressure), then read rts/PrimOps.cmm for stg_newByteArrayzh
+  on PPC32 unreg.
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.
