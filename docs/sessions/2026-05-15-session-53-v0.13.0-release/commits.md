@@ -2,15 +2,15 @@
 
 | SHA | Subject |
 |---|---|
-| TBD | v0.13.0: ship the STUArray Bool big-endian fix. |
+| `cf1639f` | v0.13.0: ship the STUArray Bool big-endian fix. |
 
-`v0.13.0` tagged at this commit.
+`v0.13.0` tagged at `cf1639f`.
 
 GitHub release: https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.13.0
 
 Assets:
-- `ghc-9.2.8-stage1-cross-to-ppc-darwin8.tar.xz` (~TODO MB) — stage1 cross-build bindist, with patch 0016 applied to the bundled array library and to every library that transitively depends on it (array, binary, containers, deepseq, exceptions, ghc, ghc-boot, ghc-heap, ghci, hpc, stm, parsec, libiserv, text, haskeline).  Other libraries (Cabal, megaparsec, etc.) didn't depend on `STUArray Bool` so didn't need rebuilding.
-- `ghc-9.2.8-stage2-native-ppc-darwin8.tar.xz` (~14.8 MB) — stage2 PPC-native ghc + wrapper, deployable to `/opt/ghc-stage2/`.  Wrapper no longer needs `+RTS -A1G -RTS`.
+- `ghc-9.2.8-stage1-cross-to-ppc-darwin8.tar.xz` (~213 MB) — stage1 cross-build bindist, with patch 0016 applied to the bundled array library and to every library that hadrian rebuilt as a transitive dependency (array, binary, containers, deepseq, exceptions, ghc, ghc-boot, ghc-heap, ghci, hpc, stm, parsec, libiserv, text, haskeline).  Other libraries (Cabal, megaparsec, etc.) weren't touched by hadrian and ship byte-identical to v0.12.0.
+- `ghc-9.2.8-stage2-native-ppc-darwin8.tar.xz` (~14.1 MB) — stage2 PPC-native ghc + wrapper, deployable to `/opt/ghc-stage2/`.  Wrapper no longer needs `+RTS -A1G -RTS`.
 
 ## Files changed
 
