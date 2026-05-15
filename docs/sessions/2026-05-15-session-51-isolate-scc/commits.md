@@ -2,7 +2,7 @@
 
 (SHA backfilled after commit lands.)
 
-- `<TBD>` — Session 51: TRUE MINIMAL REPRO found.  A 3-line
+- `2784e54` — Session 51: TRUE MINIMAL REPRO found.  A 3-line
   standalone Haskell test —
   `newArray False :: ST s (STUArray s Int Bool)` followed by
   `readArray` — has 84-87% corruption rate on pmacg5 (PPC32
