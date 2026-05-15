@@ -1,6 +1,6 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-05-14 session 48.
+Last reviewed: 2026-05-15 session 49.
 
 ## What's done (baseline)
 
@@ -733,6 +733,37 @@ much smaller than session 17 left it.  See:
   `GHC.Tc.Gen.Bind`) — add per-binder logging to determine
   whether the input list is short or the in-progress bag is
   being lopped wholesale.
+- [`docs/sessions/2026-05-15-session-49-drill-tcTopBinds/`](sessions/2026-05-15-session-49-drill-tcTopBinds/)
+  — round 31.  **Session 49 OVERTURNS session 48 — corruption
+  is BEFORE `tcTopBinds`, in the renamer.**  Probe49-v1 adds
+  13 hook sites inside `compiler/GHC/Tc/Gen/Bind.hs`'s
+  `tcTopBinds`, `tcValBinds`, `tcBindGroups`, and `tc_group`.
+  The crucial new measurement is the INPUT to `tcTopBinds` (the
+  `val_binds` argument).  **Findings:** Clean (-A256m):
+  `tcTopBinds_entry_groups`=8, `entry_total`=8 (matches
+  Big2.hs's 8 top-level bindings).  Failing -A1m -G1 len=600:
+  `entry_groups`=2, `entry_total`=2.  Failing len=1650:
+  `entry_groups`=2, `entry_total`=3 — with one group being a
+  fake Recursive of size 2 (Big2.hs has no mutually recursive
+  bindings; `depAnal` saw a phantom cycle, hinting at
+  structural pointer corruption).  Per-group recursion through
+  `tcBindGroups` / `tc_group` is faithful — whatever input
+  arrives gets processed correctly.  **The list arriving at
+  `tcTopBinds` is ALREADY truncated.**  Session 48's
+  "inside `tcTopBinds`" claim was wrong (it measured the OUTPUT
+  of `tcTopBinds`, not the input).  The truncation is upstream
+  of the typechecker entirely — in the renamer that builds the
+  `HsGroup`'s `hs_valds` field — most likely in
+  `compiler/GHC/Rename/Bind.hs`'s `rnValBindsRHS` (line 298) →
+  `mapBagM (rnLBind …) mbinds` (line 304) → `depAnalBinds`
+  (line 570).  v0.12.0 ships unchanged; probe applied and
+  reverted; stage2 rebuilt+redeployed clean + smoke-test PASS
+  + baseline tests 30 PASS / 4 FAIL_OUTPUT (matches session-48
+  noise floor).  Session-49
+  [`HANDOFF.md`](sessions/2026-05-15-session-49-drill-tcTopBinds/HANDOFF.md)
+  scopes probe50: drill inside `rnValBindsRHS` — hook
+  `lengthBag mbinds` at entry, `lengthBag binds_w_dus` after
+  `mapBagM rnLBind`, `length anal_binds` after `depAnalBinds`.
 
 Earlier "missing PPC memory fences" hypothesis is **dead** under
 our build configuration — non-threaded RTS uses no fences.

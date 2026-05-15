@@ -1,0 +1,134 @@
+diff --git a/compiler/GHC/Tc/Gen/Bind.hs b/compiler/GHC/Tc/Gen/Bind.hs
+index 0046e938..62db03c7 100644
+--- a/compiler/GHC/Tc/Gen/Bind.hs
++++ b/compiler/GHC/Tc/Gen/Bind.hs
+@@ -78,9 +78,34 @@ import qualified GHC.LanguageExtensions as LangExt
+ 
+ import Control.Monad
+ import Data.Foldable (find)
++import Data.IORef        (IORef, newIORef, atomicModifyIORef')
++import System.IO         (hPutStrLn, stderr, hFlush)
++import System.IO.Unsafe  (unsafePerformIO)
+ 
+ #include "HsVersions.h"
+ 
++-- PROBE49: drill INSIDE tcTopBinds to find the loop/recursion
++-- step where the binder count is short-counted from 8 to 2-3.
++
++{-# NOINLINE probe49Counter #-}
++probe49Counter :: IORef Int
++probe49Counter = unsafePerformIO (newIORef 0)
++
++probe49Log :: String -> Int -> ()
++probe49Log site n = unsafePerformIO $ do
++    k <- atomicModifyIORef' probe49Counter (\c -> (c+1, c+1))
++    hPutStrLn stderr $ unwords
++      [ "PROBE49"
++      , "evt=" ++ show k
++      , "site=" ++ site
++      , "n=" ++ show n
++      ]
++    hFlush stderr
++
++-- Total binder count across a [(RecFlag, LHsBinds p)] list.
++probe49TotalBinders :: [(RecFlag, LHsBinds p)] -> Int
++probe49TotalBinders = sum . map (lengthBag . snd)
++
+ {-
+ ************************************************************************
+ *                                                                      *
+@@ -178,11 +203,14 @@ tcTopBinds :: [(RecFlag, LHsBinds GhcRn)] -> [LSig GhcRn]
+ -- The TcGblEnv contains the new tcg_binds and tcg_spects
+ -- The TcLclEnv has an extended type envt for the new bindings
+ tcTopBinds binds sigs
+-  = do  { -- Pattern synonym bindings populate the global environment
+-          (binds', (tcg_env, tcl_env)) <- tcValBinds TopLevel binds sigs $
++  = do  { let { !_p49_e_g = probe49Log "tcTopBinds_entry_groups" (length binds)
++              ; !_p49_e_t = probe49Log "tcTopBinds_entry_total"  (probe49TotalBinders binds) }
++          -- Pattern synonym bindings populate the global environment
++        ; (binds', (tcg_env, tcl_env)) <- tcValBinds TopLevel binds sigs $
+             do { gbl <- getGblEnv
+                ; lcl <- getLclEnv
+                ; return (gbl, lcl) }
++        ; let { !_p49_v = probe49Log "tcTopBinds_after_tcValBinds" (probe49TotalBinders binds') }
+         ; specs <- tcImpPrags sigs   -- SPECIALISE prags for imported Ids
+ 
+         ; complete_matches <- setEnvs (tcg_env, tcl_env) $ tcCompleteSigs sigs
+@@ -304,11 +332,12 @@ tcValBinds :: TopLevelFlag
+            -> TcM ([(RecFlag, LHsBinds GhcTc)], thing)
+ 
+ tcValBinds top_lvl binds sigs thing_inside
+-  = do  {   -- Typecheck the signatures
++  = do  { let { !_p49_vb_e = probe49Log "tcValBinds_entry_total" (probe49TotalBinders binds) }
++            -- Typecheck the signatures
+             -- It's easier to do so now, once for all the SCCs together
+             -- because a single signature  f,g :: <type>
+             -- might relate to more than one SCC
+-          (poly_ids, sig_fn) <- tcAddPatSynPlaceholders patsyns $
++        ; (poly_ids, sig_fn) <- tcAddPatSynPlaceholders patsyns $
+                                 tcTySigs sigs
+ 
+         -- Extend the envt right away with all the Ids
+@@ -329,6 +358,8 @@ tcValBinds top_lvl binds sigs thing_inside
+                     ; let extra_binds = [ (NonRecursive, builder)
+                                         | builder <- patsyn_builders ]
+                     ; return (extra_binds, thing) }
++        ; let { !_p49_vb_bg = probe49Log "tcValBinds_after_tcBindGroups" (probe49TotalBinders binds')
++              ; !_p49_vb_x  = probe49Log "tcValBinds_exit_total"         (probe49TotalBinders (binds' ++ extra_binds')) }
+         ; return (binds' ++ extra_binds', thing) }}
+   where
+     patsyns = getPatSynBinds binds
+@@ -345,16 +376,20 @@ tcBindGroups :: TopLevelFlag -> TcSigFun -> TcPragEnv
+ -- ignoring type signatures (that part comes later)
+ 
+ tcBindGroups _ _ _ [] thing_inside
+-  = do  { thing <- thing_inside
++  = do  { let { !_p49_bg_done = probe49Log "tcBindGroups_recursion_done" 0 }
++        ; thing <- thing_inside
+         ; return ([], thing) }
+ 
+ tcBindGroups top_lvl sig_fn prag_fn (group : groups) thing_inside
+-  = do  { -- See Note [Closed binder groups]
+-          type_env <- getLclTypeEnv
++  = do  { let { !_p49_bg_in = probe49Log "tcBindGroups_in_groupsize" (lengthBag (snd group))
++              ; !_p49_bg_rm = probe49Log "tcBindGroups_in_remaining" (length groups) }
++          -- See Note [Closed binder groups]
++        ; type_env <- getLclTypeEnv
+         ; let closed = isClosedBndrGroup type_env (snd group)
+         ; (group', (groups', thing))
+                 <- tc_group top_lvl sig_fn prag_fn group closed $
+                    tcBindGroups top_lvl sig_fn prag_fn groups thing_inside
++        ; let { !_p49_bg_out = probe49Log "tcBindGroups_out_groupsize" (probe49TotalBinders group') }
+         ; return (group' ++ groups', thing) }
+ 
+ -- Note [Closed binder groups]
+@@ -388,12 +423,14 @@ tc_group top_lvl sig_fn prag_fn (NonRecursive, binds) closed thing_inside
+         -- A single non-recursive binding
+         -- We want to keep non-recursive things non-recursive
+         -- so that we desugar unlifted bindings correctly
+-  = do { let bind = case bagToList binds of
++  = do { let { !_p49_nr_in = probe49Log "tc_group_nonrec_in" (lengthBag binds) }
++       ; let bind = case bagToList binds of
+                  [bind] -> bind
+                  []     -> panic "tc_group: empty list of binds"
+                  _      -> panic "tc_group: NonRecursive binds is not a singleton bag"
+        ; (bind', thing) <- tc_single top_lvl sig_fn prag_fn bind closed
+                                      thing_inside
++       ; let { !_p49_nr_out = probe49Log "tc_group_nonrec_out" (lengthBag bind') }
+        ; return ( [(NonRecursive, bind')], thing) }
+ 
+ tc_group top_lvl sig_fn prag_fn (Recursive, binds) closed thing_inside
+@@ -402,10 +439,12 @@ tc_group top_lvl sig_fn prag_fn (Recursive, binds) closed thing_inside
+         -- any references to variables with type signatures.
+         -- (This used to be optional, but isn't now.)
+         -- See Note [Polymorphic recursion] in "GHC.Hs.Binds".
+-    do  { traceTc "tc_group rec" (pprLHsBinds binds)
++    do  { let { !_p49_rr_in = probe49Log "tc_group_rec_in" (lengthBag binds) }
++        ; traceTc "tc_group rec" (pprLHsBinds binds)
+         ; whenIsJust mbFirstPatSyn $ \lpat_syn ->
+             recursivePatSynErr (locA $ getLoc lpat_syn) binds
+         ; (binds1, thing) <- go sccs
++        ; let { !_p49_rr_out = probe49Log "tc_group_rec_out" (lengthBag binds1) }
+         ; return ([(Recursive, binds1)], thing) }
+                 -- Rec them all together
+   where
