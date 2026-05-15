@@ -1,0 +1,22 @@
+# Session 52 size_test: count=3000
+## STUArray Bool (bit-packed)
+STUArray Bool    sz=8 iters=3000 bad=1495
+STUArray Bool    sz=16 iters=3000 bad=2989
+STUArray Bool    sz=32 iters=3000 bad=0
+STUArray Bool    sz=64 iters=3000 bad=0
+STUArray Bool    sz=128 iters=3000 bad=0
+STUArray Bool    sz=256 iters=3000 bad=0
+STUArray Bool    sz=512 iters=3000 bad=0
+## STUArray Word8 (one byte each)
+STUArray Word8   sz=1 iters=3000 bad=0
+STUArray Word8   sz=2 iters=3000 bad=0
+STUArray Word8   sz=4 iters=3000 bad=0
+STUArray Word8   sz=8 iters=3000 bad=0
+STUArray Word8   sz=16 iters=3000 bad=0
+STUArray Word8   sz=32 iters=3000 bad=0
+STUArray Word8   sz=64 iters=3000 bad=0
+## STUArray Int (4 bytes each on PPC32)
+STUArray Int     sz=1 iters=3000 bad=0
+STUArray Int     sz=2 iters=3000 bad=0
+STUArray Int     sz=4 iters=3000 bad=0
+STUArray Int     sz=8 iters=3000 bad=0

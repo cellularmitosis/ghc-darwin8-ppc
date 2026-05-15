@@ -1,0 +1,7 @@
+# Session 52 nogc_test: sz=8 count=10000 (no burnGC)
+iter=1500 bools=[True,False,False,True,False,True,True,True]
+iter=1501 bools=[False,False,False,True,False,True,False,False]
+iter=1502 bools=[False,True,False,False,False,False,False,False]
+iter=1503 bools=[True,False,True,False,True,False,False,True]
+iter=1504 bools=[False,False,False,False,True,True,True,False]
+nogc done iters=10000 bad=8365

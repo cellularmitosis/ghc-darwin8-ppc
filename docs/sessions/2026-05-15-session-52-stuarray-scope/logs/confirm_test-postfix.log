@@ -1,0 +1,11 @@
+# Session 52 confirm_test: count=2000
+## Prediction (1): newArray True sz=8 should see Falses on BE
+newArray True  init=True sz=8 iters=2000 bad=0 idxHist=[]
+## Prediction (2): newArray False sz=24 should see Trues on BE
+newArray False init=False sz=24 iters=2000 bad=0 idxHist=[]
+## Prediction (3): newArray False sz=32 should be clean
+newArray False init=False sz=32 iters=2000 bad=0 idxHist=[]
+## Prediction (4): newArray False sz=33 should fail at index 32+
+newArray False init=False sz=33 iters=2000 bad=0 idxHist=[]
+## Prediction: newArray False sz=40 should fail at index 32..39 (byte 7)
+newArray False init=False sz=40 iters=2000 bad=0 idxHist=[]

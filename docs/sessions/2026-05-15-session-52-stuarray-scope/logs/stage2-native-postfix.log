@@ -1,0 +1,20 @@
+=== ghc --version ===
+The Glorious Glasgow Haskell Compilation System, version 9.2.8
+
+=== ghc -c NoMain.hs (Typeable-free non-main module) ===
+-rw-r--r--   1 macuser  wheel   689 May 15 11:42 NoMain.hi
+-rw-r--r--   1 macuser  wheel  2060 May 15 11:42 NoMain.o
+
+=== ghc -c -dno-typeable-binds NoMain.hs ===
+compilation IS NOT required
+-rw-r--r--   1 macuser  wheel   689 May 15 11:42 NoMain.hi
+-rw-r--r--   1 macuser  wheel  2060 May 15 11:42 NoMain.o
+
+=== ghc Hello.hs -o hello (full main module) ===
+[1 of 1] Compiling Main             ( Hello.hs, Hello.o )
+Linking hello ...
+ld: warning: object file compiled with -mlong-branch which is no longer needed. To remove this warning, recompile without -mlong-branch: /Developer/SDKs/MacOSX10.4u.sdk/usr/lib/crt1.o
+ld: warning: duplicate dylib /opt/gcc14/lib/libgcc_s.1.dylib
+
+=== ./hello ===
+hello from native stage2 ghc on Tiger

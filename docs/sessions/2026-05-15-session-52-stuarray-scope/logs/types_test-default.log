@@ -1,0 +1,9 @@
+# Session 52 types_test: sz=8 count=5000
+STUArray Bool    iters=5000 bad=3487 firstFew=[(1494,3),(1495,4),(1496,2)]
+STUArray Int8    iters=5000 bad=0 firstFew=[]
+STUArray Word8   iters=5000 bad=0 firstFew=[]
+STUArray Int     iters=5000 bad=0 firstFew=[]
+STUArray Word    iters=5000 bad=0 firstFew=[]
+STUArray Char    iters=5000 bad=0 firstFew=[]
+STUArray Word32  iters=5000 bad=0 firstFew=[]
+STArray  Int     iters=5000 bad=0 firstFew=[]

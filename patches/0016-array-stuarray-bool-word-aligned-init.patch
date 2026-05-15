@@ -1,0 +1,114 @@
+From: ghc-darwin8-ppc project
+Subject: [PATCH] array: word-align STUArray Bool's setByteArray# zeroing
+
+ghc-darwin8-ppc: `STUArray Bool` is bit-packed but its `unsafeRead`
+and `unsafeWrite` access memory via `readWordArray#` / `writeWordArray#`
+at full-word granularity, while `newArray`'s `setByteArray#` only
+initialises `bOOL_SCALE n = ceil(n/8)` bytes.  For any size that does
+not align to a full machine word the trailing partial-word bytes are
+left at whatever `newByteArray#` returned -- i.e. uninitialised heap
+memory.
+
+On big-endian targets (PPC32, SPARC, ...) the bit corresponding to
+element 0 of the first word lives in the *last* memory byte of that
+word, so `setByteArray#` writing only the low-address bytes zeroes
+the wrong end and **every** read of elements 0..(SIZEOF_HSWORD*8 - 1)
+of a sub-word `STUArray Bool` returns garbage.  The same problem
+exists on little-endian targets for any size that doesn't align to a
+full word (e.g. n=33 on 32-bit leaves bytes 5..7 of the second word
+uninitialised, so elements 33..63 read garbage), but has gone
+unnoticed because nursery allocations on 64-bit-LE platforms tend to
+return zeroed pages that mask the issue.
+
+The fix is to round the byte count up to a whole machine word for both
+the `newByteArray#` allocation and the `setByteArray#` zeroing call.
+`newByteArray# n` already rounds its payload up to a word internally,
+so passing the rounded byte count to both is safe.
+
+A 3-line standalone reproducer (sz=8, init=False) reproduces on
+pmacg5 (PPC32 unreg) at an ~84% rate under default RTS and 87% under
+`-A1m -G1`; the fix drops both to 0/10001 iterations.  After
+redeploying stage2 with the fix, the Big2.hs stage2-compile reproducer
+that produced 152-byte empty .o files for the past ten sessions now
+produces a fully-populated 46340-byte .o under both default RTS and
+`-A1m -G1`.  See `docs/sessions/2026-05-15-session-52-stuarray-scope`
+for the bisection and minimal repros that pinned this.
+
+This is an upstream GHC bug, not a port-specific one -- the broken
+code is identical in current GHC HEAD.  This patch is appropriate for
+upstream submission once a smaller test case is prepared.
+
+--- a/libraries/array/Data/Array/Base.hs
++++ b/libraries/array/Data/Array/Base.hs
+@@ -1031,16 +1031,21 @@ instance MArray (STUArray s) Bool (ST s) where
+     {-# INLINE getNumElements #-}
+     getNumElements (STUArray _ _ n _) = return n
+     {-# INLINE newArray #-}
++    -- See Note [STUArray Bool word-aligned initialization]
+     newArray (l,u) initialValue = ST $ \s1# ->
+-        case safeRangeSize (l,u)                   of { n@(I# n#) ->
+-        case bOOL_SCALE n#                         of { nbytes# ->
+-        case newByteArray# nbytes# s1#             of { (# s2#, marr# #) ->
+-        case setByteArray# marr# 0# nbytes# e# s2# of { s3# ->
++        case safeRangeSize (l,u)                          of { n@(I# n#) ->
++        case bOOL_WORD_SCALE n#                           of { nbytes# ->
++        case newByteArray# nbytes# s1#                    of { (# s2#, marr# #) ->
++        case setByteArray# marr# 0# nbytes# e# s2#        of { s3# ->
+         (# s3#, STUArray l u n marr# #) }}}}
+       where
+         !(I# e#) = if initialValue then 0xff else 0x0
+     {-# INLINE unsafeNewArray_ #-}
+-    unsafeNewArray_ (l,u) = unsafeNewArraySTUArray_ (l,u) bOOL_SCALE
++    -- Allocate a word-rounded number of bytes so the trailing partial
++    -- word's bits never read uninitialised memory through unsafeRead /
++    -- unsafeWrite, which work at word granularity.  See Note [STUArray
++    -- Bool word-aligned initialization].
++    unsafeNewArray_ (l,u) = unsafeNewArraySTUArray_ (l,u) bOOL_WORD_SCALE
+     {-# INLINE newArray_ #-}
+     newArray_ arrBounds = newArray arrBounds False
+     {-# INLINE unsafeRead #-}
+@@ -1355,6 +1360,44 @@ wORD_SCALE   n# = safe_scale scale# n# where !(I# scale#) = SIZEOF_HSWORD
+ dOUBLE_SCALE n# = safe_scale scale# n# where !(I# scale#) = SIZEOF_HSDOUBLE
+ fLOAT_SCALE  n# = safe_scale scale# n# where !(I# scale#) = SIZEOF_HSFLOAT
+
++-- Note [STUArray Bool word-aligned initialization]
++-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++-- @STUArray Bool@ is bit-packed: the @MArray@ instance's @unsafeRead@
++-- and @unsafeWrite@ use @readWordArray#@ / @writeWordArray#@, which
++-- operate at full-word granularity (@SIZEOF_HSWORD@ bytes).  The byte
++-- count returned by @bOOL_SCALE@ is @ceil(n/8)@, which for @n < 32@ on
++-- a 32-bit target (or @n < 64@ on a 64-bit target) is strictly less
++-- than one machine word.  @newByteArray#@ does *not* zero its payload,
++-- so any bytes within the trailing partial word that @setByteArray#@
++-- did not write contain stale heap memory.  On big-endian targets the
++-- bit corresponding to element 0 of the first word lives in the *last*
++-- byte of that word in memory, so @setByteArray#@ writing only the
++-- low-address bytes zeros the wrong end and every read of elements
++-- 0..(SIZEOF_HSWORD * 8 - 1) returns garbage.  On little-endian
++-- targets the same problem exists for any size that does not align to
++-- a full word (e.g. n=33 on a 32-bit target leaves bytes 5..7 of the
++-- second word uninitialised, so elements 33..63 read garbage).  The
++-- bug had not been observed because nursery allocations on the more
++-- common 64-bit-LE platforms tended to return zeroed pages, masking
++-- the issue.  See session 52 of the ghc-darwin8-ppc project for the
++-- bisection and minimal repro that pinned this.
++--
++-- The fix is to round @bOOL_SCALE@'s byte count up to a whole word
++-- when allocating *and* when calling @setByteArray#@, so the trailing
++-- partial word is always fully initialized.  @newByteArray#@ already
++-- rounds its payload up to a word boundary internally, so the rounded
++-- byte count fits within the allocated region.
++bOOL_WORD_SCALE :: Int# -> Int#
++#if SIZEOF_HSWORD == 4
++-- (n + 31) >> 5 words * 4 bytes/word
++bOOL_WORD_SCALE n# = ((n# +# 31#) `uncheckedIShiftRA#` 5#) `uncheckedIShiftL#` 2#
++#elif SIZEOF_HSWORD == 8
++-- (n + 63) >> 6 words * 8 bytes/word
++bOOL_WORD_SCALE n# = ((n# +# 63#) `uncheckedIShiftRA#` 6#) `uncheckedIShiftL#` 3#
++#else
++# error "unsupported SIZEOF_HSWORD"
++#endif
++
+ safe_scale :: Int# -> Int# -> Int#
+ safe_scale scale# n#
+   | not overflow = res#
