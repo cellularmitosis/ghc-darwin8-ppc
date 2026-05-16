@@ -1,0 +1,345 @@
+
+==================== Proto-BCOs ====================
+2026-05-16 07:57:35.025632 UTC
+
+ProtoBCO Ghci2.$trModule#0 []:
+   CCS_DONT_CARE GHC.Types.Module! [$trModule2_rWT $trModule4_rWV]
+   bitmap:  0 []
+   PUSH_G   $trModule4_rWV
+   PUSH_G   $trModule2_rWT
+   PACK     GHC.Types.Module 2
+   ENTER
+ 
+ProtoBCO $trModule2_rWT#0 []:
+   CCS_DONT_CARE GHC.Types.TrNameS! [$trModule1_rWH]
+   bitmap:  0 []
+   PUSH_UBX32 255881744##
+   PACK     GHC.Types.TrNameS 1
+   ENTER
+ 
+ProtoBCO $trModule4_rWV#0 []:
+   CCS_DONT_CARE GHC.Types.TrNameS! [$trModule3_rWU]
+   bitmap:  0 []
+   PUSH_UBX32 255881728##
+   PACK     GHC.Types.TrNameS 1
+   ENTER
+ 
+ProtoBCO Ghci2.fac#1 []:
+   \r [ds_sWX] let sat_sWY = ... in ...
+   bitmap:  1 [0]
+   PUSH_UBX32 0#
+   PACK     GHC.Num.Integer.IS 1
+   PUSH_ALTS
+     ProtoBCO wild_sWZ#0 []:
+        { GHC.Types.False -> let sat_sX2 = ... in ...
+        ; GHC.Types.True -> GHC.Num.Integer.IS [1#]
+        bitmap:  2 [0]
+        TESTLT_P 1 __lbl:1
+        ALLOC_AP    1
+        PUSH32_W   20
+        PUSH_BCO
+          ProtoBCO sat_sX2#1 []:
+             \u [] let sat_sX1 = ... in ...
+             bitmap:  1 [0]
+             ALLOC_AP    1
+             PUSH32_W   4
+             PUSH_BCO
+               ProtoBCO sat_sX1#1 []:
+                  \u [] let sat_sX0 = ... in ...
+                  bitmap:  1 [0]
+                  PUSH_UBX32 1#
+                  PACK     GHC.Num.Integer.IS 1
+                  PUSH32_W   0
+                  PUSH32_W   8
+                  PUSH_G   GHC.Num.$fNumInteger
+                  PUSH_APPLY_PPP
+                  PUSH_G   GHC.Num.-
+                  SLIDE    5 2
+                  ENTER
+             MKAP     1 words, 2 stkoff
+             PUSH32_W   0
+             PUSH_APPLY_P
+             PUSH_G   Ghci2.fac
+             SLIDE    3 2
+             ENTER
+        MKAP     1 words, 2 stkoff
+        PUSH32_W   0
+        PUSH32_W   24
+        PUSH_G   GHC.Num.$fNumInteger
+        PUSH_APPLY_PPP
+        PUSH_G   GHC.Num.*
+        SLIDE    5 6
+        ENTER
+        __lbl:1:
+        PUSH_UBX32 1#
+        PACK     GHC.Num.Integer.IS 1
+        SLIDE    1 5
+        ENTER
+   PUSH32_W   8
+   PUSH32_W   16
+   PUSH_G   GHC.Num.Integer.$fEqInteger
+   PUSH_APPLY_PPP
+   PUSH_G   GHC.Classes.==
+   ENTER
+
+
+==================== Proto-BCOs ====================
+2026-05-16 07:57:35.160179 UTC
+
+ProtoBCO BCO_toplevel_E0#0 []:
+   \u [] let sat_s15h = ... in ...
+   bitmap:  0 []
+   ALLOC_PAP    1 0
+   PUSH_BCO
+     ProtoBCO sat_s15h#1 []:
+        \r [it_s15d] let sat_s15g = ... in ...
+        bitmap:  1 [0]
+        ALLOC_AP    1
+        PUSH32_W   4
+        PUSH_BCO
+          ProtoBCO sat_s15g#1 []:
+             \u [] let sat_s15f = ... in ...
+             bitmap:  1 [0]
+             PUSH_G   GHC.Types.[]
+             PUSH32   4
+             PACK     : 2
+             PUSH32_W   0
+             PUSH_APPLY_P
+             PUSH_G   GHC.Base.returnIO
+             SLIDE    3 2
+             ENTER
+        MKAP     1 words, 2 stkoff
+        ALLOC_AP    1
+        PUSH32_W   8
+        PUSH_BCO
+          ProtoBCO sat_s15e#1 []:
+             \u [] System.IO.print GHC.Show.$fShowBool it_s15d
+             bitmap:  1 [0]
+             PUSH32_W   0
+             PUSH_G   GHC.Show.$fShowBool
+             PUSH_APPLY_PP
+             PUSH_G   System.IO.print
+             SLIDE    4 1
+             ENTER
+        MKAP     1 words, 2 stkoff
+        PUSH32_W   4
+        PUSH32_W   4
+        PUSH_APPLY_PP
+        PUSH_G   GHC.Base.thenIO
+        SLIDE    4 3
+        ENTER
+   MKPAP    0 words, 1 stkoff
+   ALLOC_AP    0
+   PUSH_BCO
+     ProtoBCO sat_s15c#0 []:
+        \u [] let sat_s15b = ... in ...
+        bitmap:  0 []
+        ALLOC_AP    0
+        PUSH_BCO
+          ProtoBCO sat_s15b#0 []:
+             \u [] let sat_s15a = ... in ...
+             bitmap:  0 []
+             ALLOC_AP    0
+             PUSH_BCO
+               ProtoBCO sat_s15a#0 []:
+                  \u [] GHC.CString.unpackCString# "T17500.dump-BCOs"#
+                  bitmap:  0 []
+                  PUSH_UBX32 "T17500.dump-BCOs"#
+                  PUSH_APPLY_N
+                  PUSH_G   GHC.CString.unpackCString#
+                  ENTER
+             MKAP     0 words, 1 stkoff
+             PUSH32_W   0
+             PUSH_APPLY_P
+             PUSH_G   T17500.isBCOsFile
+             SLIDE    3 1
+             ENTER
+        MKAP     0 words, 1 stkoff
+        PUSH32_W   0
+        PUSH_G   GHC.GHCi.$fGHCiSandboxIOIO
+        PUSH_APPLY_PP
+        PUSH_G   GHC.GHCi.ghciStepIO
+        SLIDE    4 1
+        ENTER
+   MKAP     0 words, 1 stkoff
+   PUSH32_W   4
+   PUSH32_W   4
+   PUSH_APPLY_PP
+   PUSH_G   GHC.Base.bindIO
+   SLIDE    4 2
+   ENTER
+
+
+==================== Proto-BCOs ====================
+2026-05-16 07:57:35.268742 UTC
+
+ProtoBCO BCO_toplevel_E0#0 []:
+   \u [] let sat_s15Q = ... in ...
+   bitmap:  0 []
+   ALLOC_PAP    1 0
+   PUSH_BCO
+     ProtoBCO sat_s15Q#1 []:
+        \r [it_s15M] let sat_s15P = ... in ...
+        bitmap:  1 [0]
+        ALLOC_AP    1
+        PUSH32_W   4
+        PUSH_BCO
+          ProtoBCO sat_s15P#1 []:
+             \u [] let sat_s15O = ... in ...
+             bitmap:  1 [0]
+             PUSH_G   GHC.Types.[]
+             PUSH32   4
+             PACK     : 2
+             PUSH32_W   0
+             PUSH_APPLY_P
+             PUSH_G   GHC.Base.returnIO
+             SLIDE    3 2
+             ENTER
+        MKAP     1 words, 2 stkoff
+        ALLOC_AP    1
+        PUSH32_W   8
+        PUSH_BCO
+          ProtoBCO sat_s15N#1 []:
+             \u [] System.IO.print GHC.Show.$fShowBool it_s15M
+             bitmap:  1 [0]
+             PUSH32_W   0
+             PUSH_G   GHC.Show.$fShowBool
+             PUSH_APPLY_PP
+             PUSH_G   System.IO.print
+             SLIDE    4 1
+             ENTER
+        MKAP     1 words, 2 stkoff
+        PUSH32_W   4
+        PUSH32_W   4
+        PUSH_APPLY_PP
+        PUSH_G   GHC.Base.thenIO
+        SLIDE    4 3
+        ENTER
+   MKPAP    0 words, 1 stkoff
+   ALLOC_AP    0
+   PUSH_BCO
+     ProtoBCO sat_s15L#0 []:
+        \u [] let sat_s15K = ... in ...
+        bitmap:  0 []
+        ALLOC_AP    0
+        PUSH_BCO
+          ProtoBCO sat_s15K#0 []:
+             \u [] let sat_s15J = ... in ...
+             bitmap:  0 []
+             ALLOC_AP    0
+             PUSH_BCO
+               ProtoBCO sat_s15J#0 []:
+                  \u [] GHC.CString.unpackCString# "Ghci1.dump-BCOs"#
+                  bitmap:  0 []
+                  PUSH_UBX32 "Ghci1.dump-BCOs"#
+                  PUSH_APPLY_N
+                  PUSH_G   GHC.CString.unpackCString#
+                  ENTER
+             MKAP     0 words, 1 stkoff
+             PUSH32_W   0
+             PUSH_APPLY_P
+             PUSH_G   T17500.isBCOsFile
+             SLIDE    3 1
+             ENTER
+        MKAP     0 words, 1 stkoff
+        PUSH32_W   0
+        PUSH_G   GHC.GHCi.$fGHCiSandboxIOIO
+        PUSH_APPLY_PP
+        PUSH_G   GHC.GHCi.ghciStepIO
+        SLIDE    4 1
+        ENTER
+   MKAP     0 words, 1 stkoff
+   PUSH32_W   4
+   PUSH32_W   4
+   PUSH_APPLY_PP
+   PUSH_G   GHC.Base.bindIO
+   SLIDE    4 2
+   ENTER
+
+
+==================== Proto-BCOs ====================
+2026-05-16 07:57:35.362798 UTC
+
+ProtoBCO BCO_toplevel_E0#0 []:
+   \u [] let sat_s16p = ... in ...
+   bitmap:  0 []
+   ALLOC_PAP    1 0
+   PUSH_BCO
+     ProtoBCO sat_s16p#1 []:
+        \r [it_s16l] let sat_s16o = ... in ...
+        bitmap:  1 [0]
+        ALLOC_AP    1
+        PUSH32_W   4
+        PUSH_BCO
+          ProtoBCO sat_s16o#1 []:
+             \u [] let sat_s16n = ... in ...
+             bitmap:  1 [0]
+             PUSH_G   GHC.Types.[]
+             PUSH32   4
+             PACK     : 2
+             PUSH32_W   0
+             PUSH_APPLY_P
+             PUSH_G   GHC.Base.returnIO
+             SLIDE    3 2
+             ENTER
+        MKAP     1 words, 2 stkoff
+        ALLOC_AP    1
+        PUSH32_W   8
+        PUSH_BCO
+          ProtoBCO sat_s16m#1 []:
+             \u [] System.IO.print GHC.Show.$fShowBool it_s16l
+             bitmap:  1 [0]
+             PUSH32_W   0
+             PUSH_G   GHC.Show.$fShowBool
+             PUSH_APPLY_PP
+             PUSH_G   System.IO.print
+             SLIDE    4 1
+             ENTER
+        MKAP     1 words, 2 stkoff
+        PUSH32_W   4
+        PUSH32_W   4
+        PUSH_APPLY_PP
+        PUSH_G   GHC.Base.thenIO
+        SLIDE    4 3
+        ENTER
+   MKPAP    0 words, 1 stkoff
+   ALLOC_AP    0
+   PUSH_BCO
+     ProtoBCO sat_s16k#0 []:
+        \u [] let sat_s16j = ... in ...
+        bitmap:  0 []
+        ALLOC_AP    0
+        PUSH_BCO
+          ProtoBCO sat_s16j#0 []:
+             \u [] let sat_s16i = ... in ...
+             bitmap:  0 []
+             ALLOC_AP    0
+             PUSH_BCO
+               ProtoBCO sat_s16i#0 []:
+                  \u [] GHC.CString.unpackCString# "Ghci2.dump-BCOs"#
+                  bitmap:  0 []
+                  PUSH_UBX32 "Ghci2.dump-BCOs"#
+                  PUSH_APPLY_N
+                  PUSH_G   GHC.CString.unpackCString#
+                  ENTER
+             MKAP     0 words, 1 stkoff
+             PUSH32_W   0
+             PUSH_APPLY_P
+             PUSH_G   T17500.isBCOsFile
+             SLIDE    3 1
+             ENTER
+        MKAP     0 words, 1 stkoff
+        PUSH32_W   0
+        PUSH_G   GHC.GHCi.$fGHCiSandboxIOIO
+        PUSH_APPLY_PP
+        PUSH_G   GHC.GHCi.ghciStepIO
+        SLIDE    4 1
+        ENTER
+   MKAP     0 words, 1 stkoff
+   PUSH32_W   4
+   PUSH32_W   4
+   PUSH_APPLY_PP
+   PUSH_G   GHC.Base.bindIO
+   SLIDE    4 2
+   ENTER
+

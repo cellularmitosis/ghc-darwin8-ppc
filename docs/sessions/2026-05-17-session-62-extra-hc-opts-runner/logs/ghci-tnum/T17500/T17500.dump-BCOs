@@ -1,0 +1,99 @@
+
+==================== Proto-BCOs ====================
+2026-05-16 07:57:34.793693 UTC
+
+ProtoBCO T17500.$trModule#0 []:
+   CCS_DONT_CARE GHC.Types.Module! [$trModule2_rSG $trModule4_rSI]
+   bitmap:  0 []
+   PUSH_G   $trModule4_rSI
+   PUSH_G   $trModule2_rSG
+   PACK     GHC.Types.Module 2
+   ENTER
+ 
+ProtoBCO $trModule2_rSG#0 []:
+   CCS_DONT_CARE GHC.Types.TrNameS! [$trModule1_rSz]
+   bitmap:  0 []
+   PUSH_UBX32 255881568##
+   PACK     GHC.Types.TrNameS 1
+   ENTER
+ 
+ProtoBCO $trModule4_rSI#0 []:
+   CCS_DONT_CARE GHC.Types.TrNameS! [$trModule3_rSH]
+   bitmap:  0 []
+   PUSH_UBX32 255881488##
+   PACK     GHC.Types.TrNameS 1
+   ENTER
+ 
+ProtoBCO T17500.isBCOsFile#1 []:
+   \r [fname_sSK] break<3>(fname_sSK) let sat_sSQ = ... in ...
+   bitmap:  1 [0]
+   BRK_FUN 3 $1cP <cc>
+   ALLOC_PAP    1 0
+   PUSH_BCO
+     ProtoBCO sat_sSQ#1 []:
+        \r [content_sSM] break<2>(content_sSM) let sat_sSP = ... in ...
+        bitmap:  1 [0]
+        BRK_FUN 2 $1cP <cc>
+        ALLOC_AP    1
+        PUSH32_W   4
+        PUSH_BCO
+          ProtoBCO sat_sSP#1 []:
+             \u [] break<1>(content_sSM) let sat_sSO = ... in ...
+             bitmap:  1 [0]
+             BRK_FUN 1 $1cP <cc>
+             ALLOC_AP    0
+             PUSH_BCO
+               ProtoBCO sat_sSO#0 []:
+                  \u [] GHC.CString.unpackCString# "== Proto-BCOs =="#
+                  bitmap:  0 []
+                  PUSH_UBX32 "== Proto-BCOs =="#
+                  PUSH_APPLY_N
+                  PUSH_G   GHC.CString.unpackCString#
+                  ENTER
+             MKAP     0 words, 1 stkoff
+             PUSH32_W   4
+             PUSH32_W   4
+             PUSH_G   GHC.Classes.$fEqChar
+             PUSH_APPLY_PPP
+             PUSH_G   Data.OldList.isInfixOf
+             SLIDE    5 2
+             ENTER
+        MKAP     1 words, 2 stkoff
+        ALLOC_AP    0
+        PUSH_BCO
+          ProtoBCO sat_sSN#0 []:
+             \u [] GHC.Base.pure GHC.Base.$fApplicativeIO
+             bitmap:  0 []
+             PUSH_G   GHC.Base.$fApplicativeIO
+             PUSH_APPLY_P
+             PUSH_G   GHC.Base.pure
+             ENTER
+        MKAP     0 words, 1 stkoff
+        PUSH32_W   4
+        PUSH32_W   4
+        PUSH_APPLY_PP
+        PUSH_G   GHC.Base.$
+        SLIDE    4 3
+        ENTER
+   MKPAP    0 words, 1 stkoff
+   ALLOC_AP    1
+   PUSH32_W   8
+   PUSH_BCO
+     ProtoBCO sat_sSL#1 []:
+        \u [] break<0>(fname_sSK) System.IO.readFile fname_sSK
+        bitmap:  1 [0]
+        BRK_FUN 0 $1cP <cc>
+        PUSH32_W   0
+        PUSH_APPLY_P
+        PUSH_G   System.IO.readFile
+        SLIDE    3 1
+        ENTER
+   MKAP     1 words, 2 stkoff
+   PUSH32_W   4
+   PUSH32_W   4
+   PUSH_G   GHC.Base.$fMonadIO
+   PUSH_APPLY_PPP
+   PUSH_G   GHC.Base.>>=
+   SLIDE    5 3
+   ENTER
+

@@ -1,0 +1,92 @@
+--- docs/sessions/2026-05-17-session-61-v0.14.2-dso-handle/scripts/run-ghci-tnum.sh	2026-05-16 01:47:05
++++ docs/sessions/2026-05-17-session-62-extra-hc-opts-runner/scripts/run-ghci-tnum.sh	2026-05-16 02:30:01
+@@ -20,6 +20,17 @@
+ # upstream-`expect_broken(17669)` so we don't run it; ghci017 has
+ # `reqlib('haskell98')`; ghci056 has `pre_cmd($MAKE)`).
+ #
++# Session 62 extension: also handle upstream's `extra_hc_opts(...)`
++# annotation.  Wiring is identical to `extra_run_opts(...)` — both
++# end up appended to the same GHC `--interactive` command (compile
++# and run happen in one invocation, so compile-flags and run-flags
++# both arrive on the same command line).  Adds six tests: T2452,
++# T2182ghci2, T9293, T13385, T14342, T16563 — every
++# `extra_hc_opts(...)` ghci script in all.T that isn't already
++# skipped (ghci057 + ghci065 are ghciNNN-shaped so are out of this
++# T<num> runner's scope; T5975b also has `pre_cmd`; T19650 also has
++# `pre_cmd` + `filter_stdout_lines`).
++#
+ # Usage:
+ #   ./run-ghci-tnum.sh                 # runs against pmacg5
+ #   ./run-ghci-tnum.sh imacg4          # explicit host
+@@ -52,9 +63,11 @@
+ #    session 56's `<name>.*` / `<name>_*` auto-discovery globs
+ #    (T5417a, T8469a, T8696A/B, T10110A/B/C, T10322A/B/C, T16876A/B).
+ TESTS=(
++  "T2452 0"
+   "T2766 0"
+   "T1914 0"
+   "T2182ghci 0"
++  "T2182ghci2 0"
+   "T2976 0"
+   "T2816 0"
+   "T789 0"
+@@ -122,6 +135,7 @@
+   "T9181 0"
+   "T9086b 0"
+   "T9140 1"
++  "T9293 0 ghci057.hs"
+   "T9658 0"
+   "T9881 0"
+   "T9878 0"
+@@ -165,6 +179,7 @@
+   "StaticPtr 0"
+   "T13202 0"
+   "T13202a 0"
++  "T13385 0"
+   "T13420 0"
+   "T13466 0"
+   "GhciCurDir 0"
+@@ -173,6 +188,7 @@
+   "T13407 0"
+   "T13795 0"
+   "T13963 0"
++  "T14342 0"
+   "T14796 0"
+   "T14969 0"
+   "T15259 0"
+@@ -191,6 +207,7 @@
+   "T14828 0"
+   "T16376 0"
+   "T16527 0"
++  "T16563 0"
+   "T16569 0"
+   "T16767 0"
+   "T16575 0"
+@@ -225,14 +242,23 @@
+ HC_FLAGS="--interactive -v0 -ignore-dot-ghci -fno-ghci-history \
+ -fshow-warning-groups -fno-diagnostics-show-caret -fdiagnostics-color=never"
+ 
+-# Per-test extra GHC flags.  Mirrors `extra_run_opts(...)` annotations
+-# in upstream tests/ghci/scripts/all.T — the flags are appended to
+-# the GHC invocation for tests that need a specific REPL mode (eg.
+-# -fobject-code) or extra dump flags (eg. -ddump-to-file).
++# Per-test extra GHC flags.  Mirrors `extra_run_opts(...)` and
++# `extra_hc_opts(...)` annotations in upstream tests/ghci/scripts/all.T —
++# the flags are appended to the GHC invocation for tests that need a
++# specific REPL mode (eg. -fobject-code), extra dump flags (eg.
++# -ddump-to-file), or extension/flag tweaks (eg. -XRebindableSyntax).
+ run_opts_for() {
+   case "$1" in
++    # extra_run_opts(...) (session 60)
+     T9878b|T12091) echo "-fobject-code" ;;
+     T17500)        echo "-ddump-to-file -ddump-bcos" ;;
++    # extra_hc_opts(...) (session 62)
++    T2452)         echo "-fno-implicit-import-qualified" ;;
++    T2182ghci2)    echo "-XNoImplicitPrelude" ;;
++    T9293)         echo "-fno-ghci-leak-check" ;;
++    T13385)        echo "-XRebindableSyntax" ;;
++    T14342)        echo "-XOverloadedStrings -XRebindableSyntax" ;;
++    T16563)        echo "-clear-package-db -global-package-db" ;;
+     *)             echo "" ;;
+   esac
+ }

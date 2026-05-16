@@ -1,6 +1,6 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-05-17 session 61.
+Last reviewed: 2026-05-17 session 62.
 
 ## What's done (baseline)
 
@@ -258,6 +258,25 @@ Demo: [`demos/v0.14.2-static-pointers.{hs,sh}`](../demos/v0.14.2-static-pointers
 `-fobject-code` load path (the path that was broken pre-v0.14.2).
 Upstream-shaped fix; would help any Mach-O cross-GHC.
 See [session 61](sessions/2026-05-17-session-61-v0.14.2-dso-handle/).
+
+✅ **Session 62 (verification):** Extended session 60's
+`run-ghci-tnum.sh` with `extra_hc_opts(...)` support — six new cases
+in `run_opts_for()` plus six new TESTS entries (T2452, T2182ghci2,
+T9293, T13385, T14342, T16563).  All 6 pass clean.  Same dispatch
+arm as session 60's `extra_run_opts` because ghci_script tests
+compile-and-run in one `ghc --interactive` invocation.  `normalise.py`
+gained a trailing-blank-line trim to absorb a 1-byte discrepancy
+between upstream's `T16563.stdout` (`hello world\n\n`) and GHCi's
+actual output (`hello world\n`) — reproduced on host ghc-9.2.8 too,
+so test-data issue not PPC.  Result: **171/172 PASS** on the
+now-172-test T-prefix subset; lone failure is T8042 (the HFS+
+1-second mtime-granularity race in upstream's `:reload` script,
+which alternates with T17549 as the unlucky coin-flip per run).
+Verification only; no GHC source changes, no patches, no release.
+Reusable harness in [`docs/sessions/2026-05-17-session-62-extra-hc-opts-runner/scripts/`](sessions/2026-05-17-session-62-extra-hc-opts-runner/scripts/);
+future `reqlib` / `pre_cmd` extensions can use the same
+`run_opts_for()` shape.
+See [session 62](sessions/2026-05-17-session-62-extra-hc-opts-runner/).
 
 ### ~~B. Stage2 native `ghc`~~ ✅ done (v0.13.0)
 
