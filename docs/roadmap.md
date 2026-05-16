@@ -1,6 +1,6 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-05-15 session 53.
+Last reviewed: 2026-05-15 session 56.
 
 ## What's done (baseline)
 
@@ -151,6 +151,19 @@ blocks, imports, `Data.Map.Strict.fromListWith`, recursion
 (`factorial 20`, `fib 12`), all working.  Demo:
 [`demos/v0.14.0-ghci-repl.sh`](../demos/v0.14.0-ghci-repl.sh).
 See [session 55](sessions/2026-05-15-session-55-ghci-repl-attempt/).
+
+✅ **Session 56 (verification):** 51/51 PASS on a curated subset of
+upstream's `testsuite/tests/ghci/scripts/`.  Picked every
+`normal` / `combined_output` `ghciNNN` test that doesn't need extra
+harness (no `reqlib` / `req_th` / `expect_broken` / `extra_hc_opts`
+/ cross-dir extras).  Reusable runner +
+`normalise_errmsg`-equivalent normaliser in
+[`docs/sessions/2026-05-15-session-56-ghci-testsuite/scripts/`](sessions/2026-05-15-session-56-ghci-testsuite/scripts/).
+No new patches, no source changes, no release — verification only.
+Notable: ghci018 (TH splice typed at REPL) PASSes — cross-stresses
+the in-process interpreter + BCO machinery + runtime Mach-O loader
+beyond anything session 55's hand smoke tests reached.
+See [session 56](sessions/2026-05-15-session-56-ghci-testsuite/).
 
 ### ~~B. Stage2 native `ghc`~~ ✅ done (v0.13.0)
 

@@ -1,0 +1,25 @@
+
+=== GHCi subset results (host=pmacg5, ghc=/opt/ghc-stage2/bin/ghc-real) ===
+  PASS  ghci001     (rc=0)
+  PASS  ghci002     (rc=0)
+  PASS  ghci003     (rc=0)
+  PASS  ghci005     (rc=0)
+  PASS  ghci009     (rc=0)
+  PASS  ghci011     (rc=0)
+  PASS  ghci012     (rc=0)
+  PASS  ghci013     (rc=0)
+  PASS  ghci018     (rc=0)
+  PASS  ghci020     (rc=0)
+  PASS  ghci023     (rc=0)
+  PASS  ghci028     (rc=0)
+  PASS  ghci029     (rc=0)
+  PASS  ghci031     (rc=0)
+  PASS  ghci032     (rc=0)
+  PASS  ghci033     (rc=0)
+  PASS  ghci034     (rc=0)
+  PASS  ghci040     (rc=0)
+  PASS  ghci042     (rc=0)
+  PASS  ghci050     (rc=0)
+  PASS  ghci060     (rc=0)
+
+=== Summary: 21 PASS / 0 FAIL out of 21 tests ===

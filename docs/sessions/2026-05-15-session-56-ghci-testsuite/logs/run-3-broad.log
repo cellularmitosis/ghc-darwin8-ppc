@@ -1,0 +1,57 @@
+
+=== GHCi subset results (host=pmacg5, ghc=/opt/ghc-stage2/bin/ghc-real) ===
+  PASS  ghci001     (rc=0)
+  PASS  ghci002     (rc=0)
+  PASS  ghci003     (rc=0)
+  PASS  ghci005     (rc=0)
+  PASS  ghci007     (rc=0)
+  FAIL  ghci008     (rc=0)  combined output mismatch
+  PASS  ghci009     (rc=0)
+  PASS  ghci011     (rc=0)
+  PASS  ghci012     (rc=0)
+  PASS  ghci013     (rc=0)
+  PASS  ghci018     (rc=0)
+  PASS  ghci019     (rc=0)
+  PASS  ghci020     (rc=0)
+  FAIL  ghci021     (rc=0)  stderr mismatch
+  FAIL  ghci022     (rc=0)  stderr mismatch
+  PASS  ghci023     (rc=0)
+  PASS  ghci025     (rc=0)
+  FAIL  ghci027     (rc=0)  stdout mismatch;stderr non-empty but no expected.stderr
+  PASS  ghci028     (rc=0)
+  PASS  ghci029     (rc=0)
+  PASS  ghci030     (rc=0)
+  PASS  ghci031     (rc=0)
+  PASS  ghci032     (rc=0)
+  PASS  ghci033     (rc=0)
+  PASS  ghci034     (rc=0)
+  PASS  ghci035     (rc=0)
+  FAIL  ghci036     (rc=0)  stderr mismatch
+  PASS  ghci039     (rc=0)
+  PASS  ghci040     (rc=0)
+  PASS  ghci041     (rc=0)
+  PASS  ghci042     (rc=0)
+  PASS  ghci043     (rc=0)
+  PASS  ghci044     (rc=0)
+  PASS  ghci044a    (rc=0)
+  PASS  ghci045     (rc=0)
+  PASS  ghci046     (rc=0)
+  PASS  ghci047     (rc=0)
+  FAIL  ghci048     (rc=0)  stderr mismatch
+  PASS  ghci049     (rc=0)
+  PASS  ghci050     (rc=0)
+  PASS  ghci051     (rc=0)
+  PASS  ghci052     (rc=0)
+  PASS  ghci053     (rc=0)
+  PASS  ghci054     (rc=0)
+  FAIL  ghci055     (rc=0)  combined output mismatch
+  PASS  ghci059     (rc=0)
+  PASS  ghci060     (rc=0)
+  PASS  ghci061     (rc=0)
+  PASS  ghci063     (rc=0)
+  PASS  ghci064     (rc=0)
+  PASS  ghci066     (rc=0)
+
+=== Summary: 44 PASS / 7 FAIL out of 51 tests ===
+Failed: ghci008 ghci021 ghci022 ghci027 ghci036 ghci048 ghci055
+Diffs in /Users/cell/claude/ghc-darwin8-ppc/docs/sessions/2026-05-15-session-56-ghci-testsuite/logs/ghci-subset/<test>/{actual,expected}.* 

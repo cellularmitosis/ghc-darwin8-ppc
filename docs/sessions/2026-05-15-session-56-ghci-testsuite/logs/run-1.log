@@ -1,0 +1,27 @@
+
+=== GHCi subset results (host=pmacg5, ghc=/opt/ghc-stage2/bin/ghc-real) ===
+  PASS  ghci001     (rc=0)
+  PASS  ghci002     (rc=0)
+  PASS  ghci003     (rc=0)
+  FAIL  ghci005     (rc=0)  combined output mismatch
+  PASS  ghci009     (rc=0)
+  PASS  ghci011     (rc=0)
+  PASS  ghci012     (rc=0)
+  PASS  ghci013     (rc=0)
+  PASS  ghci018     (rc=0)
+  PASS  ghci020     (rc=0)
+  FAIL  ghci023     (rc=0)  stdout mismatch;stderr non-empty but no expected.stderr
+  PASS  ghci028     (rc=0)
+  PASS  ghci029     (rc=0)
+  FAIL  ghci031     (rc=0)  stderr mismatch
+  PASS  ghci032     (rc=0)
+  PASS  ghci033     (rc=0)
+  PASS  ghci034     (rc=0)
+  PASS  ghci040     (rc=0)
+  PASS  ghci042     (rc=0)
+  PASS  ghci050     (rc=0)
+  PASS  ghci060     (rc=0)
+
+=== Summary: 18 PASS / 3 FAIL out of 21 tests ===
+Failed: ghci005 ghci023 ghci031
+Diffs in /Users/cell/claude/ghc-darwin8-ppc/docs/sessions/2026-05-15-session-56-ghci-testsuite/logs/ghci-subset/<test>/{actual,expected}.* 
