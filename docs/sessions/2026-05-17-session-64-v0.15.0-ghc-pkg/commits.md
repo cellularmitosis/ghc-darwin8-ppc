@@ -2,7 +2,7 @@
 
 | SHA | Subject |
 |-----|---------|
-| _pending_ | v0.15.0: hadrian carve-out adds ghc-pkg/hp2ps/hsc2hs; skip cross bindist recache; T6106 + T19650 wired; 175/177 PASS. |
+| [`575e6a1`](https://github.com/cellularmitosis/ghc-darwin8-ppc/commit/575e6a1c6bf99058fb391cb3eba868a1a4c22c0a) | v0.15.0: hadrian carve-out adds ghc-pkg/hp2ps/hsc2hs; skip cross bindist recache; T6106 + T19650 wired; 175/177 PASS. |
 
 ## Commit message
 
