@@ -1,0 +1,5 @@
+== Building random ==
+Up to date
+
+== Running dist/build/ppc-osx/ghc-9.2.8/random-example-0.1/x/random-example/build/random-example/random-example on pmacg5 ==
+random int 1..100 with seed 42: 49

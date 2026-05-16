@@ -1,0 +1,6 @@
+== Building https-get ==
+14 errors generated.
+compilation failed
+Error: [Cabal-7125]
+Failed to build HsOpenSSL-0.11.7.10 (which is required by exe:https-get from https-get-0.1).
+

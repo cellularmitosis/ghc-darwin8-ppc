@@ -34,9 +34,25 @@ produces a fully-populated 46340-byte .o under both default RTS and
 `-A1m -G1`.  See `docs/sessions/2026-05-15-session-52-stuarray-scope`
 for the bisection and minimal repros that pinned this.
 
-This is an upstream GHC bug, not a port-specific one -- the broken
-code is identical in current GHC HEAD.  This patch is appropriate for
-upstream submission once a smaller test case is prepared.
+This is an upstream GHC bug, not a port-specific one.  The
+`MArray (STUArray s) Bool (ST s)` instance code in current upstream
+HEAD's `Data/Array/Base.hs` is byte-identical to what this patch
+modifies, but the upstream fix lives elsewhere: commit
+`9cc80b51cf98c13a140b00effb38329e7210d03c` (May 2023, "Round up
+unboxed Bool arrays to whole-word sizes", motivated by ghc#23132)
+modifies `bOOL_SCALE` itself to return a whole-word-aligned byte
+count, which all call sites pick up automatically.  Functionally
+identical to the patch below.  Shipped in `array-0.5.6.0` and later.
+
+GHC 9.2.x ships `array-0.5.4.0`, which predates that fix, so we
+need to carry an equivalent change locally.  The two could be
+unified by modifying `bOOL_SCALE` directly (cleaner, matches
+upstream form) instead of adding `bOOL_WORD_SCALE` and updating
+the call sites; this patch takes the longer route because the
+diagnostic narrative in session 52 reasoned about the instance
+code directly.  See
+[`docs/sessions/2026-05-15-session-54-upstream-mr-prep/findings.md`](../docs/sessions/2026-05-15-session-54-upstream-mr-prep/findings.md)
+for the full discovery write-up.
 
 --- a/libraries/array/Data/Array/Base.hs
 +++ b/libraries/array/Data/Array/Base.hs

@@ -868,43 +868,37 @@ Fixing the actual GC bug is still likely multi-session work.
 
 Paused until we're further down the road.
 
-### H. Upstream MR for the `STUArray Bool` big-endian fix — pending
+### ~~H. Upstream MR for the `STUArray Bool` big-endian fix~~ ✅ already fixed upstream
 
 [Patch 0016](../patches/0016-array-stuarray-bool-word-aligned-init.patch)
 shipped in v0.13.0 ([session 52](sessions/2026-05-15-session-52-stuarray-scope/))
-fixes a real upstream GHC bug — the same broken code is in current
-[`gitlab.haskell.org/ghc/packages/array`'s master branch's
-`Data/Array/Base.hs`](https://gitlab.haskell.org/ghc/packages/array/-/blob/master/Data/Array/Base.hs)
-(confirmed in session 53).
+fixes a real upstream GHC bug — but the upstream fix already exists.
+Session 54 discovered upstream commit
+[`9cc80b5`](https://gitlab.haskell.org/ghc/packages/array/-/commit/9cc80b51cf98c13a140b00effb38329e7210d03c)
+"Round up unboxed Bool arrays to whole-word sizes" by Matthew Craven
+(May 2023, motivated by [ghc#23132](https://gitlab.haskell.org/ghc/ghc/-/issues/23132))
+which modifies `bOOL_SCALE` itself to return whole-word-aligned byte
+counts.  Functionally identical to our patch (which adds
+`bOOL_WORD_SCALE` and updates call sites).  Shipped in `array-0.5.6.0`
+and later.
 
-Open work to land this upstream:
+GHC 9.2.8 ships `array-0.5.4.0`, which predates the upstream fix —
+[patch 0016](../patches/0016-array-stuarray-bool-word-aligned-init.patch)
+is the equivalent backport into our tree.
 
-1. **Portable repro.**  Our current minimal repro (`newArray False
-   :: ST s (STUArray s Int Bool)` of sub-word size) needs PPC32
-   unreg or another big-endian target.  Options to make it
-   reproducible on a Tier-1 target:
-   - Add a CPP flag to `Base.hs` that forces `bOOL_SCALE` to also
-     be little-endian-broken (e.g. shift the partial bytes to the
-     wrong end), exposing the same byte-mismatch on LE.
-   - Instrument `setByteArray#` in a debug RTS to fill *unwritten*
-     bytes with `0xFF` (a sentinel value); the bug shows up
-     immediately on any target.
-   - Use a qemu-emulated PPC32 (or s390x) target in GHC CI.
-2. **`unsafeNewArray_` consideration.**  Our patch fixes both
-   `newArray` and `unsafeNewArray_` to use `bOOL_WORD_SCALE` for
-   allocation size, but does *not* add a `setByteArray#` zeroing
-   call to `unsafeNewArray_`.  That means users of `unsafeNewArray_`
-   Bool still face the read-modify-write problem on the first
-   `unsafeWrite` per word (see [session-52 finding F7](sessions/2026-05-15-session-52-stuarray-scope/findings.md#f7-same-bug-affects-unsafenewarray_)).
-   The upstream MR should probably also add a `setByteArray#` call
-   to `unsafeNewArray_` for Bool with a comment explaining why
-   bool is special, even though it costs a memset on the "unsafe"
-   path.  In practice virtually all users go through `newArray
-   False` / `newArray_` so this is a low-impact change.
-3. **Open the GHC issue / MR.**  Suggested title: "STUArray Bool:
-   `newArray` under-zeroes the trailing partial word, causing
-   garbage reads on big-endian (and on any LE size that doesn't
-   align to a word)."
+Session 53's "live upstream issue" claim was based on checking only
+the `MArray (STUArray s) Bool (ST s)` instance code (byte-identical
+upstream), missing the change to `bOOL_SCALE` that the instance
+calls.  Lesson recorded in
+[session 54 findings](sessions/2026-05-15-session-54-upstream-mr-prep/findings.md).
+
+What our project adds, even though the fix is in: the BE-specific
+silent-miscompile narrative.  Upstream's framing is "spurious
+`-fcheck-prim-bounds` alarms"; ours pins down that on BE the bug is
+not a warning but actually-wrong-data, that the same problem fires
+on LE for sizes not aligned to a word (masked by nursery zero-fill),
+and that the bug propagates up through `Data.Graph.scc` to break
+GHC's renamer dep-analysis and produce "empty" .o files on BE.
 
 ### ~~G. Cross-toolchain: LLVM-7 r4 → LLVM-8 swap~~ ✅ done (v0.12.0)
 

@@ -48,9 +48,15 @@ writes byte 0 (MSB), so every read of an `STUArray Bool` of
 size < `SIZEOF_HSWORD * 8` returned garbage.  `Data.Graph.scc` uses
 `STUArray Int Bool` for its "visited" set; the bug dropped vertices
 out of the renamer's dependency analysis, which dropped bindings,
-which produced empty `.o` files.  Real upstream GHC bug — the same
-code is in current GHC HEAD.  See
+which produced empty `.o` files.  See
 [session 52](docs/sessions/2026-05-15-session-52-stuarray-scope/).
+Same root cause as the previously-fixed-upstream
+[ghc#23132](https://gitlab.haskell.org/ghc/ghc/-/issues/23132); patch
+0016 backports the equivalent fix into the `array-0.5.4.0` that
+GHC 9.2.8 ships (upstream's `bOOL_SCALE` rounding was added in
+`array-0.5.6.0`).  See
+[session 54](docs/sessions/2026-05-15-session-54-upstream-mr-prep/findings.md)
+for the prior-art discovery.
 Plus all of v0.12.0's LLVM-8 swap, v0.11.0's stage2 native ghc,
 v0.10.0's profiling, v0.9.0's HTTPS, etc.
 
@@ -229,7 +235,7 @@ instead.
 | [v0.10.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.10.0) | 2026-04-29 | **Profiling works on Tiger** 📊 (LLVM-7 r4 BUG-003 fix + Tiger compat shims for `__MAC_OS_X_VERSION_MIN_REQUIRED` + `strnlen`). |
 | [v0.11.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.11.0) | 2026-04-30 | **Stage2 native ghc works on Tiger** 🐯 (GC bug worked around with `+RTS -A1G -RTS`; `scripts/ghc-stage2-wrapper.sh` + `scripts/deploy-stage2.sh`). |
 | [v0.12.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.12.0) | 2026-05-09 | **Cross-toolchain swap LLVM-7 → LLVM-8** 🔧 (sister-project's BUG-010 patch restored the PPC32 Darwin "power" alignment field-cap that LLVM-8 dropped; stage1 builds 3× faster). |
-| [v0.13.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.13.0) | 2026-05-15 | **`STUArray Bool` big-endian root cause fixed** 🪄 (11-line patch to `libraries/array/Data/Array/Base.hs`; stage2 native ghc compiles real programs without the `-A1G` workaround.  Real upstream GHC bug — same code in current HEAD).  Closes the 32-session "stage2 produces empty .o" investigation. |
+| [v0.13.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.13.0) | 2026-05-15 | **`STUArray Bool` big-endian root cause fixed** 🪄 (11-line patch to `libraries/array/Data/Array/Base.hs`; stage2 native ghc compiles real programs without the `-A1G` workaround.  Same root cause as previously-fixed-upstream [ghc#23132](https://gitlab.haskell.org/ghc/ghc/-/issues/23132); patch 0016 backports the equivalent fix into `array-0.5.4.0` — upstream's `bOOL_SCALE` rounding was added in `array-0.5.6.0`).  Closes the 32-session "stage2 produces empty .o" investigation. |
 
 ## Licence
 

@@ -49,9 +49,19 @@ Fetched current `libraries/array/Data/Array/Base.hs` from
 the buggy `STUArray Bool` `MArray` instance is byte-identical to what
 session 52 patched.  `newArray` allocates `bOOL_SCALE n#` bytes via
 `newByteArray#`, zeroes the same `nbytes#` via `setByteArray#`, and
-`unsafeRead` accesses via `readWordArray#`.  Same code, same bug.
-This is a live upstream issue, not a 9.2.8 regression — appropriate
-for an upstream MR.
+`unsafeRead` accesses via `readWordArray#`.
+
+**Correction (added in session 54):** the *instance* code is
+byte-identical, but `bOOL_SCALE` itself was modified upstream in
+May 2023 (commit
+[`9cc80b5`](https://gitlab.haskell.org/ghc/packages/array/-/commit/9cc80b51cf98c13a140b00effb38329e7210d03c),
+motivated by ghc#23132) to return a whole-word-aligned byte count.
+The fix shipped in `array-0.5.6.0`, so any GHC version using that
+or a later `array` is already correct.  GHC 9.2.8 ships
+`array-0.5.4.0`, which predates the upstream fix — our patch 0016
+is the equivalent backport into our tree.  See
+[session 54 findings](../2026-05-15-session-54-upstream-mr-prep/findings.md)
+for the discovery write-up.
 
 ### Demo: `demos/v0.13.0-bool-bug-fix.sh`
 

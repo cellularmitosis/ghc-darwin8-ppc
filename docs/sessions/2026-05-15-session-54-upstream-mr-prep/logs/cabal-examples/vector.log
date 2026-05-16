@@ -1,0 +1,14 @@
+== Building vector ==
+Building executable 'vector-example' for vector-example-0.1...
+[1 of 1] Compiling Main             ( Main.hs, dist/build/ppc-osx/ghc-9.2.8/vector-example-0.1/x/vector-example/build/vector-example/vector-example-tmp/Main.o )
+Linking ./dist/build/ppc-osx/ghc-9.2.8/vector-example-0.1/x/vector-example/build/vector-example/vector-example ...
+ld: warning: object file compiled with -mlong-branch which is no longer needed. To remove this warning, recompile without -mlong-branch: /Developer/SDKs/MacOSX10.4u.sdk/usr/lib/crt1.o
+ld: warning: duplicate dylib /opt/gcc14/lib/libgcc_s.1.dylib
+
+== Running dist/build/ppc-osx/ghc-9.2.8/vector-example-0.1/x/vector-example/build/vector-example/vector-example on pmacg5 ==
+[1,2,3,4,5,6,7,8,9,10]
+55
+[2,4,6,8,10,12,14,16,18,20]
+500500
+1000
+[(1,101),(2,102),(3,103),(4,104),(5,105),(6,106),(7,107),(8,108),(9,109),(10,110)]

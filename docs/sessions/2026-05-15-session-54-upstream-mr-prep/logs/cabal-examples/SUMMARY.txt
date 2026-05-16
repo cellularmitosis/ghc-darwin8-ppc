@@ -1,0 +1,20 @@
+=== random ===
+PASS  random  (last line: random int 1..100 with seed 42: 49)
+=== async ===
+PASS  async  (last line: concurrent: (42,"world"))
+=== vector ===
+PASS  vector  (last line: [(1,101),(2,102),(3,103),(4,104),(5,105),(6,106),(7,107),(8,108),(9,109),(10,110)])
+=== optparse ===
+FAIL  optparse  rc=1  (tail: Missing: (-n|--name NAME)  Usage: optparse-example (-n|--name NAME) [-c|--count N]    Greet someone )
+=== megaparsec ===
+PASS  megaparsec  (last line: ("charlie",42))
+=== aeson-generics ===
+PASS  aeson-generics  (last line: {"items":[{"age":1,"name":"a"},{"age":2,"name":"b"},{"age":3,"name":"c"}]})
+=== network-echo ===
+PASS  network-echo  (last line: got: re: hello tiger)
+=== full-stack-cli ===
+FAIL  full-stack-cli  rc=1  (tail: Missing: (-i|--input FILE)  Usage: full-stack-cli (-i|--input FILE) [--desc]    Sort JSON people by age )
+=== https-get ===
+FAIL  https-get  rc=1  (tail: 14 errors generated. compilation failed Error: [Cabal-7125] Failed to build HsOpenSSL-0.11.7.10 (which is required by exe:https-get from https-get-0.1).  )
+
+=== Summary ===

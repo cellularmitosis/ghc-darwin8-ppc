@@ -1,0 +1,11 @@
+== Building aeson-generics ==
+Building executable 'aeson-example' for aeson-example-0.1...
+[1 of 1] Compiling Main             ( Main.hs, dist/build/ppc-osx/ghc-9.2.8/aeson-example-0.1/x/aeson-example/build/aeson-example/aeson-example-tmp/Main.o )
+Linking ./dist/build/ppc-osx/ghc-9.2.8/aeson-example-0.1/x/aeson-example/build/aeson-example/aeson-example ...
+ld: warning: object file compiled with -mlong-branch which is no longer needed. To remove this warning, recompile without -mlong-branch: /Developer/SDKs/MacOSX10.4u.sdk/usr/lib/crt1.o
+ld: warning: duplicate dylib /opt/gcc14/lib/libgcc_s.1.dylib
+
+== Running dist/build/ppc-osx/ghc-9.2.8/aeson-example-0.1/x/aeson-example/build/aeson-example/aeson-example on pmacg5 ==
+{"age":30,"name":"alice"}
+decoded: Person {name = "alice", age = 30}
+{"items":[{"age":1,"name":"a"},{"age":2,"name":"b"},{"age":3,"name":"c"}]}

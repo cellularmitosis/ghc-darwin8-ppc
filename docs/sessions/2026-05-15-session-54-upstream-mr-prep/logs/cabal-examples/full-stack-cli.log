@@ -1,0 +1,13 @@
+== Building full-stack-cli ==
+Building executable 'full-stack-cli' for full-stack-cli-0.1...
+[1 of 1] Compiling Main             ( Main.hs, dist/build/ppc-osx/ghc-9.2.8/full-stack-cli-0.1/x/full-stack-cli/build/full-stack-cli/full-stack-cli-tmp/Main.o ) [Data.Aeson changed]
+Linking ./dist/build/ppc-osx/ghc-9.2.8/full-stack-cli-0.1/x/full-stack-cli/build/full-stack-cli/full-stack-cli ...
+ld: warning: object file compiled with -mlong-branch which is no longer needed. To remove this warning, recompile without -mlong-branch: /Developer/SDKs/MacOSX10.4u.sdk/usr/lib/crt1.o
+ld: warning: duplicate dylib /opt/gcc14/lib/libgcc_s.1.dylib
+
+== Running dist/build/ppc-osx/ghc-9.2.8/full-stack-cli-0.1/x/full-stack-cli/build/full-stack-cli/full-stack-cli on pmacg5 ==
+Missing: (-i|--input FILE)
+
+Usage: full-stack-cli (-i|--input FILE) [--desc]
+
+  Sort JSON people by age

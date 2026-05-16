@@ -1,0 +1,13 @@
+== Building optparse ==
+Preprocessing executable 'optparse-example' for optparse-example-0.1...
+Building executable 'optparse-example' for optparse-example-0.1...
+Linking ./dist/build/ppc-osx/ghc-9.2.8/optparse-example-0.1/x/optparse-example/build/optparse-example/optparse-example ...
+ld: warning: object file compiled with -mlong-branch which is no longer needed. To remove this warning, recompile without -mlong-branch: /Developer/SDKs/MacOSX10.4u.sdk/usr/lib/crt1.o
+ld: warning: duplicate dylib /opt/gcc14/lib/libgcc_s.1.dylib
+
+== Running dist/build/ppc-osx/ghc-9.2.8/optparse-example-0.1/x/optparse-example/build/optparse-example/optparse-example on pmacg5 ==
+Missing: (-n|--name NAME)
+
+Usage: optparse-example (-n|--name NAME) [-c|--count N]
+
+  Greet someone
