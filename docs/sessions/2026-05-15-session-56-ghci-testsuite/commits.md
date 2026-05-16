@@ -2,7 +2,7 @@
 
 | SHA | Subject |
 |---|---|
-| TBD (post-commit) | Session 56: 51/51 PASS on curated GHCi testsuite subset. |
+| `b9fad10` | Session 56: 51/51 PASS on curated GHCi testsuite subset. |
 
 ## Files changed
 
