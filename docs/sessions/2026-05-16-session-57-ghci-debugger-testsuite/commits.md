@@ -1,8 +1,8 @@
 # Session 57 commits
 
-One commit landed this session.  SHA backfilled after `git commit`.
+One commit landed this session.
 
-## (sha pending) — Session 57: 83/83 PASS on curated GHCi debugger testsuite subset
+## [376147e](https://github.com/cellularmitosis/ghc-darwin8-ppc/commit/376147e) — Session 57: 83/83 PASS on curated GHCi debugger testsuite subset
 
 Verification-only.  No GHC source-tree changes, no new patches, no
 release tag.  Stage2 ghc-real on pmacg5 unchanged (still the v0.14.0
