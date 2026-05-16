@@ -1,0 +1,37 @@
+==> 0. confirm v0.14.2 ghc-real has both __dso_handle spellings
+___dso_handle
+__dso_handle
+
+==> 1. ship the .hs to Tiger
+
+==> 2. compile + run natively
+[1 of 1] Compiling Main             ( static-pointers.hs, static-pointers.o )
+Linking static-pointers ...
+ld: warning: object file compiled with -mlong-branch which is no longer needed. To remove this warning, recompile without -mlong-branch: /Developer/SDKs/MacOSX10.4u.sdk/usr/lib/crt1.o
+ld: warning: duplicate dylib /opt/gcc14/lib/libgcc_s.1.dylib
+
+deRefStaticPtr round-trip:
+  static True               = True
+  static "v0.14.2 ..."      = v0.14.2 static-pointer demo on PPC/Tiger
+  static (\x -> x+x) $ 21   = 42
+  static sum $ [1..10]      = 55
+
+StaticPointers work on PPC/Tiger.
+
+==> 3. :load the module into GHCi -fobject-code (the v0.14.2 path)
+GHCi, version 9.2.8: https://www.haskell.org/ghc/  :? for help
+ghci> Ok, one module loaded.
+ghci> ghci> True
+ghci> "v0.14.2 static-pointer demo on PPC/Tiger"
+ghci> 42
+ghci> 55
+ghci> deRefStaticPtr round-trip:
+  static True               = True
+  static "v0.14.2 ..."      = v0.14.2 static-pointer demo on PPC/Tiger
+  static (\x -> x+x) $ 21   = 42
+  static sum $ [1..10]      = 55
+
+StaticPointers work on PPC/Tiger.
+ghci> Leaving GHCi.
+
+v0.14.2 demo done.  StaticPointers + GHCi -fobject-code work on PPC/Tiger.

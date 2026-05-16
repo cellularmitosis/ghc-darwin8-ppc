@@ -1,0 +1,1 @@
+module T8042C where { type B = Bool; }

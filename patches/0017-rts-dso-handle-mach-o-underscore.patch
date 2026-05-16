@@ -1,0 +1,56 @@
+From: ghc-darwin8-ppc project
+Subject: [PATCH] rts/Linker.c: match Mach-O underscore-prefixed ___dso_handle
+
+ghc-darwin8-ppc: `rts/Linker.c::lookupDependentSymbol` has a special
+case for `__dso_handle` (see `Note [Resolving __dso_handle]`, upstream
+#20493) that hands the dependent object's image address back as a
+synthetic handle.  The strcmp was written for ELF, where the symbol
+arrives with two leading underscores.
+
+Mach-O preserves the platform's leading-underscore symbol-name prefix.
+Our PPC Mach-O loader populates `macho_symbols[i].name` directly from
+the object's string table (`rts/linker/MachO.c:137-138`), so the
+symbol arrives at `lookupDependentSymbol` as `"___dso_handle"` (three
+underscores).  The strcmp misses, the special case never fires, and
+resolution falls through to `dlsym(lbl + 1)`.  On Tiger this also
+fails -- `___dso_handle` is provided at link time by `dylib1.o`/`crt1.o`
+and is not exported into the runtime dyld namespace.  The .o load
+therefore aborts with:
+
+    lookupSymbol failed in resolveImports
+    /tmp/.../T9878b.o: unknown symbol `___dso_handle'
+
+The fix is to match both spellings.  Same semantics on ELF and Mach-O
+(the loader hands the dependent object's image back either way); only
+the spelling at lookup time differs.
+
+Surfaced by session 60's extended ghci-tnum runner on T9878b
+(`-fobject-code` + `:l T9878b.hs` with `import GHC.StaticPtr; static
+True` -- SPT init emits a call to `__cxa_atexit(..., __dso_handle)`).
+Released as v0.14.2.
+
+diff --git a/rts/Linker.c b/rts/Linker.c
+index 19545fd3..4c06a477 100644
+--- a/rts/Linker.c
++++ b/rts/Linker.c
+@@ -851,7 +851,8 @@ SymbolAddr* lookupDependentSymbol (SymbolName* lbl, ObjectCode *dependent)
+     RtsSymbolInfo *pinfo;
+
+     /* See Note [Resolving __dso_handle] */
+-    if (strcmp(lbl, "__dso_handle") == 0) {
++    if (strcmp(lbl, "__dso_handle") == 0 ||
++        strcmp(lbl, "___dso_handle") == 0) { /* Mach-O underscore prefix */
+         if (dependent) {
+             return dependent->image;
+         } else {
+@@ -925,6 +926,11 @@ SymbolAddr* lookupDependentSymbol (SymbolName* lbl, ObjectCode *dependent)
+  * relocations of bounded displacement and therefore __dso_handle must not be
+  * too far from the loaded object's code (hence using its start address).
+  *
++ * On Mach-O the symbol table preserves the leading underscore prefix
++ * convention, so the symbol arrives at lookupDependentSymbol() as
++ * "___dso_handle" (three underscores) rather than the ELF spelling
++ * "__dso_handle" (two).  We match both forms above.
++ *
+  * See #20493.
+  */

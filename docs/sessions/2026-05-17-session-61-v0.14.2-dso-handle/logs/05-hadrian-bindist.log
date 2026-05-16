@@ -1,0 +1,119 @@
+Warning: Specifying an absolute path to the project file is deprecated. Use
+--project-dir to set the project's directory.
+Configuration is affected by cabal.project at
+'/Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/hadrian'.
+Up to date
+Warning: Specifying an absolute path to the project file is deprecated. Use
+--project-dir to set the project's directory.
+Configuration is affected by cabal.project at
+'/Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/hadrian'.
+| Configure package 'ghc-prim'
+# cabal-configure (for _build/stage1/libraries/ghc-prim/setup-config)
+| Run Ghc LinkHs Stage1: _build/stage1/utils/unlit/build/c/fs.o (and 1 more) => _build/stage1/lib/bin/powerpc-apple-darwin8-unlit
+ld: warning: object file compiled with -mlong-branch which is no longer needed. To remove this warning, recompile without -mlong-branch: /Developer/SDKs/MacOSX10.4u.sdk/usr/lib/crt1.o
+/---------------------------------------------------------------\
+| Successfully built program 'unlit' (Stage1).                  |
+| Executable: _build/stage1/lib/bin/powerpc-apple-darwin8-unlit |
+| Program synopsis: Literate program filter.                    |
+\---------------------------------------------------------------/
+| Configure package 'ghc-bignum'
+# cabal-configure (for _build/stage1/libraries/ghc-bignum/setup-config)
+| Configure package 'base'
+# cabal-configure (for _build/stage1/libraries/base/setup-config)
+| Configure package 'ghc-boot-th'
+| Configure package 'integer-gmp'
+| Configure package 'xhtml'
+| Configure package 'array'
+| Configure package 'transformers'
+| Configure package 'filepath'
+# cabal-configure (for _build/stage1/libraries/xhtml/setup-config)
+# cabal-configure (for _build/stage1/libraries/ghc-boot-th/setup-config)
+# cabal-configure (for _build/stage1/libraries/filepath/setup-config)
+# cabal-configure (for _build/stage1/libraries/transformers/setup-config)
+# cabal-configure (for _build/stage1/libraries/integer-gmp/setup-config)
+# cabal-configure (for _build/stage1/libraries/array/setup-config)
+| Configure package 'deepseq'
+| Configure package 'stm'
+# cabal-configure (for _build/stage1/libraries/stm/setup-config)
+# cabal-configure (for _build/stage1/libraries/deepseq/setup-config)
+| Configure package 'mtl'
+# cabal-configure (for _build/stage1/libraries/mtl/setup-config)
+| Configure package 'time'
+| Configure package 'pretty'
+| Configure package 'containers'
+# cabal-configure (for _build/stage1/libraries/pretty/setup-config)
+# cabal-configure (for _build/stage1/libraries/containers/containers/setup-config)
+# cabal-configure (for _build/stage1/libraries/time/setup-config)
+| Configure package 'template-haskell'
+# cabal-configure (for _build/stage1/libraries/template-haskell/setup-config)
+| Configure package 'ghc-heap'
+# cabal-configure (for _build/stage1/libraries/ghc-heap/setup-config)
+| Configure package 'exceptions'
+| Configure package 'bytestring'
+# cabal-configure (for _build/stage1/libraries/exceptions/setup-config)
+# cabal-configure (for _build/stage1/libraries/bytestring/setup-config)
+| Configure package 'ghc-compact'
+| Configure package 'binary'
+| Configure package 'unix'
+# cabal-configure (for _build/stage1/libraries/unix/setup-config)
+# cabal-configure (for _build/stage1/libraries/binary/setup-config)
+# cabal-configure (for _build/stage1/libraries/ghc-compact/setup-config)
+| Configure package 'text'
+# cabal-configure (for _build/stage1/libraries/text/setup-config)
+| Configure package 'parsec'
+# cabal-configure (for _build/stage1/libraries/parsec/setup-config)
+| Configure package 'directory'
+# cabal-configure (for _build/stage1/libraries/directory/setup-config)
+| Configure package 'process'
+| Configure package 'hpc'
+| Configure package 'ghc-boot'
+# cabal-configure (for _build/stage1/libraries/process/setup-config)
+# cabal-configure (for _build/stage1/libraries/ghc-boot/setup-config)
+# cabal-configure (for _build/stage1/libraries/hpc/setup-config)
+| Configure package 'ghci'
+# cabal-configure (for _build/stage1/libraries/ghci/setup-config)
+configure: WARNING: result yes guessed because of cross compilation
+| Configure package 'haskeline'
+| Configure package 'Cabal'
+| Copy file: _build/stage0/bin/powerpc-apple-darwin8-hsc2hs => _build/stage1/bin/powerpc-apple-darwin8-hsc2hs
+# cabal-configure (for _build/stage1/libraries/haskeline/setup-config)
+# cabal-configure (for _build/stage1/libraries/Cabal/Cabal/setup-config)
+| Configure package 'ghc'
+| Configure package 'libiserv'
+# cabal-configure (for _build/stage1/libraries/libiserv/setup-config)
+# cabal-configure (for _build/stage1/compiler/setup-config)
+| Configure package 'iserv'
+# cabal-configure (for _build/stage1/utils/iserv/setup-config)
+| Copy file: _build/stage0/bin/powerpc-apple-darwin8-ghc-pkg => _build/stage1/bin/powerpc-apple-darwin8-ghc-pkg
+| Copy file: _build/stage0/bin/powerpc-apple-darwin8-ghc => _build/stage1/bin/powerpc-apple-darwin8-ghc
+| Run Ghc LinkHs Stage1: _build/stage1/utils/iserv/build/c/cbits/iservmain.o (and 1 more) => _build/stage1/lib/bin/powerpc-apple-darwin8-ghc-iserv
+ld: warning: object file compiled with -mlong-branch which is no longer needed. To remove this warning, recompile without -mlong-branch: /Developer/SDKs/MacOSX10.4u.sdk/usr/lib/crt1.o
+ld: warning: duplicate dylib /opt/gcc14/lib/libgcc_s.1.dylib
+/-------------------------------------------------------------------------------\
+| Successfully built program 'iserv' (Stage1).                                  |
+| Executable: _build/stage1/lib/bin/powerpc-apple-darwin8-ghc-iserv             |
+| Program synopsis: iserv allows GHC to delegate Template Haskell computations. |
+\-------------------------------------------------------------------------------/
+| Create directory _build/bindist/ghc-9.2.8-powerpc-apple-darwin8
+| Create directory _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/bin
+| Create directory _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/lib
+| Copy file: _build/stage1/bin/powerpc-apple-darwin8-ghc => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/bin/powerpc-apple-darwin8-ghc-9.2.8
+| Copy file: _build/stage1/bin/powerpc-apple-darwin8-ghc-pkg => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/bin/powerpc-apple-darwin8-ghc-pkg-9.2.8
+| Copy file: _build/stage1/bin/powerpc-apple-darwin8-hp2ps => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/bin/powerpc-apple-darwin8-hp2ps-ghc-9.2.8
+| Copy file: _build/stage1/bin/powerpc-apple-darwin8-hsc2hs => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/bin/powerpc-apple-darwin8-hsc2hs-ghc-9.2.8
+| Copy file: _build/stage1/lib/bin/powerpc-apple-darwin8-unlit => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/bin/powerpc-apple-darwin8-unlit-ghc-9.2.8
+| Copy file: _build/stage1/lib/bin/powerpc-apple-darwin8-ghc-iserv => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/bin/powerpc-apple-darwin8-ghc-iserv-ghc-9.2.8
+| Copy directory: _build/stage1/lib => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8
+| Copy directory: _build/stage1/lib/ppc-osx-ghc-9.2.8/rts-1.0.2/include => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8
+# powerpc-apple-darwin8-ghc-pkg (for binary-dist-dir)
+| Remove file _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/lib/settings
+shakeArgsWith                        0.006s    0%                           
+Function shake                       0.022s    0%                           
+Database read                        0.573s    0%                           
+With database                        0.037s    0%                           
+Running rules                      188.068s   99%  =========================
+Pool finished (5494 threads, 8 max)  0.001s    0%                           
+Cleanup                              0.000s    0%                           
+Total                              188.707s  100%                           
+Build completed in 3m09s
+

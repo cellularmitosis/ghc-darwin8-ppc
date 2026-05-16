@@ -1,0 +1,33 @@
+Build run at: Sat May 16 01:38:51 CDT 2026
+
+=== git diff rts/Linker.c ===
+diff --git a/rts/Linker.c b/rts/Linker.c
+index 19545fd3..4c06a477 100644
+--- a/rts/Linker.c
++++ b/rts/Linker.c
+@@ -851,7 +851,8 @@ SymbolAddr* lookupDependentSymbol (SymbolName* lbl, ObjectCode *dependent)
+     RtsSymbolInfo *pinfo;
+ 
+     /* See Note [Resolving __dso_handle] */
+-    if (strcmp(lbl, "__dso_handle") == 0) {
++    if (strcmp(lbl, "__dso_handle") == 0 ||
++        strcmp(lbl, "___dso_handle") == 0) { /* Mach-O underscore prefix */
+         if (dependent) {
+             return dependent->image;
+         } else {
+@@ -925,6 +926,11 @@ SymbolAddr* lookupDependentSymbol (SymbolName* lbl, ObjectCode *dependent)
+  * relocations of bounded displacement and therefore __dso_handle must not be
+  * too far from the loaded object's code (hence using its start address).
+  *
++ * On Mach-O the symbol table preserves the leading underscore prefix
++ * convention, so the symbol arrives at lookupDependentSymbol() as
++ * "___dso_handle" (three underscores) rather than the ELF spelling
++ * "__dso_handle" (two).  We match both forms above.
++ *
+  * See #20493.
+  */
+ 
+
+=== strings _build/stage1/rts/build/c/Linker.o | grep dso_handle ===
+__dso_handle
+___dso_handle

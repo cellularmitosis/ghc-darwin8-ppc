@@ -1,6 +1,6 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-05-17 session 59.
+Last reviewed: 2026-05-17 session 61.
 
 ## What's done (baseline)
 
@@ -244,6 +244,20 @@ Reusable runner extension at
 future `extra_hc_opts` / `reqlib` / `pre_cmd` extensions can use
 the same `run_opts_for()` shape.
 See [session 60](sessions/2026-05-17-session-60-extra-run-opts-runner/).
+
+✅ **Session 61 (v0.14.2 release):** Executed session 60's proposal.
+Two-line change to `rts/Linker.c::lookupDependentSymbol` matches
+both `"__dso_handle"` and `"___dso_handle"` ([patch 0017](../patches/0017-rts-dso-handle-mach-o-underscore.patch)).
+Stage1 rebuilt; stage2 re-cross-built + deployed to pmacg5;
+session-60 runner re-runs at **165/166 PASS** (T9878b ✅; only
+T17549's HFS+ mtime race remains).  Bindist re-rolled; tarball
+shipped as the [v0.14.2 GitHub release](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.14.2).
+Demo: [`demos/v0.14.2-static-pointers.{hs,sh}`](../demos/v0.14.2-static-pointers.sh)
+— exercises four `static` pointers (Bool, String, Int→Int closure,
+[Int]→Int closure) under both native compile and the GHCi
+`-fobject-code` load path (the path that was broken pre-v0.14.2).
+Upstream-shaped fix; would help any Mach-O cross-GHC.
+See [session 61](sessions/2026-05-17-session-61-v0.14.2-dso-handle/).
 
 ### ~~B. Stage2 native `ghc`~~ ✅ done (v0.13.0)
 

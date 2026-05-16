@@ -1,0 +1,1 @@
+{-# OPTIONS_GHC -fobject-code #-} module T8042A where { import T8042B; import T8042C }

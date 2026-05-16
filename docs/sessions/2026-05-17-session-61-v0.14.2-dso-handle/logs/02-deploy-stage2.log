@@ -1,0 +1,18 @@
+==> [1/5] cross-compile ghc-bin (ghc/Main.hs)
+[7 of 7] Compiling Main             ( /Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/ghc/Main.hs, /tmp/stage2-build/Main.o )
+Linking /tmp/stage2-build/ghc-stage2 ...
+ld: warning: object file compiled with -mlong-branch which is no longer needed. To remove this warning, recompile without -mlong-branch: /Developer/SDKs/MacOSX10.4u.sdk/usr/lib/crt1.o
+ld: warning: duplicate dylib /opt/gcc14/lib/libgcc_s.1.dylib
+==> [2/5] verify PPC Mach-O
+/tmp/stage2-build/ghc-stage2: Mach-O executable ppc_7400
+==> [3/5] deploy to pmacg5
+==> [4/5] write Tiger lib/settings
+==> [5/5] smoke-test on pmacg5
+The Glorious Glasgow Haskell Compilation System, version 9.2.8
+Linking /tmp/_stage2_hello ...
+ld: warning: object file compiled with -mlong-branch which is no longer needed. To remove this warning, recompile without -mlong-branch: /Developer/SDKs/MacOSX10.4u.sdk/usr/lib/crt1.o
+ld: warning: duplicate dylib /opt/gcc14/lib/libgcc_s.1.dylib
+stage2 native ghc on Tiger: ok
+
+stage2 deployment to pmacg5 done.
+Native ghc: /opt/ghc-stage2/bin/ghc
