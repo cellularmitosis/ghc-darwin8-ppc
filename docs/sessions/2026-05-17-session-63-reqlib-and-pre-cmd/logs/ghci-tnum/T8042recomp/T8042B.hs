@@ -1,0 +1,1 @@
+module T8042B where { fooB = "T8042B"; }

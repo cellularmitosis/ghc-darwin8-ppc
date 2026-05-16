@@ -1,0 +1,4 @@
+
+<interactive>:2:11:
+    The role annotation for ‘X’ lacks an accompanying binding
+      (The role annotation must be given where ‘X’ is declared)

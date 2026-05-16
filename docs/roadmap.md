@@ -1,6 +1,6 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-05-17 session 62.
+Last reviewed: 2026-05-17 session 63.
 
 ## What's done (baseline)
 
@@ -277,6 +277,29 @@ Reusable harness in [`docs/sessions/2026-05-17-session-62-extra-hc-opts-runner/s
 future `reqlib` / `pre_cmd` extensions can use the same
 `run_opts_for()` shape.
 See [session 62](sessions/2026-05-17-session-62-extra-hc-opts-runner/).
+
+✅ **Session 63 (verification):** Extended session 62's
+`run-ghci-tnum.sh` with `reqlib(...)` and simple `pre_cmd(...)`
+support — a new `pre_cmd_for()` lookup function (returns a shell
+snippet that runs in the per-test directory before the GHC
+invocation), plus one new arm each in `run_opts_for()` (T5975b's
+`extra_hc_opts('föøbàr2.hs')`) and `norm_args_for()` (T5979's
+`normalise_version("transformers")` — reusing `normalise.py`'s
+`--version pkg` flag from session 58).  Three new TESTS entries:
+T5979 (`reqlib('transformers')`; stage2 already has
+`transformers-0.5.6.2` installed), T5975a + T5975b (UTF-8 filename
+`pre_cmd('touch föøbàr<N>.hs')` smoke tests).  All 3 pass clean on
+the first run.  Result: **173/175 PASS**, with both T8042 and T17549
+failing in this run — the same HFS+ mtime-race shape seen in
+sessions 58/60/61/62, except this run was unlucky on *both*
+coin-flips at once (session 62's "exactly one fails per run" claim
+was an undersample).  Verification only; no GHC source changes, no
+patches, no release.  Reusable harness in
+[`docs/sessions/2026-05-17-session-63-reqlib-and-pre-cmd/scripts/`](sessions/2026-05-17-session-63-reqlib-and-pre-cmd/scripts/).
+Remaining unwired annotations in this subset: `$MAKE`-style
+`pre_cmd` (T6106, T19650, ghci056) — need a native-preproc compile
+step or `ghc-pkg` deployment.
+See [session 63](sessions/2026-05-17-session-63-reqlib-and-pre-cmd/).
 
 ### ~~B. Stage2 native `ghc`~~ ✅ done (v0.13.0)
 

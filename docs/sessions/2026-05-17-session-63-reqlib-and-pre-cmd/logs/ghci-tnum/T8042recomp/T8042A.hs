@@ -1,0 +1,1 @@
+module T8042A where { import T8042B; run = putStrLn fooB }

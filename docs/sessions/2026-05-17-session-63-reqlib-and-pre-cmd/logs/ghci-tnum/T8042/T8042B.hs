@@ -1,0 +1,1 @@
+{-# OPTIONS_GHC -fobject-code #-} module T8042B where { type I = Int; }

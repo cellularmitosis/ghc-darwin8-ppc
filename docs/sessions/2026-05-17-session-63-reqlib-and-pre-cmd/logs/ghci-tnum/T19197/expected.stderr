@@ -1,0 +1,5 @@
+
+<interactive>:1:8:
+     Expected a type, but ‘'()’ has kind ‘()’
+     In the kind ‘'()’
+      In the type ‘(() :: '())’

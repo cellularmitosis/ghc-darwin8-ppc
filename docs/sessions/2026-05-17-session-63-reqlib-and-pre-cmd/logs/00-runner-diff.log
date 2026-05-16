@@ -1,0 +1,56 @@
+33a34,50
+> # Session 63 extension: also handle upstream's `reqlib(...)` and
+> # simple `pre_cmd(...)` annotations.  Adds three tests:
+> #  - T5979 (reqlib('transformers')): the stage2 ghc-pkg already has
+> #    transformers-0.5.6.2 installed.  Test expects a "Could not find
+> #    module" error with package-version suggestions; we reuse the
+> #    existing `normalise_version` machinery (via norm_args_for() →
+> #    `--version transformers`) to elide the embedded version number.
+> #  - T5975a, T5975b (pre_cmd 'touch föøbàr<N>.hs'): UTF-8 filename
+> #    smoke test.  T5975b additionally has extra_hc_opts('föøbàr2.hs')
+> #    which threads through run_opts_for() the same way other
+> #    extra_hc_opts tests do.
+> # T6106 (pre_cmd '$MAKE T6106_prep' = compile preproc + extra_files
+> # ../shell.hs) and T19650 (pre_cmd '$MAKE T19650_setup' = needs
+> # ghc-pkg on the PPC host) are deliberately *not* wired yet — they
+> # need either a native compile step or ghc-pkg deployment that's
+> # outside this session's scope.
+> #
+87a105,107
+>   "T5975a 0"
+>   "T5975b 0"
+>   "T5979 0"
+261a282,284
+>     # extra_hc_opts(...) (session 63) — UTF-8 filename loaded as a
+>     # positional arg (the file itself is created by pre_cmd_for below).
+>     T5975b)        echo "föøbàr2.hs" ;;
+265a289,302
+> # Per-test pre-commands.  Mirrors `pre_cmd(...)` annotations in
+> # upstream tests/ghci/scripts/all.T — a shell snippet that runs
+> # (relative to the per-test directory) before the GHC invocation.
+> # Kept to *simple* one-liners (touch, etc.).  Tests whose pre_cmd
+> # is `$MAKE ...` (T6106, T19650, ghci056) need a richer harness and
+> # are deliberately not yet wired.
+> pre_cmd_for() {
+>   case "$1" in
+>     T5975a) echo "touch föøbàr1.hs" ;;
+>     T5975b) echo "touch föøbàr2.hs" ;;
+>     *)      echo "" ;;
+>   esac
+> }
+> 
+316a354
+>   pre=$(pre_cmd_for "$name")
+319a358
+>   $pre
+326a366
+>   $pre
+355c395,400
+<     *) echo "" ;;
+---
+>     # reqlib + normalise_version("transformers") (session 63).  Mirrors
+>     # upstream's normalise_version() on this test — strips the embedded
+>     # transformers-X.Y.Z so our 0.5.6.2 install doesn't diff against
+>     # upstream's 0.5.2.0 expected file.
+>     T5979) echo "--version transformers" ;;
+>     *)     echo "" ;;
