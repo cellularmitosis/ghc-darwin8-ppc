@@ -1,0 +1,39 @@
+13a14,22
+> # Session 60 extension: also handle upstream's `extra_run_opts(...)`
+> # annotation by threading those flags onto the GHC invocation
+> # (looked up in `run_opts_for` below).  Adds T9878b, T12091, T17500
+> # to the TESTS list — the three `extra_run_opts` tests in
+> # tests/ghci/scripts/all.T that weren't already skipped by some
+> # other annotation (T17669 is also `extra_run_opts(...)` but is
+> # upstream-`expect_broken(17669)` so we don't run it; ghci017 has
+> # `reqlib('haskell98')`; ghci056 has `pre_cmd($MAKE)`).
+> #
+118a128
+>   "T9878b 0"
+143a154
+>   "T12091 0"
+193a205
+>   "T17500 0"
+215a228,239
+> # Per-test extra GHC flags.  Mirrors `extra_run_opts(...)` annotations
+> # in upstream tests/ghci/scripts/all.T — the flags are appended to
+> # the GHC invocation for tests that need a specific REPL mode (eg.
+> # -fobject-code) or extra dump flags (eg. -ddump-to-file).
+> run_opts_for() {
+>   case "$1" in
+>     T9878b|T12091) echo "-fobject-code" ;;
+>     T17500)        echo "-ddump-to-file -ddump-bcos" ;;
+>     *)             echo "" ;;
+>   esac
+> }
+> 
+265a290
+>   opts=$(run_opts_for "$name")
+269c294
+<   $GHC $HC_FLAGS < '$name.script' > actual.combined 2>&1
+---
+>   $GHC $HC_FLAGS $opts < '$name.script' > actual.combined 2>&1
+276c301
+<   $GHC $HC_FLAGS < '$name.script' > actual.stdout 2> actual.stderr
+---
+>   $GHC $HC_FLAGS $opts < '$name.script' > actual.stdout 2> actual.stderr

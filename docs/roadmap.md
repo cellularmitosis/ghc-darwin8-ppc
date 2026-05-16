@@ -227,6 +227,24 @@ literate-Haskell gap latent since v0.7.0.  Demo:
 [`demos/v0.14.1-literate-haskell.{lhs,sh}`](../demos/v0.14.1-literate-haskell.sh).
 See [session 59](sessions/2026-05-17-session-59-v0.14.1-unlit-release/).
 
+🟡 **Session 60 (verification + new bug):** Extended session 58's
+`run-ghci-tnum.sh` with `extra_run_opts(...)` support; **164/166
+PASS** on the now-166-test T-prefix subset.  Two of the three new
+tests (T12091, T17500) pass clean; **T9878b surfaces a real
+PPC/Tiger bug**: the runtime Mach-O loader can't resolve
+`___dso_handle` because `rts/Linker.c::lookupDependentSymbol`'s
+special case strcmps against the ELF spelling `"__dso_handle"`
+while the Mach-O loader passes the underscore-prefixed
+`"___dso_handle"` straight from the object's string table.  Filed
+as [`docs/proposals/rts-dso-handle-mach-o.md`](proposals/rts-dso-handle-mach-o.md)
+with a v0.14.2 release sketch (two-line fix in `lookupDependentSymbol`).
+Verification only; no GHC source changes, no patches, no release.
+Reusable runner extension at
+[`docs/sessions/2026-05-17-session-60-extra-run-opts-runner/scripts/`](sessions/2026-05-17-session-60-extra-run-opts-runner/scripts/);
+future `extra_hc_opts` / `reqlib` / `pre_cmd` extensions can use
+the same `run_opts_for()` shape.
+See [session 60](sessions/2026-05-17-session-60-extra-run-opts-runner/).
+
 ### ~~B. Stage2 native `ghc`~~ ✅ done (v0.13.0)
 
 **The 32-session GC bug investigation resolved in

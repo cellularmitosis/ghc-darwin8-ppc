@@ -1,0 +1,6 @@
+ghc-real: 
+lookupSymbol failed in resolveImports
+/private/tmp/ghci-tnum-6727/T9878b/T9878b.o: unknown symbol `___dso_handle'
+ghc-real: Could not load Object Code /private/tmp/ghci-tnum-6727/T9878b/T9878b.o.
+
+
