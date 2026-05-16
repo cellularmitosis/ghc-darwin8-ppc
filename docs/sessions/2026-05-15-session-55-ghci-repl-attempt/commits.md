@@ -2,7 +2,7 @@
 
 | SHA | Subject |
 |---|---|
-| _(filled in after commit)_ | Session 55 / v0.14.0: enable GHCi REPL on PPC/Tiger. |
+| `2fb956a` | v0.14.0: GHCi REPL on PPC/Tiger. |
 
 ## Files changed
 
