@@ -89,7 +89,7 @@ Remaining untested / future sessions:
   really need OS-thread parallelism need either a `__atomic_*_8`
   shim, libatomic, or SMP rebuild.  Not blocking.
 
-### ~~C. GHCi / TemplateHaskell~~ ✅ TH done (session 12f, v0.8.0)
+### ~~C. GHCi / TemplateHaskell~~ ✅ TH done (session 12f, v0.8.0); REPL done (session 55, v0.14.0)
 
 ✅ **PPC runtime Mach-O loader restored.**  Patch 0009 brings back
 `relocateSection()` for PPC, adapted from GHC 8.6.5 to 9.2.8's
@@ -105,8 +105,9 @@ Test in `tests/macho-loader/`:
 - `PPC_RELOC_SECTDIFF` family ✅ — same Haskell `.o` test exercises
   scattered LOCAL_SECTDIFF in `__eh_frame`.
 
-❌ **GHCi REPL** still blocked on stage2 (roadmap B) — no in-process
-ghc to compile splice expressions.
+_(Originally: ❌ **GHCi REPL** still blocked on stage2 — no
+in-process ghc to compile splice expressions.  Now ✅ — see
+v0.14.0 below.)_
 
 ⚠️ **TemplateHaskell end-to-end — partial.**  v0.7.0/v0.7.1 ship:
 - PPC `ghc-iserv` (29.7 MB), bundled in the bindist `lib/bin/`.
@@ -135,9 +136,21 @@ After both fixes, `$(stringE "...")` and friends evaluate on Tiger
 and splice into the output binary.  See [`docs/sessions/2026-04-24-session-12-iserv-ppc/12f-th-end-to-end.md`](sessions/2026-04-24-session-12-iserv-ppc/12f-th-end-to-end.md).
 Demo: [`demos/v0.8.0-th-splice.hs`](../demos/v0.8.0-th-splice.hs).
 
-🟡 **GHCi REPL** — stage2 works as of v0.11.0, so an in-process
-REPL is now reachable.  Not yet wired up; future session.  TH
-end-to-end via `-fexternal-interpreter` already works (v0.8.0).
+✅ **Session 55 (v0.14.0):** GHCi REPL on PPC/Tiger.  No new
+patches.  All the load-bearing pieces (runtime Mach-O loader,
+BCO byte-swap, `__eprintf` stub) have been in place since v0.8.0;
+the last gating dep was stage2 native ghc compiling without
+`-A1G`, which v0.13.0's `STUArray Bool` fix unblocked.  Build
+change is one-line-ish: `scripts/deploy-stage2.sh` now compiles
+`ghc/Main.hs` with `-DHAVE_INTERNAL_INTERPRETER` (the cabal
+`internal-interpreter` flag's effective contents — also pulls in
+`-i$GHC_SRC/ghc -package exceptions -package time` for the
+GHCi.UI/Leak/Util modules and the new deps).  Verified end-to-end:
+`ghc -e`, `ghc --interactive`, `:t`, `:load`, multi-line `:{ :}`
+blocks, imports, `Data.Map.Strict.fromListWith`, recursion
+(`factorial 20`, `fib 12`), all working.  Demo:
+[`demos/v0.14.0-ghci-repl.sh`](../demos/v0.14.0-ghci-repl.sh).
+See [session 55](sessions/2026-05-15-session-55-ghci-repl-attempt/).
 
 ### ~~B. Stage2 native `ghc`~~ ✅ done (v0.13.0)
 

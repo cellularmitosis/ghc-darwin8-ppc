@@ -1,0 +1,36 @@
+==> 1. ghc -e: one-shot expression evaluation
+5050
+[1,1,2,3,3,4,5,5,5,6,9]
+1307674368000
+hello from the REPL on Tiger PPC
+
+==> 2. --interactive with stdin: types, arithmetic, let, lambdas
+GHCi, version 9.2.8: https://www.haskell.org/ghc/  :? for help
+ghci> reverse :: [a] -> [a]
+ghci> (+) :: Num a => a -> a -> a
+ghci> ghci> [2,5,10,17,26,37]
+ghci> [1,2,4,8,16,32,64,128,256,512,1024,2048]
+ghci> ghci> "TIGER POWERPC"
+ghci> ghci> [('a',3),('c',3),('d',1),('e',2),('f',1),('g',1),('i',7),('l',3),('o',2),('p',2),('r',2),('s',3),('t',1),('u',2),('x',1)]
+ghci> Leaving GHCi.
+
+==> 3. :load a real Haskell module, then call functions in it
+GHCi, version 9.2.8: https://www.haskell.org/ghc/  :? for help
+ghci> [1 of 1] Compiling RepoDemo         ( /tmp/RepoDemo.hs, interpreted )
+Ok, one module loaded.
+ghci> "hello, tiger!"
+ghci> 2432902008176640000
+ghci> [0,1,1,2,3,5,8,13,21,34,55,89,144]
+ghci> [1,2,3,4,5,6,9]
+ghci> factorial :: Integer -> Integer
+ghci> fib :: Int -> Int
+ghci> Leaving GHCi.
+
+==> 4. Multi-line :{ :} block, then evaluate
+GHCi, version 9.2.8: https://www.haskell.org/ghc/  :? for help
+ghci> ghci| ghci| ghci| ghci| ghci| ghci| ghci> 112
+ghci> 9232
+ghci> [27,82,41,124,62,31,94,47,142,71]
+ghci> Leaving GHCi.
+
+v0.14.0 demo done.  GHCi REPL is alive on PPC/Tiger.

@@ -35,11 +35,23 @@ mkdir -p /tmp/stage2-build
 cd /tmp/stage2-build
 rm -f *.hi *.o ghc-stage2
 
+# -DHAVE_INTERNAL_INTERPRETER turns on the GHCi REPL code in
+# ghc/Main.hs (`#if defined(HAVE_INTERNAL_INTERPRETER)` guards the
+# ghciUI codepath).  ghc-bin.cabal puts that block behind the
+# `internal-interpreter` cabal flag (default False, hadrian sets True
+# for stage1+), and includes Other-Modules GHCi.UI/Leak/Util/etc. plus
+# extra Build-depends `exceptions` and `time`.  Our manual build
+# bypasses cabal so we wire those in by hand: -i$GHC_SRC/ghc lets
+# `--make` discover ghc/GHCi/UI.hs et al, and -package exceptions
+# -package time covers the new deps.
 "$STAGE1" \
   -package ghc -package ghci -package haskeline \
+  -package exceptions -package time \
   -outputdir /tmp/stage2-build \
+  -i"$GHC_SRC/ghc" \
   -no-hs-main \
   -optc-DNON_POSIX_SOURCE \
+  -DHAVE_INTERNAL_INTERPRETER \
   "$GHC_SRC/ghc/Main.hs" \
   "$GHC_SRC/ghc/hschooks.c" \
   -o /tmp/stage2-build/ghc-stage2

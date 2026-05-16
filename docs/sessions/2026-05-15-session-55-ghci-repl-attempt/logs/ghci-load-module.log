@@ -1,0 +1,30 @@
+=== :t reverse | ghci ===
+GHCi, version 9.2.8: https://www.haskell.org/ghc/  :? for help
+ghci> reverse :: [a] -> [a]
+ghci> Leaving GHCi.
+=== :load Hello, then call greet ===
+GHCi, version 9.2.8: https://www.haskell.org/ghc/  :? for help
+ghci> [1 of 1] Compiling Hello            ( /tmp/Hello.hs, interpreted )
+Ok, one module loaded.
+ghci> "hello, tiger!"
+ghci> 3628800
+ghci> factorial :: Int -> Int
+ghci> Leaving GHCi.
+=== let + lambda + map ===
+GHCi, version 9.2.8: https://www.haskell.org/ghc/  :? for help
+ghci> ghci> [2,5,10,17,26]
+ghci> ghci> 500500
+ghci> 1307674368000
+ghci> Leaving GHCi.
+=== imports + Double ===
+GHCi, version 9.2.8: https://www.haskell.org/ghc/  :? for help
+ghci> ghci> [9,6,5,4,3,2,1,1]
+ghci> ghci> "TIGER"
+ghci> 4.294967296e9
+ghci> 3.141592653589793
+ghci> 2.718281828459045
+ghci> Leaving GHCi.
+=== :{ :} multiline ===
+GHCi, version 9.2.8: https://www.haskell.org/ghc/  :? for help
+ghci> ghci| ghci| ghci| ghci| ghci| ghci> [0,1,1,2,3,5,8,13,21,34,55]
+ghci> Leaving GHCi.

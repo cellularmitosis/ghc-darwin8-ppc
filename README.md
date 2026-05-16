@@ -32,33 +32,27 @@ running Tigerbrew's gcc14, because our local cross-ld doesn't speak
 Tiger's crt1.
 
 Latest release:
-[**v0.13.0**](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.13.0)
-— **stage2 native ghc compiles real programs without the `-A1G`
-workaround** 🪄.  The 32-session-old "stage2 panics on anything
-non-trivial / emits 152-byte empty `.o` files" bug is **fixed** by
-a single 11-line patch to GHC's `libraries/array/Data/Array/Base.hs`
-([patch 0016](patches/0016-array-stuarray-bool-word-aligned-init.patch)).
-`STUArray Bool`'s `newArray` was allocating and zeroing
-`ceil(n/8)` bytes via `setByteArray#` but its `unsafeRead` /
-`unsafeWrite` access the array via `readWordArray#` /
-`writeWordArray#` (a full machine word).  For sub-word sizes the
-trailing partial-word bytes were uninitialised; on big-endian, the
-bit for element 0 lives in memory byte 3 (LSB) but `setByteArray#`
-writes byte 0 (MSB), so every read of an `STUArray Bool` of
-size < `SIZEOF_HSWORD * 8` returned garbage.  `Data.Graph.scc` uses
-`STUArray Int Bool` for its "visited" set; the bug dropped vertices
-out of the renamer's dependency analysis, which dropped bindings,
-which produced empty `.o` files.  See
-[session 52](docs/sessions/2026-05-15-session-52-stuarray-scope/).
-Same root cause as the previously-fixed-upstream
-[ghc#23132](https://gitlab.haskell.org/ghc/ghc/-/issues/23132); patch
-0016 backports the equivalent fix into the `array-0.5.4.0` that
-GHC 9.2.8 ships (upstream's `bOOL_SCALE` rounding was added in
-`array-0.5.6.0`).  See
-[session 54](docs/sessions/2026-05-15-session-54-upstream-mr-prep/findings.md)
-for the prior-art discovery.
-Plus all of v0.12.0's LLVM-8 swap, v0.11.0's stage2 native ghc,
-v0.10.0's profiling, v0.9.0's HTTPS, etc.
+[**v0.14.0**](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.14.0)
+— **GHCi REPL on PPC/Tiger** 🎉.  `ghc -e`, `ghc --interactive`,
+`:t`, `:load`, `let`/lambdas, multi-line `:{ :}` blocks, imports,
+`Data.Map.Strict` lookups — all running in-process on a real
+PowerMac G5 under Mac OS X 10.4.  No new patches; all the load-
+bearing pieces have been in place since v0.8.0 (TemplateHaskell):
+runtime Mach-O loader (patches 0007 + 0009 + 0012), BCO byte-swap
+(patch 0014), `__eprintf` stub (patch 0011).  The last gating
+dependency was stage2 native ghc compiling real programs without
+`-A1G`, which v0.13.0's `STUArray Bool` fix
+([patch 0016](patches/0016-array-stuarray-bool-word-aligned-init.patch))
+unblocked.  v0.14.0 is the small turn of the key:
+`scripts/deploy-stage2.sh` now compiles `ghc/Main.hs` with
+`-DHAVE_INTERNAL_INTERPRETER` (and the `-i$GHC_SRC/ghc /
+-package exceptions / -package time` extras the cabal flag would
+otherwise wire in).  See
+[session 55](docs/sessions/2026-05-15-session-55-ghci-repl-attempt/)
+and [`demos/v0.14.0-ghci-repl.sh`](demos/v0.14.0-ghci-repl.sh).
+Plus all of v0.13.0's `STUArray Bool` fix, v0.12.0's LLVM-8 swap,
+v0.11.0's stage2 native ghc, v0.10.0's profiling, v0.9.0's HTTPS,
+etc.
 
 ## Implementation status
 
@@ -140,7 +134,7 @@ differences from 32-bit Int / process-pid / program-name).
 | `loadObj` of all bindist `.o`s through iserv | ✅ Working | [v0.7.2](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.7.2).  ghc-prim, integer-gmp, ghc-bignum, **base** all load successfully. |
 | `__eprintf` symbol resolution | ✅ Working | [v0.7.1](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.7.1).  Tiger's libSystem has the symbol but doesn't export it, so `dlsym` fails.  RTS now ships its own stub via [patch 0011](patches/0011-rts-eprintf-stub.patch). |
 | TH splice end-to-end (host ghc → SSH → iserv → result) | ✅ Working | [v0.8.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.0).  `$(stringE …)`, `$(litE …)`, compile-time arithmetic — all evaluated by `ghc-iserv` on Tiger, then spliced into the output binary by host GHC.  Two bugs caught during 12f: (a) cross-built `binary` library mis-encoded Generic-derived sum tags as Word64 instead of Word8 ([patch 0013](patches/0013-binary-generic-direct-numeric-guards.patch)); (b) BCO array contents need byte-swap on host/target endian mismatch ([patch 0014](patches/0014-ghci-bco-byteswap-on-endian-mismatch.patch)). |
-| GHCi REPL | ❌ Missing | Needs stage2 native ghc working (currently panics on Typeable lookup) — see roadmap B.  Use `-fexternal-interpreter` instead (full TH support). |
+| GHCi REPL | ✅ Working | [v0.14.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.14.0).  `ghc -e`, `ghc --interactive`, `:t`, `:load`, `let`/lambdas, `:{ :}` blocks, imports, `Data.Map.Strict` lookups — all running in-process on a real PowerMac G5 under Mac OS X 10.4.  No new patches; the load-bearing pieces (runtime Mach-O loader, BCO byte-swap, `__eprintf` stub) have been in place since v0.8.0; v0.13.0's `STUArray Bool` fix unblocked the last gating dep.  Build change: `scripts/deploy-stage2.sh` compiles `ghc/Main.hs` with `-DHAVE_INTERNAL_INTERPRETER` + `-i$GHC_SRC/ghc -package exceptions -package time` (the cabal `internal-interpreter` flag's effective contents). |
 
 ### Tooling
 
@@ -236,6 +230,7 @@ instead.
 | [v0.11.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.11.0) | 2026-04-30 | **Stage2 native ghc works on Tiger** 🐯 (GC bug worked around with `+RTS -A1G -RTS`; `scripts/ghc-stage2-wrapper.sh` + `scripts/deploy-stage2.sh`). |
 | [v0.12.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.12.0) | 2026-05-09 | **Cross-toolchain swap LLVM-7 → LLVM-8** 🔧 (sister-project's BUG-010 patch restored the PPC32 Darwin "power" alignment field-cap that LLVM-8 dropped; stage1 builds 3× faster). |
 | [v0.13.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.13.0) | 2026-05-15 | **`STUArray Bool` big-endian root cause fixed** 🪄 (11-line patch to `libraries/array/Data/Array/Base.hs`; stage2 native ghc compiles real programs without the `-A1G` workaround.  Same root cause as previously-fixed-upstream [ghc#23132](https://gitlab.haskell.org/ghc/ghc/-/issues/23132); patch 0016 backports the equivalent fix into `array-0.5.4.0` — upstream's `bOOL_SCALE` rounding was added in `array-0.5.6.0`).  Closes the 32-session "stage2 produces empty .o" investigation. |
+| [v0.14.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.14.0) | 2026-05-15 | **GHCi REPL on PPC/Tiger** 🎉 (`ghc -e`, `ghc --interactive`, `:t`, `:load`, multi-line `:{ :}`, imports — all running in-process on a real PowerMac G5).  No new patches; `scripts/deploy-stage2.sh` now compiles `ghc/Main.hs` with `-DHAVE_INTERNAL_INTERPRETER` + `-i$GHC_SRC/ghc -package exceptions -package time` (the cabal `internal-interpreter` flag's effective contents).  Closes [roadmap C](docs/roadmap.md). |
 
 ## Licence
 
