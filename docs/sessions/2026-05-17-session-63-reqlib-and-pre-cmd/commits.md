@@ -2,7 +2,7 @@
 
 | SHA | Subject |
 |-----|---------|
-| _pending_ | Session 63: extend ghci-tnum runner with reqlib + simple pre_cmd; 173/175 PASS. |
+| [`29c2251`](https://github.com/cellularmitosis/ghc-darwin8-ppc/commit/29c2251b9023883dc96e1a0ff91883f49cd0ad3a) | Session 63: extend ghci-tnum runner with reqlib + simple pre_cmd; 173/175 PASS. |
 
 ## Commit message
 
