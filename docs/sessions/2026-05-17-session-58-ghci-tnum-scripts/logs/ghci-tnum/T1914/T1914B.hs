@@ -1,0 +1,1 @@
+module T1914B where { type T = Int; }

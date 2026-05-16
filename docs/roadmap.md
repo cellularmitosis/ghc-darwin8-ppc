@@ -1,6 +1,6 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-05-16 session 57.
+Last reviewed: 2026-05-17 session 58.
 
 ## What's done (baseline)
 
@@ -182,6 +182,34 @@ shared normaliser gained two more upstream `testlib.py` rules
 (`...plus N instances` count erasure, `ghc-bignum-<VERSION>`).
 No new patches, no source changes, no release.
 See [session 57](sessions/2026-05-16-session-57-ghci-debugger-testsuite/).
+
+✅ **Session 58 (verification + packaging fix):** 161/163 PASS on
+the **T-prefix subset** of upstream's `testsuite/tests/ghci/scripts/`
+— every `T<NUM>.script` / `GhciKinds` / `StaticPtr` / `TypeAppData` /
+`GhciCurDir` / `T19667Ghci` test with annotation in
+`{normal, combined_output, extra_files(...)}` that doesn't need
+special harness.  Run 1's first failure surfaced a real packaging
+bug in the v0.14.0 bindist: `/opt/ghc-stage2/lib/bin/powerpc-apple-
+darwin8-unlit` is the *host* (arm64) binary, copied verbatim by
+Hadrian's cross-build path; patch 0010's
+``case (cross, stage) of (True, s) | s > Stage0 && package /= iserv``
+carve-out should also exclude `unlit`.  Cross-built a real ppc
+`unlit` from the GHC source tree via two-step compile-then-link
+through `$CROSS_CC`, deployed to pmacg5; T10989 then passes.  The
+two remaining failures (T8042, T17549) are HFS+ 1-second mtime
+granularity races in the upstream scripts — `writeFile X → :load X
+→ writeFile X → :reload` skips the reload when both writeFiles land
+in the same second; T1914 has the same shape but explicitly bumps
+mtimes with `:! touch -t`, T8042 / T17549 omit it.  Not PPC bugs.
+Reusable runner + `build-unlit-ppc.sh` + built artifact in
+[`docs/sessions/2026-05-17-session-58-ghci-tnum-scripts/scripts/`](sessions/2026-05-17-session-58-ghci-tnum-scripts/scripts/).
+**No GHC source changes, no new patches landed, no release tag.**
+The Hadrian patch update + stage1-rebuild + new bindist + v0.14.1
+release is scoped in session 58's HANDOFF priority #1.
+Notable PASSes: 6 TH-from-REPL regressions (T4127, T4127a, T5566,
+T8831, T10466, T11098 — session-57-HANDOFF priority #1's actual
+concern), `StaticPtr` (static-pointer table walk via REPL).
+See [session 58](sessions/2026-05-17-session-58-ghci-tnum-scripts/).
 
 ### ~~B. Stage2 native `ghc`~~ ✅ done (v0.13.0)
 
