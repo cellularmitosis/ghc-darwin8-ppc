@@ -2,7 +2,8 @@
 
 | SHA | Subject |
 |---|---|
-| `(this commit)` | v0.14.2: rts/Linker.c match Mach-O ___dso_handle spelling. |
+| `d09c4ba` | v0.14.2: rts/Linker.c match Mach-O ___dso_handle spelling. |
+| `(this commit)` | Session 61 commits.md: backfill the v0.14.2 SHA. |
 
 `v0.14.2` annotated tag pointing at the session-61 commit — pushed
 to origin.
