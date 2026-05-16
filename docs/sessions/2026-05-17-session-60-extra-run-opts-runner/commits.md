@@ -5,7 +5,7 @@ no release tag.
 
 | SHA | Message |
 | --- | --- |
-| (pending) | Session 60: extend ghci-tnum runner with `extra_run_opts(...)` support; 164/166 PASS; T9878b surfaces __dso_handle Mach-O bug. |
+| [aa02c20](https://github.com/cellularmitosis/ghc-darwin8-ppc/commit/aa02c20) | Session 60: extend ghci-tnum runner with `extra_run_opts(...)` support; 164/166 PASS; T9878b surfaces __dso_handle Mach-O bug. |
 
 ## Files in this commit
 
