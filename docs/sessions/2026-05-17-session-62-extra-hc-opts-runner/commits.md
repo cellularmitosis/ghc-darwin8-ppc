@@ -2,7 +2,7 @@
 
 | SHA | Subject |
 |-----|---------|
-| _TBD_ | Session 62: extend ghci-tnum runner with extra_hc_opts; 171/172 PASS. |
+| [`f9570d1`](https://github.com/cellularmitosis/ghc-darwin8-ppc/commit/f9570d11f152abadbe875df0239cbc4a613c9a01) | Session 62: extend ghci-tnum runner with extra_hc_opts; 171/172 PASS. |
 
 ## Commit message
 
