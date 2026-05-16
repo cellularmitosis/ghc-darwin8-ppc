@@ -14,23 +14,21 @@ proper release-grade fix (update patch 0010 → stage1 rebuild →
 stage2 redeploy → bindist re-roll → demo + release tag) was queued
 as session 58 HANDOFF priority #1.
 
-**Status on exit:** v0.14.1 committed and tagged locally.  Demo
-committed at [`demos/v0.14.1-literate-haskell.{lhs,sh}`](../../../demos/).
+**Status on exit:** v0.14.1 **released**.  Tag pushed; bindist
+tarball uploaded to the [v0.14.1 GitHub release](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.14.1).
+Demo committed at [`demos/v0.14.1-literate-haskell.{lhs,sh}`](../../../demos/).
 README "Latest release" line flipped to v0.14.1, GHCi REPL status
 row's "pending v0.14.1" note rewritten as ✅ in-bindist, new row
 added to the Releases table.  `docs/state.md` and `docs/roadmap.md`
 updated.  Session-58's runner re-ran clean on the new bindist:
 **161/163 PASS** (T10989 now passes natively from the new bindist;
 T8042 + T17549 remain HFS+ mtime-granularity races in the upstream
-scripts, not PPC bugs).  **Tag push and GitHub release upload
-deferred** — the local v0.14.0 tag also hasn't been pushed to
-origin / uploaded to a GitHub release (the v0.13.0 release on
-GitHub is the most recent), so this session stops at "tagged
-locally" to let the user decide on the GitHub-side promotion
-sequence (push v0.14.0 first? push both? bundle the release
-notes differently?).  Bindist tarball at
-`external/ghc-modern/ghc-9.2.8/_build/bindist/ghc-9.2.8-stage1-cross-to-ppc-darwin8.tar.xz`
-is ready to upload when the user is ready.
+scripts, not PPC bugs).  Also retroactively pushed + released
+[v0.14.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.14.0)
+(no bindist asset — v0.14.0's stage1 build is byte-identical to
+v0.13.0's; the v0.14.0 change is entirely in `scripts/deploy-stage2.sh`)
+so the README's link to it works and the GitHub-side history is
+continuous.
 
 ## What was done
 

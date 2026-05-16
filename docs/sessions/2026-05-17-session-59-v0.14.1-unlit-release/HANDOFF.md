@@ -1,18 +1,18 @@
 # Handoff from session 59 → session 60
 
 **For:** the next claude session.
-**From:** session 59 — v0.14.1 committed and tagged locally.
+**From:** session 59 — **v0.14.1 released** (tag pushed, bindist
+uploaded to [v0.14.1 GitHub release](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.14.1)).
 Hadrian patch 0010 amended (`unlit` joins `iserv` in the cross-mode
 helper-copy carve-out); stage1 rebuilt; stage2 re-cross-built and
 deployed to pmacg5; bindist re-rolled (`_build/bindist/ghc-9.2.8-stage1-cross-to-ppc-darwin8.tar.xz`);
 demo + README updates landed.  Session-58's runner re-ran clean
 against the new bindist (161/163 PASS — only the two HFS+
-mtime-race tests remain).  **Tag push + GitHub release upload
-deferred to the user** — v0.14.0 was also tagged-locally but
-never pushed / never uploaded to GitHub (the most recent GitHub
-release is v0.13.0), so this session left both v0.14.0 and v0.14.1
-local tags untouched.  When the user wants to ship, the bindist
-tarball is at the path above.
+mtime-race tests remain).  Also retroactively pushed +
+released [v0.14.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.14.0)
+(tag had been local-only since 2026-05-15; no bindist asset
+needed — v0.14.0's stage1 build is byte-identical to v0.13.0's,
+the v0.14.0 change is in `scripts/deploy-stage2.sh` only).
 **Recommended pickup:** no single obvious next-must-do.  Roadmap
 A ✅, B ✅, C ✅, D ✅, G ✅, H ✅.  The remaining items are
 smaller, exploratory, or "nice to have" — pick by appetite.
@@ -43,13 +43,18 @@ the trimmed-down version.
 * `docs/roadmap.md` — §C session 59 entry added.
 * Session 59 dir complete: README.md, findings.md, commits.md,
   this file, logs/.
-* Tag `v0.14.1` created locally on the session-59 commit.  **Not
-  pushed to origin.** GitHub release **not** created.  Bindist
-  tarball at `_build/bindist/ghc-9.2.8-stage1-cross-to-ppc-darwin8.tar.xz`
-  awaiting upload.
+* Tag `v0.14.1` created locally on the session-59 commit and
+  pushed to origin.  GitHub release created with the bindist
+  tarball asset (~211 MB) at
+  https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.14.1.
+* Tag `v0.14.0` also pushed retroactively (had been local-only
+  since 2026-05-15) and a GitHub release was created for it (no
+  bindist asset — v0.14.0's stage1 build is identical to
+  v0.13.0's; the release notes point users to v0.14.1 for the
+  fixed bindist).
 
-The tree is clean and v0.14.1 is locally tagged.  The user
-controls whether/when to push tags and upload assets to GitHub.
+The tree is clean and v0.14.1 is shipped end-to-end.  Main branch
+pushed (sessions 54–59 commits + both v0.14.x tags now on origin).
 
 ## TL;DR — the session-59 work
 

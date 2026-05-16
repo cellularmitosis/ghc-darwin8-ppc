@@ -3,45 +3,36 @@
 | SHA | Subject |
 |---|---|
 | `e95ee29` | v0.14.1: literate Haskell (unlit) packaging fix. |
+| `f3161df` | Session 59 commits.md: backfill the v0.14.1 SHA. |
+| `(this commit)` | Session 59 commits.md + docs: backfill the GitHub release URLs (replaces "deferred to user" language). |
 
-`v0.14.1` annotated tag pointing at `e95ee29` (local-only, not
-pushed).
+`v0.14.1` annotated tag pointing at `e95ee29` — pushed to origin.
 
-## Release artifacts (ready locally, not yet uploaded)
+## Releases (live)
 
-- Tag: `v0.14.1` (on the above commit, **local-only**).
-- Bindist: `external/ghc-modern/ghc-9.2.8/_build/bindist/ghc-9.2.8-stage1-cross-to-ppc-darwin8.tar.xz`
-  — re-rolled stage1 cross-build with the corrected `unlit` (47 KB
-  ppc Mach-O at `lib/bin/powerpc-apple-darwin8-unlit`).  Verified
-  via `tar tvJf ... | grep unlit` + extract + `file` (expected:
-  `Mach-O executable ppc`).
-- Stage2 native bindist: `ghc-9.2.8-stage2-native-ppc-darwin8.tar.xz`
-  — same artifacts as `/opt/ghc-stage2/` on pmacg5 after session 59's
-  `scripts/deploy-stage2.sh`.  Not regenerated as a tarball this
-  session; matches the v0.13.0/v0.14.0 stage2 layout 1:1 except for
-  the new ppc `unlit` under `lib/bin/`.
+- **[v0.14.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.14.0)** — retroactively pushed and released this session.  Tag had been local-only since 2026-05-15.  No bindist asset — v0.14.0's stage1 cross-build is byte-identical to v0.13.0's (the v0.14.0 change is entirely in `scripts/deploy-stage2.sh`'s manual `ghc/Main.hs` build line that enables `-DHAVE_INTERNAL_INTERPRETER`).  The release notes point users to v0.14.1 for the corrected bindist.
+- **[v0.14.1](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.14.1)** — committed + tagged + pushed + released this session.  Bindist tarball asset: `ghc-9.2.8-stage1-cross-to-ppc-darwin8.tar.xz` (~211 MB), re-rolled with the corrected `unlit` (47 KB ppc Mach-O at `lib/bin/`, `bin/`, and `bin/*-ghc-9.2.8`).
 
-## GitHub release path (user-owned)
+## Release ritual recorded for future sessions
 
-Both v0.14.0 and v0.14.1 are local-only tags at session-59 exit.
-The latest GitHub release on the repo is v0.13.0.  When the user
-is ready to ship:
+This is the standard end-to-end recipe — saved as feedback memory
+"Handle release push and GitHub upload, don't defer" so future
+sessions follow it without prompting:
 
 ```
-git push origin v0.14.0 v0.14.1      # push both tags
-gh release create v0.14.0 \
+git commit -m "vX.Y.Z: <one-line subject>." …
+git tag -a vX.Y.Z -F <commit-message>
+git push origin main
+git push origin vX.Y.Z
+gh release create vX.Y.Z \
   external/ghc-modern/ghc-9.2.8/_build/bindist/ghc-9.2.8-stage1-cross-to-ppc-darwin8.tar.xz \
-  --title "v0.14.0 — GHCi REPL on PPC/Tiger 🎉" \
-  --notes-file <release-notes>
-gh release create v0.14.1 \
-  external/ghc-modern/ghc-9.2.8/_build/bindist/ghc-9.2.8-stage1-cross-to-ppc-darwin8.tar.xz \
-  --title "v0.14.1 — Literate Haskell (unlit) packaging fix 📜" \
+  --title "vX.Y.Z — <emoji headline>" \
   --notes-file <release-notes>
 ```
 
-(Both releases would point at the same bindist tarball, since
-v0.14.0's bindist is the broken one — v0.14.1's bindist is the
-fixed-and-superseding artifact.  Alternative: ship only v0.14.1
-on GitHub, since v0.14.0's bindist had the packaging bug and
-v0.14.1 supersedes it; the v0.14.0 tag stays in git history for
-provenance.)
+## Stage2 native bindist (not shipped this release)
+
+`ghc-9.2.8-stage2-native-ppc-darwin8.tar.xz` (which v0.13.0 shipped
+as a secondary asset) was not regenerated for v0.14.1.  The deployed
+stage2 on pmacg5 at `/opt/ghc-stage2/` reflects the v0.14.1
+state and can be re-tarred from there if needed.
