@@ -1,0 +1,33 @@
+Warning: Specifying an absolute path to the project file is deprecated. Use
+--project-dir to set the project's directory.
+Configuration is affected by cabal.project at
+'/Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/hadrian'.
+Up to date
+Warning: Specifying an absolute path to the project file is deprecated. Use
+--project-dir to set the project's directory.
+Configuration is affected by cabal.project at
+'/Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/hadrian'.
+| Configure package 'unlit'
+# cabal-configure (for _build/stage1/utils/unlit/setup-config)
+| Run Cc (FindCDependencies CDep) Stage1: utils/unlit/unlit.c => _build/stage1/utils/unlit/build/c/unlit.o.d
+| Run Cc (FindCDependencies CDep) Stage1: utils/unlit/fs.c => _build/stage1/utils/unlit/build/c/fs.o.d
+# cabal-autogen (for _build/stage1/utils/unlit/build/unlit/autogen/cabal_macros.h)
+| Run Ghc CompileCWithGhc Stage1: utils/unlit/unlit.c => _build/stage1/utils/unlit/build/c/unlit.o
+| Run Ghc CompileCWithGhc Stage1: utils/unlit/fs.c => _build/stage1/utils/unlit/build/c/fs.o
+| Run Ghc LinkHs Stage1: _build/stage1/utils/unlit/build/c/fs.o (and 1 more) => _build/stage1/lib/bin/powerpc-apple-darwin8-unlit
+ld: warning: object file compiled with -mlong-branch which is no longer needed. To remove this warning, recompile without -mlong-branch: /Developer/SDKs/MacOSX10.4u.sdk/usr/lib/crt1.o
+/---------------------------------------------------------------\
+| Successfully built program 'unlit' (Stage1).                  |
+| Executable: _build/stage1/lib/bin/powerpc-apple-darwin8-unlit |
+| Program synopsis: Literate program filter.                    |
+\---------------------------------------------------------------/
+shakeArgsWith                        0.000s    0%                           
+Function shake                       0.004s    0%                           
+Database read                        0.705s    9%  ==                       
+With database                        0.030s    0%                           
+Running rules                        6.682s   90%  =========================
+Pool finished (2235 threads, 8 max)  0.001s    0%                           
+Cleanup                              0.000s    0%                           
+Total                                7.423s  100%                           
+Build completed in 7.42s
+

@@ -1,0 +1,465 @@
+Warning: Specifying an absolute path to the project file is deprecated. Use
+--project-dir to set the project's directory.
+Configuration is affected by cabal.project at
+'/Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/hadrian'.
+Up to date
+Warning: Specifying an absolute path to the project file is deprecated. Use
+--project-dir to set the project's directory.
+Configuration is affected by cabal.project at
+'/Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/hadrian'.
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Program/GHC.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Program/GHC.o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Program/Script.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Program/Script.o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Program/Hpc.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Program/Hpc.o
+
+
+
+when making flags consistent: warning:
+when making flags consistent: warning:
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+    Target platform uses unregisterised ABI, so compiling via C
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Program/Builtin.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Program/Builtin.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Backpack/MixLink.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Backpack/MixLink.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/PackageDescription/PrettyPrint.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/PackageDescription/PrettyPrint.o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Program/HcPkg.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Program/HcPkg.o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/PackageDescription/Parsec.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/PackageDescription/Parsec.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Backpack/MixLink.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Backpack/MixLink.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Copy file: _build/stage0/bin/powerpc-apple-darwin8-ghc => _build/stage1/bin/powerpc-apple-darwin8-ghc
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Program/Db.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Program/Db.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Program.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Program.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Program/Strip.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Program/Strip.p_o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Setup.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Setup.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Program/Builtin.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Program/Builtin.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Program/Db.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Program/Db.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Program.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Program.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Setup.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Setup.o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Program/Strip.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Program/Strip.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Types/LocalBuildInfo.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Types/LocalBuildInfo.o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Make.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Make.o
+
+
+when making flags consistent: warning:
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/LocalBuildInfo.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/LocalBuildInfo.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/BuildTarget.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/BuildTarget.o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Test/Log.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Test/Log.o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Hpc.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Hpc.o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Build/PathsModule.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Build/PathsModule.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Backpack/Id.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Backpack/Id.o
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Build/Macros.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Build/Macros.o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/BuildPaths.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/BuildPaths.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Backpack/ConfiguredComponent.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Backpack/ConfiguredComponent.o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Backpack/ComponentsGraph.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Backpack/ComponentsGraph.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Program/Ar.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Program/Ar.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Program/Ld.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Program/Ld.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/GHC/Internal.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/GHC/Internal.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/HaskellSuite.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/HaskellSuite.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/UHC.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/UHC.o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Test/ExeV10.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Test/ExeV10.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Test/LibV09.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Test/LibV09.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/PackageDescription/Check.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/PackageDescription/Check.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Backpack/LinkedComponent.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Backpack/LinkedComponent.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/PreProcess.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/PreProcess.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/GHC/EnvironmentParser.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/GHC/EnvironmentParser.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/GHC.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/GHC.o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/GHCJS.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/GHCJS.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Backpack/ReadyComponent.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Backpack/ReadyComponent.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/UserHooks.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/UserHooks.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Bench.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Bench.o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Test.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Test.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Backpack/Configure.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Backpack/Configure.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Make.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Make.p_o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Types/LocalBuildInfo.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Types/LocalBuildInfo.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/ShowBuildInfo.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/ShowBuildInfo.o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Configure.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Configure.o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Install.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Install.o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Register.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Register.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/SrcDist.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/SrcDist.o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Build.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Build.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/LocalBuildInfo.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/LocalBuildInfo.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Haddock.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Haddock.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Build/PathsModule.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Build/PathsModule.p_o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/BuildTarget.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/BuildTarget.p_o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Backpack/ComponentsGraph.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Backpack/ComponentsGraph.p_o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Test/Log.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Test/Log.p_o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Program/Ar.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Program/Ar.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Hpc.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Hpc.p_o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Backpack/Id.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Backpack/Id.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple.o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Backpack/ConfiguredComponent.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Backpack/ConfiguredComponent.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Build/Macros.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Build/Macros.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Program/Ld.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Program/Ld.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Remove file _build/stage1/libraries/Cabal/Cabal/build/libHSCabal-3.6.3.0.a
+| Run MergeObjects Stage1: _build/stage1/libraries/Cabal/Cabal/build/Distribution/Backpack.o (and 246 more) => _build/stage1/libraries/Cabal/Cabal/build/HSCabal-3.6.3.0.o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/BuildPaths.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/BuildPaths.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ar Pack Stage1: _build/stage1/libraries/Cabal/Cabal/build/Distribution/Backpack.o (and 246 more) => _build/stage1/libraries/Cabal/Cabal/build/libHSCabal-3.6.3.0.a
+ar: creating archive _build/stage1/libraries/Cabal/Cabal/build/libHSCabal-3.6.3.0.a
+/-------------------------------------------------------------------------\
+| Successfully built library 'Cabal' (Stage1, way v).                     |
+| Library: _build/stage1/libraries/Cabal/Cabal/build/libHSCabal-3.6.3.0.a |
+| Library synopsis: A framework for packaging Haskell software.           |
+\-------------------------------------------------------------------------/
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/PackageDescription/Check.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/PackageDescription/Check.p_o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Test/LibV09.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Test/LibV09.p_o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/UHC.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/UHC.p_o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/GHC/Internal.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/GHC/Internal.p_o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Test/ExeV10.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Test/ExeV10.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Backpack/LinkedComponent.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Backpack/LinkedComponent.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/HaskellSuite.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/HaskellSuite.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/PreProcess.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/PreProcess.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Backpack/ReadyComponent.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Backpack/ReadyComponent.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/GHC/EnvironmentParser.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/GHC/EnvironmentParser.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/GHCJS.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/GHCJS.p_o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/GHC.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/GHC.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/UserHooks.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/UserHooks.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Backpack/Configure.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Backpack/Configure.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Bench.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Bench.p_o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Test.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Test.p_o
+
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Configure.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Configure.p_o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Register.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Register.p_o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Install.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Install.p_o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/ShowBuildInfo.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/ShowBuildInfo.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Build.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Build.p_o
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/SrcDist.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/SrcDist.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple/Haddock.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple/Haddock.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Run Ghc CompileHs Stage1: libraries/Cabal/Cabal/src/Distribution/Simple.hs => _build/stage1/libraries/Cabal/Cabal/build/Distribution/Simple.p_o
+
+when making flags consistent: warning:
+    Target platform uses unregisterised ABI, so compiling via C
+| Remove file _build/stage1/libraries/Cabal/Cabal/build/libHSCabal-3.6.3.0_p.a
+| Run MergeObjects Stage1: _build/stage1/libraries/Cabal/Cabal/build/Distribution/Backpack.p_o (and 246 more) => _build/stage1/libraries/Cabal/Cabal/build/HSCabal-3.6.3.0.p_o
+| Run Ar Pack Stage1: _build/stage1/libraries/Cabal/Cabal/build/Distribution/Backpack.p_o (and 246 more) => _build/stage1/libraries/Cabal/Cabal/build/libHSCabal-3.6.3.0_p.a
+ar: creating archive _build/stage1/libraries/Cabal/Cabal/build/libHSCabal-3.6.3.0_p.a
+/---------------------------------------------------------------------------\
+| Successfully built library 'Cabal' (Stage1, way p).                       |
+| Library: _build/stage1/libraries/Cabal/Cabal/build/libHSCabal-3.6.3.0_p.a |
+| Library synopsis: A framework for packaging Haskell software.             |
+\---------------------------------------------------------------------------/
+| Copy package 'Cabal'
+# cabal-copy (for _build/stage1/lib/package.conf.d/Cabal-3.6.3.0.conf)
+| Register package 'Cabal'
+# cabal-register (for _build/stage1/lib/package.conf.d/Cabal-3.6.3.0.conf)
+| Copy file: _build/stage0/bin/powerpc-apple-darwin8-ghc-pkg => _build/stage1/bin/powerpc-apple-darwin8-ghc-pkg
+| Create directory _build/bindist/ghc-9.2.8-powerpc-apple-darwin8
+| Create directory _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/bin
+| Create directory _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/lib
+| Copy file: _build/stage1/bin/powerpc-apple-darwin8-ghc => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/bin/powerpc-apple-darwin8-ghc-9.2.8
+| Copy file: _build/stage1/bin/powerpc-apple-darwin8-ghc-pkg => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/bin/powerpc-apple-darwin8-ghc-pkg-9.2.8
+| Copy file: _build/stage1/bin/powerpc-apple-darwin8-hp2ps => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/bin/powerpc-apple-darwin8-hp2ps-ghc-9.2.8
+| Copy file: _build/stage1/bin/powerpc-apple-darwin8-hsc2hs => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/bin/powerpc-apple-darwin8-hsc2hs-ghc-9.2.8
+| Copy file: _build/stage1/lib/bin/powerpc-apple-darwin8-unlit => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/bin/powerpc-apple-darwin8-unlit-ghc-9.2.8
+| Copy file: _build/stage1/lib/bin/powerpc-apple-darwin8-ghc-iserv => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/bin/powerpc-apple-darwin8-ghc-iserv-ghc-9.2.8
+| Copy directory: _build/stage1/lib => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8
+| Copy directory: _build/stage1/lib/ppc-osx-ghc-9.2.8/rts-1.0.2/include => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8
+# powerpc-apple-darwin8-ghc-pkg (for binary-dist-dir)
+| Remove file _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/lib/settings
+| Copy file: /Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/distrib/README => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/README
+| Copy file: /Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/install-sh => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/install-sh
+| Copy file: /Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/distrib/INSTALL => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/INSTALL
+| Copy file: /Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/config.guess => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/config.guess
+| Copy file: /Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/mk/project.mk => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/mk/project.mk
+| Copy file: /Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/config.sub => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/config.sub
+| Copy file: /Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/mk/config.mk.in => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/mk/config.mk.in
+| Copy file: /Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/mk/relpath.sh => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/mk/relpath.sh
+| Copy file: /Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/mk/install.mk.in => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/mk/install.mk.in
+| Copy file: /Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/hadrian/bindist/Makefile => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/Makefile
+| Copy file: /Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/aclocal.m4 => /Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/distrib/aclocal.m4
+| Copy directory: /Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/m4 => /Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/distrib
+| Run Autoreconf "/Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/distrib": none => none
+configure.ac:96: warning: The macro 'AC_PROG_CC_C99' is obsolete.
+configure.ac:96: You should run autoupdate.
+./lib/autoconf/c.m4:1788: AC_PROG_CC_C99 is expanded from...
+../m4/fp_set_cflags_c99.m4:7: FP_SET_CFLAGS_C99 is expanded from...
+configure.ac:96: the top level
+configure.ac:98: warning: The macro 'AC_PROG_CC_C99' is obsolete.
+configure.ac:98: You should run autoupdate.
+./lib/autoconf/c.m4:1788: AC_PROG_CC_C99 is expanded from...
+../m4/fp_set_cflags_c99.m4:7: FP_SET_CFLAGS_C99 is expanded from...
+configure.ac:98: the top level
+configure.ac:99: warning: The macro 'AC_PROG_CC_C99' is obsolete.
+configure.ac:99: You should run autoupdate.
+./lib/autoconf/c.m4:1788: AC_PROG_CC_C99 is expanded from...
+../m4/fp_set_cflags_c99.m4:7: FP_SET_CFLAGS_C99 is expanded from...
+configure.ac:99: the top level
+configure.ac:227: warning: AC_C_BIGENDIAN should be used with AC_CONFIG_HEADERS
+| Remove file /Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/distrib/aclocal.m4
+| Remove directory /Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/distrib/m4
+| Move file: /Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/distrib/configure => _build/bindist/ghc-9.2.8-powerpc-apple-darwin8/configure
+shakeArgsWith                        0.005s    0%                           
+Function shake                       0.020s    0%                           
+Database read                        0.833s    0%                           
+Database compression                 0.114s    0%                           
+With database                        0.031s    0%                           
+Running rules                      229.405s   99%  =========================
+Pool finished (4541 threads, 8 max)  0.003s    0%                           
+Cleanup                              0.000s    0%                           
+Total                              230.411s  100%                           
+Build completed in 3m50s
+

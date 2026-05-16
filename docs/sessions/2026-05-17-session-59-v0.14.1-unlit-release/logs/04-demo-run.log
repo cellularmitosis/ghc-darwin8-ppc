@@ -1,0 +1,38 @@
+==> 0. confirm unlit on Tiger is a real PPC binary
+/opt/ghc-stage2/lib/bin/powerpc-apple-darwin8-unlit: Mach-O executable ppc
+
+==> 1. ship the .lhs to Tiger
+v0.14.1 demo program — literate Haskell on PPC/Tiger
+=====================================================
+
+...
+      44 /tmp/literate.lhs
+
+==> 2. compile the .lhs with stage2 native ghc on Tiger
+[1 of 1] Compiling Main             ( literate.lhs, literate.o )
+Linking literate ...
+ld: warning: object file compiled with -mlong-branch which is no longer needed. To remove this warning, recompile without -mlong-branch: /Developer/SDKs/MacOSX10.4u.sdk/usr/lib/crt1.o
+ld: warning: duplicate dylib /opt/gcc14/lib/libgcc_s.1.dylib
+
+==> 3. run the compiled .lhs binary
+literate haskell on tiger ppc:
+  factorial 20  = 2432902008176640000
+  sort "tiger"  = "egirt"
+  map toUpper   = PPC DARWIN 8
+  collatz 27    = length 112, max 9232
+
+==> 4. :load the .lhs into the GHCi REPL (T10989-shape exercise)
+GHCi, version 9.2.8: https://www.haskell.org/ghc/  :? for help
+ghci> Ok, one module loaded.
+ghci> 15511210043330985984000000
+ghci> [27,82,41,124,62,31,94,47]
+ghci> collatz :: Int -> [Int]
+ghci> factorial :: Integer -> Integer
+ghci> literate haskell on tiger ppc:
+  factorial 20  = 2432902008176640000
+  sort "tiger"  = "egirt"
+  map toUpper   = PPC DARWIN 8
+  collatz 27    = length 112, max 9232
+ghci> Leaving GHCi.
+
+v0.14.1 demo done.  Literate Haskell works on PPC/Tiger.

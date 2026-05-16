@@ -1,6 +1,6 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-05-17 session 58.
+Last reviewed: 2026-05-17 session 59.
 
 ## What's done (baseline)
 
@@ -210,6 +210,22 @@ Notable PASSes: 6 TH-from-REPL regressions (T4127, T4127a, T5566,
 T8831, T10466, T11098 — session-57-HANDOFF priority #1's actual
 concern), `StaticPtr` (static-pointer table walk via REPL).
 See [session 58](sessions/2026-05-17-session-58-ghci-tnum-scripts/).
+
+✅ **Session 59 (v0.14.1):** Hadrian `unlit` packaging fix shipped.
+Patch 0010 amended in-place to add `unlit` alongside `iserv` in the
+cross-mode helper-binary-copy carve-out — `(True, s) | s > Stage0
+&& package /= iserv` → `package `notElem` [iserv, unlit]`.  Stage1
+rebuilt: hadrian itself recompiles one module (`Rules.Program`),
+then unlit cross-builds via hadrian's normal `buildBinary` path
+(`Ghc LinkHs` through stage1 cross-ghc → cross-cc), producing a
+real 47 KB PPC Mach-O.  Stage2 re-cross-built via
+`scripts/deploy-stage2.sh pmacg5`; bindist re-rolled.  Session-58
+runner re-runs at **161/163 PASS** against the new bindist (T10989
+✅ natively; only T8042 + T17549 remain — HFS+ 1-second mtime
+races in the upstream scripts, not PPC bugs).  Closes the v0.14.0
+literate-Haskell gap latent since v0.7.0.  Demo:
+[`demos/v0.14.1-literate-haskell.{lhs,sh}`](../demos/v0.14.1-literate-haskell.sh).
+See [session 59](sessions/2026-05-17-session-59-v0.14.1-unlit-release/).
 
 ### ~~B. Stage2 native `ghc`~~ ✅ done (v0.13.0)
 

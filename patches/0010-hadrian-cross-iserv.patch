@@ -7,13 +7,17 @@ index 04a3bf3a..a2e39ce7 100644
    cross <- flag CrossCompiling
    -- For cross compiler, copy @stage0/bin/<pgm>@ to @stage1/bin/@.
 +  --
-+  -- ghc-darwin8-ppc: iserv is special.  It needs to run on the
-+  -- TARGET (PPC Tiger), not the host.  So we must NOT copy a
-+  -- stage0 (host) binary into stage1 — instead, build from source
-+  -- with the cross-ghc, producing a real target binary.
++  -- ghc-darwin8-ppc: iserv and unlit are special.  They need to run
++  -- on the TARGET (PPC Tiger), not the host.  So we must NOT copy
++  -- a stage0 (host) binary into stage1 — instead, build from source
++  -- with the cross-ghc, producing a real target binary.  iserv is a
++  -- Haskell program (cross-built via stage1 ghc); unlit is a pure-C
++  -- utility (cross-built via the cross-cc — no Haskell deps, no RTS).
++  -- v0.14.1: added `unlit` after T10989 surfaced a wrong-arch unlit
++  -- in the bindist (had been latent since v0.7.0).
    case (cross, stage) of
 -    (True, s) | s > Stage0 -> do
-+    (True, s) | s > Stage0 && package /= iserv -> do
++    (True, s) | s > Stage0 && package `notElem` [iserv, unlit] -> do
          srcDir <- buildRoot <&> (-/- (stageString Stage0 -/- "bin"))
          copyFile (srcDir -/- takeFileName bin) bin
      (False, s) | s > Stage0 && (package `elem` [touchy, unlit]) -> do

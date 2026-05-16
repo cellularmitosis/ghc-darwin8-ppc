@@ -32,27 +32,27 @@ running Tigerbrew's gcc14, because our local cross-ld doesn't speak
 Tiger's crt1.
 
 Latest release:
-[**v0.14.0**](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.14.0)
-— **GHCi REPL on PPC/Tiger** 🎉.  `ghc -e`, `ghc --interactive`,
-`:t`, `:load`, `let`/lambdas, multi-line `:{ :}` blocks, imports,
-`Data.Map.Strict` lookups — all running in-process on a real
-PowerMac G5 under Mac OS X 10.4.  No new patches; all the load-
-bearing pieces have been in place since v0.8.0 (TemplateHaskell):
-runtime Mach-O loader (patches 0007 + 0009 + 0012), BCO byte-swap
-(patch 0014), `__eprintf` stub (patch 0011).  The last gating
-dependency was stage2 native ghc compiling real programs without
-`-A1G`, which v0.13.0's `STUArray Bool` fix
-([patch 0016](patches/0016-array-stuarray-bool-word-aligned-init.patch))
-unblocked.  v0.14.0 is the small turn of the key:
-`scripts/deploy-stage2.sh` now compiles `ghc/Main.hs` with
-`-DHAVE_INTERNAL_INTERPRETER` (and the `-i$GHC_SRC/ghc /
--package exceptions / -package time` extras the cabal flag would
-otherwise wire in).  See
-[session 55](docs/sessions/2026-05-15-session-55-ghci-repl-attempt/)
-and [`demos/v0.14.0-ghci-repl.sh`](demos/v0.14.0-ghci-repl.sh).
-Plus all of v0.13.0's `STUArray Bool` fix, v0.12.0's LLVM-8 swap,
-v0.11.0's stage2 native ghc, v0.10.0's profiling, v0.9.0's HTTPS,
-etc.
+[**v0.14.1**](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.14.1)
+— **Literate Haskell (`unlit`) packaging fix** 📜.  The v0.14.0
+bindist shipped a host (arm64) `unlit` pre-processor at
+`lib/bin/powerpc-apple-darwin8-unlit` — Hadrian's cross-mode
+helper-binary-copy in `hadrian/src/Rules/Program.hs` excluded
+`iserv` (patch 0010's carve-out) but missed `unlit`.  Any `.lhs`
+input produced exit code 126 ("cannot execute binary file").
+Latent since v0.7.0 (when patch 0010 landed); surfaced in
+[session 58](docs/sessions/2026-05-17-session-58-ghci-tnum-scripts/)
+by T10989 (the only `.lhs` test in upstream's GHCi script suite).
+v0.14.1 amends [patch 0010](patches/0010-hadrian-cross-iserv.patch)
+to add `unlit` alongside `iserv` in the exclusion list, so the
+cross-build's `buildBinary` path produces a real PPC Mach-O
+`unlit` (47 KB).  Session 58's runner now reports 161/163 PASS
+against the new bindist (T10989 ✅; only T8042 and T17549 remain,
+both HFS+ 1-second mtime-granularity races in the upstream
+scripts).  See [session 59](docs/sessions/2026-05-17-session-59-v0.14.1-unlit-release/)
+and [`demos/v0.14.1-literate-haskell.sh`](demos/v0.14.1-literate-haskell.sh).
+Plus all of v0.14.0's GHCi REPL, v0.13.0's `STUArray Bool` fix,
+v0.12.0's LLVM-8 swap, v0.11.0's stage2 native ghc, v0.10.0's
+profiling, v0.9.0's HTTPS, etc.
 
 ## Implementation status
 
@@ -134,7 +134,7 @@ differences from 32-bit Int / process-pid / program-name).
 | `loadObj` of all bindist `.o`s through iserv | ✅ Working | [v0.7.2](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.7.2).  ghc-prim, integer-gmp, ghc-bignum, **base** all load successfully. |
 | `__eprintf` symbol resolution | ✅ Working | [v0.7.1](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.7.1).  Tiger's libSystem has the symbol but doesn't export it, so `dlsym` fails.  RTS now ships its own stub via [patch 0011](patches/0011-rts-eprintf-stub.patch). |
 | TH splice end-to-end (host ghc → SSH → iserv → result) | ✅ Working | [v0.8.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.8.0).  `$(stringE …)`, `$(litE …)`, compile-time arithmetic — all evaluated by `ghc-iserv` on Tiger, then spliced into the output binary by host GHC.  Two bugs caught during 12f: (a) cross-built `binary` library mis-encoded Generic-derived sum tags as Word64 instead of Word8 ([patch 0013](patches/0013-binary-generic-direct-numeric-guards.patch)); (b) BCO array contents need byte-swap on host/target endian mismatch ([patch 0014](patches/0014-ghci-bco-byteswap-on-endian-mismatch.patch)). |
-| GHCi REPL | ✅ Working | [v0.14.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.14.0).  `ghc -e`, `ghc --interactive`, `:t`, `:load`, `let`/lambdas, `:{ :}` blocks, imports, `Data.Map.Strict` lookups — all running in-process on a real PowerMac G5 under Mac OS X 10.4.  No new patches; the load-bearing pieces (runtime Mach-O loader, BCO byte-swap, `__eprintf` stub) have been in place since v0.8.0; v0.13.0's `STUArray Bool` fix unblocked the last gating dep.  Build change: `scripts/deploy-stage2.sh` compiles `ghc/Main.hs` with `-DHAVE_INTERNAL_INTERPRETER` + `-i$GHC_SRC/ghc -package exceptions -package time` (the cabal `internal-interpreter` flag's effective contents).  **Testsuite verification ([session 56](docs/sessions/2026-05-15-session-56-ghci-testsuite/)):** 51/51 PASS on a curated subset of upstream's `testsuite/tests/ghci/scripts/` — every `normal`/`combined_output` script test that doesn't need extra harness (reqlib, req_th, etc.).  Covers `:type` / `:info` / `:load` / `:reload` / `:browse` / `:instances` / `:m` / `:set prompt` / multi-line `:{ :}` / `:main` / `:def` / TH-splice-from-REPL / static-pointers / `:doc` / record-wildcards / type families. Reusable harness in [`scripts/run-ghci-subset.sh`](docs/sessions/2026-05-15-session-56-ghci-testsuite/scripts/run-ghci-subset.sh).  **Extended verification ([session 58](docs/sessions/2026-05-17-session-58-ghci-tnum-scripts/)):** 161/163 PASS on the bug-numbered `T<NUM>.script` subset of the same dir (every `normal` / `combined_output` / `extra_files` test that doesn't need special harness).  Covers six TemplateHaskell-from-REPL regressions (T4127, T4127a, T5566, T8831, T10466, T11098), the `:reload` / `:load` / module-dependency family, type families + kind polymorphism, `StaticPtr`, type-applications, GADTs, and a long tail of `T<NNN>` issue-tracker regressions.  The two remaining failures (T8042, T17549) are HFS+ mtime-granularity races in the upstream scripts themselves — not PPC bugs.  Session 58 also surfaced and patched-in-place a real **packaging bug** in the v0.14.0 bindist: `lib/bin/powerpc-apple-darwin8-unlit` was a host (arm64) binary, not PPC; Hadrian's cross-build host-copy carve-out in [patch 0010](patches/0010-hadrian-cross-iserv.patch) only excluded `iserv` but should also have excluded `unlit`.  Pending a v0.14.1 release with the corrected Hadrian patch + rebuilt bindist; in the meantime [`scripts/build-unlit-ppc.sh`](docs/sessions/2026-05-17-session-58-ghci-tnum-scripts/scripts/build-unlit-ppc.sh) cross-builds a real PPC unlit. |
+| GHCi REPL | ✅ Working | [v0.14.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.14.0).  `ghc -e`, `ghc --interactive`, `:t`, `:load`, `let`/lambdas, `:{ :}` blocks, imports, `Data.Map.Strict` lookups — all running in-process on a real PowerMac G5 under Mac OS X 10.4.  No new patches; the load-bearing pieces (runtime Mach-O loader, BCO byte-swap, `__eprintf` stub) have been in place since v0.8.0; v0.13.0's `STUArray Bool` fix unblocked the last gating dep.  Build change: `scripts/deploy-stage2.sh` compiles `ghc/Main.hs` with `-DHAVE_INTERNAL_INTERPRETER` + `-i$GHC_SRC/ghc -package exceptions -package time` (the cabal `internal-interpreter` flag's effective contents).  **Testsuite verification ([session 56](docs/sessions/2026-05-15-session-56-ghci-testsuite/)):** 51/51 PASS on a curated subset of upstream's `testsuite/tests/ghci/scripts/` — every `normal`/`combined_output` script test that doesn't need extra harness (reqlib, req_th, etc.).  Covers `:type` / `:info` / `:load` / `:reload` / `:browse` / `:instances` / `:m` / `:set prompt` / multi-line `:{ :}` / `:main` / `:def` / TH-splice-from-REPL / static-pointers / `:doc` / record-wildcards / type families. Reusable harness in [`scripts/run-ghci-subset.sh`](docs/sessions/2026-05-15-session-56-ghci-testsuite/scripts/run-ghci-subset.sh).  **Extended verification ([session 58](docs/sessions/2026-05-17-session-58-ghci-tnum-scripts/)):** 161/163 PASS on the bug-numbered `T<NUM>.script` subset of the same dir (every `normal` / `combined_output` / `extra_files` test that doesn't need special harness).  Covers six TemplateHaskell-from-REPL regressions (T4127, T4127a, T5566, T8831, T10466, T11098), the `:reload` / `:load` / module-dependency family, type families + kind polymorphism, `StaticPtr`, type-applications, GADTs, and a long tail of `T<NNN>` issue-tracker regressions.  The two remaining failures (T8042, T17549) are HFS+ mtime-granularity races in the upstream scripts themselves — not PPC bugs.  Session 58 also surfaced a real **packaging bug** in the v0.14.0 bindist: `lib/bin/powerpc-apple-darwin8-unlit` was a host (arm64) binary, not PPC; Hadrian's cross-build host-copy carve-out in [patch 0010](patches/0010-hadrian-cross-iserv.patch) only excluded `iserv` but should also have excluded `unlit`.  **Fixed in [v0.14.1](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.14.1)** ([session 59](docs/sessions/2026-05-17-session-59-v0.14.1-unlit-release/)) — patch 0010 amended to add `unlit` to the carve-out; cross-build's `buildBinary` path produces a real 47 KB PPC `unlit`; T10989 (literate Haskell `:l dummy.lhs`) now PASSes natively from the bindist, taking the session-58 runner to 161/163 PASS. |
 | GHCi debugger (`:break` / `:step` / `:trace` / `:print` / `:force` / `:list`) | ✅ Working | **Testsuite verification ([session 57](docs/sessions/2026-05-16-session-57-ghci-debugger-testsuite/)):** 83/83 PASS on a curated subset of upstream's `testsuite/tests/ghci.debugger/scripts/` — every `normal` / `combined_output` / plain `extra_files` test that doesn't need special harness.  Covers bytecode breakpoint insertion (`:break NAME` / `:break NUM` / `:break MOD.NAME`), single-step execution (`:step` / `:steplocal` / `:stepmodule`), execution history (`:trace` / `:hist` / `:back` / `:forward`), suspended-thunk introspection (`:print` / `:sprint`), thunk forcing (`:force`, `_result` rebinding), source listing (`:list`), dynamic break enable/disable/delete, and 15 bug-numbered `T<NNN>` regression tests including `T13825-debugger` (`expect_broken` for ppc64 — passes here on ppc32).  Reusable harness in [`scripts/run-ghci-debugger.sh`](docs/sessions/2026-05-16-session-57-ghci-debugger-testsuite/scripts/run-ghci-debugger.sh). |
 
 ### Tooling
@@ -232,6 +232,7 @@ instead.
 | [v0.12.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.12.0) | 2026-05-09 | **Cross-toolchain swap LLVM-7 → LLVM-8** 🔧 (sister-project's BUG-010 patch restored the PPC32 Darwin "power" alignment field-cap that LLVM-8 dropped; stage1 builds 3× faster). |
 | [v0.13.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.13.0) | 2026-05-15 | **`STUArray Bool` big-endian root cause fixed** 🪄 (11-line patch to `libraries/array/Data/Array/Base.hs`; stage2 native ghc compiles real programs without the `-A1G` workaround.  Same root cause as previously-fixed-upstream [ghc#23132](https://gitlab.haskell.org/ghc/ghc/-/issues/23132); patch 0016 backports the equivalent fix into `array-0.5.4.0` — upstream's `bOOL_SCALE` rounding was added in `array-0.5.6.0`).  Closes the 32-session "stage2 produces empty .o" investigation. |
 | [v0.14.0](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.14.0) | 2026-05-15 | **GHCi REPL on PPC/Tiger** 🎉 (`ghc -e`, `ghc --interactive`, `:t`, `:load`, multi-line `:{ :}`, imports — all running in-process on a real PowerMac G5).  No new patches; `scripts/deploy-stage2.sh` now compiles `ghc/Main.hs` with `-DHAVE_INTERNAL_INTERPRETER` + `-i$GHC_SRC/ghc -package exceptions -package time` (the cabal `internal-interpreter` flag's effective contents).  Closes [roadmap C](docs/roadmap.md). |
+| [v0.14.1](https://github.com/cellularmitosis/ghc-darwin8-ppc/releases/tag/v0.14.1) | 2026-05-17 | **Literate Haskell (`.lhs`) works on Tiger** 📜 — Hadrian patch 0010 amended to add `unlit` alongside `iserv` in the cross-mode helper-binary-copy carve-out.  Pre-fix the v0.14.0 bindist shipped the host arm64 `unlit` with a `powerpc-apple-darwin8-` prefix (latent since v0.7.0 when patch 0010 landed; surfaced by [session 58](docs/sessions/2026-05-17-session-58-ghci-tnum-scripts/) via T10989).  Post-fix `unlit` cross-builds as a real 47 KB PPC Mach-O binary through hadrian's normal `buildBinary` path; session-58 runner re-runs at 161/163 PASS.  No other changes. |
 
 ## Licence
 

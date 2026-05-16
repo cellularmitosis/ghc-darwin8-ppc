@@ -1,0 +1,28 @@
+Warning: Specifying an absolute path to the project file is deprecated. Use
+--project-dir to set the project's directory.
+Configuration is affected by cabal.project at
+'/Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/hadrian'.
+Warning: The package list for 'hackage.haskell.org' is 23 days old.
+Run 'cabal update' to get the latest list of available packages.
+Resolving dependencies...
+Build profile: -w ghc-9.2.8 -O1
+In order, the following will be built (use -v for more details):
+ - hadrian-0.1.0.0 (exe:hadrian) (file src/Rules/Program.hs changed)
+Preprocessing executable 'hadrian' for hadrian-0.1.0.0...
+Building executable 'hadrian' for hadrian-0.1.0.0...
+[ 99 of 101] Compiling Rules.Program    ( src/Rules/Program.hs, dist-newstyle/build/aarch64-osx/ghc-9.2.8/hadrian-0.1.0.0/x/hadrian/build/hadrian/hadrian-tmp/Rules/Program.o )
+Linking dist-newstyle/build/aarch64-osx/ghc-9.2.8/hadrian-0.1.0.0/x/hadrian/build/hadrian/hadrian ...
+Warning: Specifying an absolute path to the project file is deprecated. Use
+--project-dir to set the project's directory.
+Configuration is affected by cabal.project at
+'/Users/cell/claude/ghc-darwin8-ppc/external/ghc-modern/ghc-9.2.8/hadrian'.
+shakeArgsWith                       0.001s    0%                           
+Function shake                      0.011s    1%                           
+Database read                       0.678s   81%  =========================
+With database                       0.030s    3%  =                        
+Running rules                       0.114s   13%  ====                     
+Pool finished (106 threads, 5 max)  0.003s    0%                           
+Cleanup                             0.000s    0%                           
+Total                               0.837s  100%                           
+Build completed in 0.84s
+
