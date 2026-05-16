@@ -15,6 +15,13 @@ import sys
 CALLSITE_RE = re.compile(r', called at (.+):[\d]+:[\d]+ in [\w\-\.]+:')
 ERROR_KEYWORD_RE = re.compile(r' error:')
 WARNING_KEYWORD_RE = re.compile(r' Warning:')
+# Upstream testlib.py:normalise_errmsg masks instance counts in the
+# "out-of-scope instances" footer (varies with bignum backend / base
+# version).  Same regex as upstream (line ~2261).
+INSTANCES_OUT_OF_SCOPE_RE = re.compile(
+    r'\.\.\.plus ([a-z]+|[0-9]+) instances involving out-of-scope types')
+# Upstream also masks "ghc-bignum-X.Y.Z" → "ghc-bignum-<VERSION>".
+BIGNUM_VERSION_RE = re.compile(r'ghc-bignum-[0-9.]+')
 BULLET = '•'
 
 
@@ -37,6 +44,9 @@ def normalise(s, versions=()):
     # " Warning:" → " warning:"
     s = '\n'.join(WARNING_KEYWORD_RE.sub(' warning:', l) for l in s.split('\n'))
     s = normalise_callstacks(s)
+    s = INSTANCES_OUT_OF_SCOPE_RE.sub(
+        '...plus N instances involving out-of-scope types', s)
+    s = BIGNUM_VERSION_RE.sub('ghc-bignum-<VERSION>', s)
     s = s.replace(BULLET, '')
     s = normalise_version_strs(s, versions)
     return s

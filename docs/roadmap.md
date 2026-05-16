@@ -1,6 +1,6 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-05-15 session 56.
+Last reviewed: 2026-05-16 session 57.
 
 ## What's done (baseline)
 
@@ -164,6 +164,24 @@ Notable: ghci018 (TH splice typed at REPL) PASSes — cross-stresses
 the in-process interpreter + BCO machinery + runtime Mach-O loader
 beyond anything session 55's hand smoke tests reached.
 See [session 56](sessions/2026-05-15-session-56-ghci-testsuite/).
+
+✅ **Session 57 (verification):** 83/83 PASS on a curated subset of
+upstream's `testsuite/tests/ghci.debugger/scripts/` — the
+`:break` / `:step` / `:trace` / `:print` / `:force` / `:list` family.
+Picked every `normal` / `combined_output` / plain `extra_files` test
+that doesn't need special harness.  This was the session-56-HANDOFF-
+predicted "most likely place for an actual PPC bug to surface" — the
+debugger exercises bytecode breakpoint insertion (`BRK_FUN` opcode
+patching), suspended-thunk introspection without forcing, IND-following
+through `:force`, and call-stack walking from BCOs — none of which
+session 56 touched.  Surface zero PPC bugs.  `T13825-debugger`
+(`expect_broken(14455)` for **powerpc64**) passes here on **ppc32**.
+Reusable runner in
+[`docs/sessions/2026-05-16-session-57-ghci-debugger-testsuite/scripts/`](sessions/2026-05-16-session-57-ghci-debugger-testsuite/scripts/);
+shared normaliser gained two more upstream `testlib.py` rules
+(`...plus N instances` count erasure, `ghc-bignum-<VERSION>`).
+No new patches, no source changes, no release.
+See [session 57](sessions/2026-05-16-session-57-ghci-debugger-testsuite/).
 
 ### ~~B. Stage2 native `ghc`~~ ✅ done (v0.13.0)
 
