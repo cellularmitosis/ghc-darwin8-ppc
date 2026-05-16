@@ -1,10 +1,11 @@
 # Session 59 commits
 
-- (placeholder for the v0.14.1 release commit) — backfill the SHA
-  once `git commit` lands.  Shape: patch 0010 amended in `patches/`,
-  hadrian source change in `external/ghc-modern/ghc-9.2.8/hadrian/src/Rules/Program.hs`,
-  demo + demos/README, README + state.md + roadmap.md, session 59
-  dir + this commits.md.
+| SHA | Subject |
+|---|---|
+| `e95ee29` | v0.14.1: literate Haskell (unlit) packaging fix. |
+
+`v0.14.1` annotated tag pointing at `e95ee29` (local-only, not
+pushed).
 
 ## Release artifacts (ready locally, not yet uploaded)
 
