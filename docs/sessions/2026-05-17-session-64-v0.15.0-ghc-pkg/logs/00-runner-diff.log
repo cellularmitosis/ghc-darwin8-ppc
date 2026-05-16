@@ -1,0 +1,70 @@
+45,49c45,66
+< # T6106 (pre_cmd '$MAKE T6106_prep' = compile preproc + extra_files
+< # ../shell.hs) and T19650 (pre_cmd '$MAKE T19650_setup' = needs
+< # ghc-pkg on the PPC host) are deliberately *not* wired yet — they
+< # need either a native compile step or ghc-pkg deployment that's
+< # outside this session's scope.
+---
+> # Session 64 extension: $MAKE-style `pre_cmd(...)` for tests that
+> # need a native compile step or a ghc-pkg invocation.  Adds two tests:
+> #  - T6106 (pre_cmd '$MAKE T6106_prep' + extra_files ../shell.hs):
+> #    expands $MAKE T6106_prep to a single `ghc --make T6106_preproc
+> #    -v0` invocation against the deployed stage2 ghc-real on the PPC
+> #    host (semantically identical to upstream's Makefile target).
+> #    `../shell.hs` (a peer of scripts/) is staged into the test dir
+> #    by listing it as an explicit `../shell.hs` extras entry — the
+> #    existing staging loop's `cp "$SCRIPTS_DIR/$x" "$dest/"` resolves
+> #    the `..` and cp picks up the basename `shell.hs`.
+> #  - T19650 (pre_cmd '$MAKE T19650_setup' = `ghc-pkg latest base >
+> #    my_package_env` + extra_hc_opts '-package-env my_package_env -v1'
+> #    + filter_stdout_lines): uses v0.15.0's newly-deployed
+> #    /opt/ghc-stage2/bin/ghc-pkg.  Pre-v0.15.0 the deployed stage2
+> #    didn't include ghc-pkg (the cross-build produced an arm64 ghc-pkg
+> #    via the same patch-0010 carve-out hole that v0.14.1 fixed for
+> #    unlit); v0.15.0 adds `ghcPkg` to that carve-out and ships a real
+> #    ppc ghc-pkg in the deployed bin/.  normalise.py gains a
+> #    `--filter-stdout-regex` flag mirroring upstream's
+> #    `filter_stdout_lines(...)` annotation.
+> # ghci056 (pre_cmd $MAKE) is ghciNNN-shaped so belongs to session
+> # 56's runner, not this one — out of scope.
+107a125
+>   "T6106 0 ../shell.hs"
+251a270
+>   "T19650 0"
+284a304,306
+>     # extra_hc_opts(...) (session 64) — package-env file produced by
+>     # T19650's pre_cmd; -v1 makes the "Loaded package env" line emit.
+>     T19650)        echo "-package-env my_package_env -v1" ;;
+298a321,328
+>     # Session 64: $MAKE-style pre_cmds.  Each expansion mirrors
+>     # upstream's testsuite/tests/ghci/scripts/Makefile target body,
+>     # rewritten against the stage2 paths we use here.
+>     # T6106_prep: `'$(TEST_HC)' $(TEST_HC_OPTS) -v0 --make T6106_preproc`
+>     T6106)  echo "/opt/ghc-stage2/bin/ghc-real --make T6106_preproc -v0" ;;
+>     # T19650_setup: `'$(GHC_PKG)' latest base > my_package_env`
+>     # (uses the v0.15.0-deployed ghc-pkg).
+>     T19650) echo "/opt/ghc-stage2/bin/ghc-pkg latest base > my_package_env" ;;
+399a430,433
+>     # Session 64: T19650's filter_stdout_lines(r'Loaded package env.*').
+>     # Mirrors upstream's testlib.py::filter_stdout_lines which does
+>     # `'\n'.join(re.findall(regex, s))` — keep matching lines only.
+>     T19650) echo "--filter-stdout-regex 'Loaded package env.*'" ;;
+419a454,455
+>   # `eval` re-parses the quotes inside $nargs so multi-word regexes
+>   # (eg. T19650's `'Loaded package env.*'`) stay one argv element.
+421,422c457,458
+<     norm "$dir/expected.stdout" $nargs
+<     norm "$dir/actual.combined" $nargs
+---
+>     eval norm "\"$dir/expected.stdout\"" $nargs
+>     eval norm "\"$dir/actual.combined\"" $nargs
+429,432c465,468
+<     norm "$dir/expected.stdout" $nargs
+<     norm "$dir/expected.stderr" $nargs
+<     norm "$dir/actual.stdout" $nargs
+<     norm "$dir/actual.stderr" $nargs
+---
+>     eval norm "\"$dir/expected.stdout\"" $nargs
+>     eval norm "\"$dir/expected.stderr\"" $nargs
+>     eval norm "\"$dir/actual.stdout\"" $nargs
+>     eval norm "\"$dir/actual.stderr\"" $nargs

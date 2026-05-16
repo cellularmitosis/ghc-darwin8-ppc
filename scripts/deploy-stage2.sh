@@ -10,6 +10,7 @@
 # After this completes, the native ghc on the Tiger host is at:
 #     /opt/ghc-stage2/bin/ghc          (wrapper, calls ghc-real with -A1G)
 #     /opt/ghc-stage2/bin/ghc-real     (the actual PPC Mach-O binary)
+#     /opt/ghc-stage2/bin/ghc-pkg      (PPC ghc-pkg; v0.15.0+)
 #
 # Tiger smoke test:
 #     ssh tiger 'DYLD_LIBRARY_PATH=/opt/gmp-6.2.1/lib:/opt/gcc14/lib \
@@ -63,7 +64,14 @@ echo "==> [3/5] deploy to $PPC_HOST"
 ssh "$PPC_HOST" 'mkdir -p /opt/ghc-stage2/bin /opt/ghc-stage2/lib'
 scp -q /tmp/stage2-build/ghc-stage2 "$PPC_HOST:/opt/ghc-stage2/bin/ghc-real"
 scp -q "$WRAPPER" "$PPC_HOST:/opt/ghc-stage2/bin/ghc"
-ssh "$PPC_HOST" 'chmod +x /opt/ghc-stage2/bin/ghc /opt/ghc-stage2/bin/ghc-real'
+# v0.15.0: ship the cross-built PPC ghc-pkg.  Patch 0010 was amended
+# in this release to add `ghcPkg`, `hsc2hs`, `hp2ps` to the cross-mode
+# carve-out, so `_build/stage1/bin/powerpc-apple-darwin8-ghc-pkg` is
+# now a real ppc binary (pre-v0.15.0 it was the host arm64 binary
+# copied verbatim by hadrian's stage0→stage1 helper-copy path, same
+# packaging-bug shape as v0.14.1's unlit fix).
+scp -q "$GHC_SRC/_build/stage1/bin/powerpc-apple-darwin8-ghc-pkg" "$PPC_HOST:/opt/ghc-stage2/bin/ghc-pkg"
+ssh "$PPC_HOST" 'chmod +x /opt/ghc-stage2/bin/ghc /opt/ghc-stage2/bin/ghc-real /opt/ghc-stage2/bin/ghc-pkg'
 rsync -a --delete "$STAGE1_LIB/" "$PPC_HOST:/opt/ghc-stage2/lib/" >/dev/null
 
 echo "==> [4/5] write Tiger lib/settings"

@@ -1,0 +1,29 @@
+41c41,57
+< def normalise(s, versions=()):
+---
+> def filter_stdout_lines(s, regex):
+>     """Mirrors upstream testlib.py::filter_stdout_lines — keep only the
+>     text matched by `regex` across the whole input, joined by newlines.
+>     Used for T19650 (`r'Loaded package env.*'`) so the dozens of -v1
+>     log lines collapse to the one line the test actually asserts about.
+>     """
+>     return '\n'.join(re.findall(regex, s))
+> 
+> 
+> def normalise(s, versions=(), filter_regex=None):
+>     # filter_stdout_lines runs FIRST when applicable — it picks out
+>     # the lines the test cares about; subsequent normalisations only
+>     # see those lines.
+>     if filter_regex is not None:
+>         s = filter_stdout_lines(s, filter_regex)
+>         if s and not s.endswith('\n'):
+>             s += '\n'
+68a85,87
+>     ap.add_argument('--filter-stdout-regex', default=None,
+>                     help='regex (Python flavour) — keep only matching '
+>                          'substrings; mirrors upstream filter_stdout_lines')
+73c92,93
+<     sys.stdout.write(normalise(sys.stdin.read(), versions))
+---
+>     sys.stdout.write(normalise(sys.stdin.read(), versions,
+>                                filter_regex=args.filter_stdout_regex))

@@ -2,22 +2,25 @@ diff --git a/hadrian/src/Rules/Program.hs b/hadrian/src/Rules/Program.hs
 index 04a3bf3a..a2e39ce7 100644
 --- a/hadrian/src/Rules/Program.hs
 +++ b/hadrian/src/Rules/Program.hs
-@@ -99,8 +99,13 @@ buildProgram bin ctx@(Context{..}) rs = do
- 
+@@ -99,8 +99,18 @@ buildProgram bin ctx@(Context{..}) rs = do
+
    cross <- flag CrossCompiling
    -- For cross compiler, copy @stage0/bin/<pgm>@ to @stage1/bin/@.
 +  --
-+  -- ghc-darwin8-ppc: iserv and unlit are special.  They need to run
-+  -- on the TARGET (PPC Tiger), not the host.  So we must NOT copy
-+  -- a stage0 (host) binary into stage1 — instead, build from source
-+  -- with the cross-ghc, producing a real target binary.  iserv is a
-+  -- Haskell program (cross-built via stage1 ghc); unlit is a pure-C
-+  -- utility (cross-built via the cross-cc — no Haskell deps, no RTS).
-+  -- v0.14.1: added `unlit` after T10989 surfaced a wrong-arch unlit
-+  -- in the bindist (had been latent since v0.7.0).
++  -- ghc-darwin8-ppc: iserv, unlit, ghc-pkg (and other helpers) are
++  -- special.  They need to run on the TARGET (PPC Tiger), not the
++  -- host.  So we must NOT copy a stage0 (host) binary into stage1 —
++  -- instead, build from source with the cross-ghc, producing a real
++  -- target binary.  iserv is a Haskell program (cross-built via
++  -- stage1 ghc); unlit is a pure-C utility (cross-built via the
++  -- cross-cc — no Haskell deps, no RTS); ghc-pkg, hsc2hs, hp2ps
++  -- are similar mixed helpers shipped in the bindist's bin/.
++  -- v0.14.1: added `unlit` after T10989 surfaced a wrong-arch unlit.
++  -- v0.15.0: added `ghcPkg` (and `hsc2hs`, `hp2ps`) after T19650
++  -- surfaced the same problem for ghc-pkg in the bindist.
    case (cross, stage) of
 -    (True, s) | s > Stage0 -> do
-+    (True, s) | s > Stage0 && package `notElem` [iserv, unlit] -> do
++    (True, s) | s > Stage0 && package `notElem` [iserv, unlit, ghcPkg, hsc2hs, hp2ps] -> do
          srcDir <- buildRoot <&> (-/- (stageString Stage0 -/- "bin"))
          copyFile (srcDir -/- takeFileName bin) bin
      (False, s) | s > Stage0 && (package `elem` [touchy, unlit]) -> do

@@ -1,6 +1,6 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-05-17 session 63.
+Last reviewed: 2026-05-17 session 64.
 
 ## What's done (baseline)
 
@@ -300,6 +300,28 @@ Remaining unwired annotations in this subset: `$MAKE`-style
 `pre_cmd` (T6106, T19650, ghci056) — need a native-preproc compile
 step or `ghc-pkg` deployment.
 See [session 63](sessions/2026-05-17-session-63-reqlib-and-pre-cmd/).
+
+✅ **Session 64 (v0.15.0 release):** Shipped the ghc-pkg packaging
+fix — same shape as v0.14.1's unlit fix.  [Patch 0010](../patches/0010-hadrian-cross-iserv.patch)
+carve-out extended from `[iserv, unlit]` to
+`[iserv, unlit, ghcPkg, hsc2hs, hp2ps]`; new
+[patch 0018](../patches/0018-hadrian-bindist-cross-skip-recache.patch)
+disables hadrian's bindist-side `ghc-pkg recache` step for
+cross-compiles.  Stage1 rebuilt; ghc-pkg / hp2ps / hsc2hs now
+cross-build as real ppc Mach-O binaries.  `scripts/deploy-stage2.sh`
+ships ghc-pkg to `/opt/ghc-stage2/bin/`.  Demo:
+[`demos/v0.15.0-ghc-pkg.{sh}`](../demos/v0.15.0-ghc-pkg.sh) — exercises
+`ghc-pkg --version`, `list`, `latest base`, `field base version`,
+`field transformers id` on a real Tiger box.  Runner gained two new
+`pre_cmd_for()` arms (T6106 `--make T6106_preproc`, T19650 `ghc-pkg
+latest base > my_package_env`), one new `run_opts_for()` arm
+(T19650's `-package-env -v1`), one new `norm_args_for()` arm +
+`filter_stdout_lines()` machinery in `normalise.py`.  T6106 + T19650
+PASS clean.  Result: **175/177 PASS** on the now-177-test T-prefix
+subset; all annotation flavours in this subset are now wired (ghci056
+is ghciNNN-shaped so out of scope).  Tarball at
+`_build/bindist/ghc-9.2.8-stage1-cross-to-ppc-darwin8.tar.xz`.
+See [session 64](sessions/2026-05-17-session-64-v0.15.0-ghc-pkg/).
 
 ### ~~B. Stage2 native `ghc`~~ ✅ done (v0.13.0)
 

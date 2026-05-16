@@ -1,0 +1,30 @@
+
+==================== Proto-BCOs ====================
+2026-05-16 16:24:51.727322 UTC
+
+ProtoBCO BCO_toplevel_E0#0 []:
+   \u [] let sat_sWi = ... in ...
+   bitmap:  0 []
+   ALLOC_PAP    1 0
+   PUSH_BCO
+     ProtoBCO sat_sWi#1 []:
+        \r [$dNum_sWg] let sat_sWh = ... in ...
+        bitmap:  1 [0]
+        PUSH_UBX32 42#
+        PACK     GHC.Num.Integer.IS 1
+        PUSH32_W   0
+        PUSH32_W   8
+        PUSH_APPLY_PP
+        PUSH_G   GHC.Num.fromInteger
+        SLIDE    4 2
+        ENTER
+   MKPAP    0 words, 1 stkoff
+   PUSH_G   GHC.Types.[]
+   PUSH32   4
+   PACK     : 2
+   PUSH32_W   0
+   PUSH_APPLY_P
+   PUSH_G   GHC.Base.returnIO
+   SLIDE    3 2
+   ENTER
+

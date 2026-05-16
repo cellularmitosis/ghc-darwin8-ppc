@@ -1,0 +1,25 @@
+diff --git a/hadrian/src/Rules/BinaryDist.hs b/hadrian/src/Rules/BinaryDist.hs
+index 0000000..0000000 100644
+--- a/hadrian/src/Rules/BinaryDist.hs
++++ b/hadrian/src/Rules/BinaryDist.hs
+@@ -197,8 +197,18 @@ bindistRules = do
+         -- Call ghc-pkg recache, after copying so the package.cache is
+         -- accurate, then it's on the distributor to use `cp -a` to install
+         -- a relocatable bindist.
+         --
+         -- N.B. the ghc-pkg executable may be prefixed with a target triple
+         -- (c.f. #20267).
+-        ghcPkgName <- programName (vanillaContext Stage1 ghcPkg)
+-        cmd_ (bindistFilesDir -/- "bin" -/- ghcPkgName) ["recache"]
++        --
++        -- ghc-darwin8-ppc (v0.15.0): skip recache when cross-compiling —
++        -- the bindist's ghc-pkg is now a real target (PPC) binary (post
++        -- patch-0010 v0.15.0 carve-out fix), and can't be exec'd on the
++        -- host (arm64).  install.sh on the target runs `ghc-pkg recache`
++        -- as part of its install sequence, so the user gets a fresh
++        -- cache there.  Pre-v0.15.0 this code path worked by accident:
++        -- ghc-pkg in the bindist was the host arm64 binary copied
++        -- verbatim by the patch-0010 carve-out hole.
++        unless cross $ do
++            ghcPkgName <- programName (vanillaContext Stage1 ghcPkg)
++            cmd_ (bindistFilesDir -/- "bin" -/- ghcPkgName) ["recache"]
