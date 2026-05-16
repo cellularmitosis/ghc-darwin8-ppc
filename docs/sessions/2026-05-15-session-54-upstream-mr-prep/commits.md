@@ -2,7 +2,7 @@
 
 | SHA | Subject |
 |---|---|
-| _(to be backfilled when the commit lands)_ | Session 54: upstream prior-art discovery — STUArray Bool fix is already upstream (ghc#23132 / 9cc80b5 / array-0.5.6.0). |
+| `1b23133` | Session 54: STUArray Bool fix already upstream (ghc#23132). |
 
 ## Files changed
 
