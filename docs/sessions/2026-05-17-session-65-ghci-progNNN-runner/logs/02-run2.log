@@ -1,0 +1,21 @@
+
+=== GHCi progNNN subset results (host=pmacg5, ghc=/opt/ghc-stage2/bin/ghc-real) ===
+  PASS  prog001             (rc=0)
+  PASS  prog002             (rc=0)
+  PASS  prog003             (rc=0)
+  PASS  prog005             (rc=0)
+  PASS  prog006             (rc=0)
+  PASS  ghci.prog007        (rc=0)
+  PASS  ghci.prog008        (rc=0)
+  PASS  ghci.prog009        (rc=0)
+  PASS  ghci.prog010        (rc=0)
+  PASS  prog011             (rc=0)
+  PASS  prog012             (rc=0)
+  PASS  prog013             (rc=0)
+  PASS  prog015             (rc=0)
+  PASS  prog016             (rc=0)
+  PASS  prog017             (rc=0)
+  PASS  prog018             (rc=0)
+  PASS  prog019             (rc=0)
+
+=== Summary: 17 PASS / 0 FAIL out of 17 tests ===

@@ -1,6 +1,6 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-05-17 session 64.
+Last reviewed: 2026-05-17 session 65.
 
 ## What's done (baseline)
 
@@ -322,6 +322,32 @@ subset; all annotation flavours in this subset are now wired (ghci056
 is ghciNNN-shaped so out of scope).  Tarball at
 `_build/bindist/ghc-9.2.8-stage1-cross-to-ppc-darwin8.tar.xz`.
 See [session 64](sessions/2026-05-17-session-64-v0.15.0-ghc-pkg/).
+
+✅ **Session 65 (verification):** New runner for `tests/ghci/
+prog001..prog019` — **17/17 PASS** across two consecutive runs.
+Modelled on session 64's `run-ghci-tnum.sh` with three shape changes
+for per-test-dir staging: (i) `cp -R "$GHCI_DIR/$dir" "$dest"` plus
+a single tar stream catches subdirectories (`Level2/` in
+prog015/016/017) and non-`.hs` files (`Boot.hs-boot` in prog006,
+`C.hs-boot` in prog007); (ii) test-name vs dir-name split — four
+tests are named `ghci.prog00{7,8,9,10}` in their `.T` while the
+directory is bare `prog00N`; (iii) remote `HC` / `HC_OPTS` /
+`ghciWayFlags` env-var exports for scripts that do `:shell "$HC"
+$HC_OPTS $ghciWayFlags -fforce-recomp -c X.hs` for partial native
+compilation between `:reload`s (prog001/002/003/010).  Skipped two
+of-shape-mismatch tests: prog004 (`makefile_test`, not
+`ghci_script`) and prog014 (`expect_fail` + `pre_cmd($MAKE -s
+prog014)` for foreign-import-prim, deliberately broken upstream).
+`prog019`'s `extra_hc_opts('-fkeep-going')` routed through
+`run_opts_for()` the same way session 60/62/63/64 routed other
+flags; `prog018`'s `combined_output` handled by the existing
+`combined=1` arm.  Verification only; no GHC source changes, no
+patches, no release.  Reusable harness in
+[`docs/sessions/2026-05-17-session-65-ghci-progNNN-runner/scripts/`](sessions/2026-05-17-session-65-ghci-progNNN-runner/scripts/);
+the per-test-dir staging shape generalises directly to other
+multi-file test families (the bug-numbered `tests/ghci/T<num>/`
+subdirs, `tests/ghci/should_run/`, `tests/ghci/should_fail/`).
+See [session 65](sessions/2026-05-17-session-65-ghci-progNNN-runner/).
 
 ### ~~B. Stage2 native `ghc`~~ ✅ done (v0.13.0)
 

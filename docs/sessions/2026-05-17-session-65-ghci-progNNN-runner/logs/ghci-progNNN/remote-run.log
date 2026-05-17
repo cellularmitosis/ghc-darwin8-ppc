@@ -1,0 +1,17 @@
+TEST prog001 rc=0
+TEST prog002 rc=0
+TEST prog003 rc=0
+TEST prog005 rc=0
+TEST prog006 rc=0
+TEST ghci.prog007 rc=0
+TEST ghci.prog008 rc=0
+TEST ghci.prog009 rc=0
+TEST ghci.prog010 rc=0
+TEST prog011 rc=0
+TEST prog012 rc=0
+TEST prog013 rc=0
+TEST prog015 rc=0
+TEST prog016 rc=0
+TEST prog017 rc=0
+TEST prog018 rc=0
+TEST prog019 rc=0
