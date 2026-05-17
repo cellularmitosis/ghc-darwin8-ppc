@@ -1,6 +1,6 @@
 # Session 67 commits
 
-- [`<TBD>`](https://github.com/cellularmitosis/ghc-darwin8-ppc/commit/TBD):
+- [`30dba01`](https://github.com/cellularmitosis/ghc-darwin8-ppc/commit/30dba01):
   Session 67: new runner for tests/ghci/should_run/ +
   tests/ghci/should_fail/ subsets; 44/44 PASS.  Adds the
   compile_and_run-ghci shape (synthetic genscript mirroring
