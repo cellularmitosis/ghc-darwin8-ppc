@@ -1,0 +1,14 @@
+
+=== GHCi T-dir subset results (host=pmacg5, ghc=/opt/ghc-stage2/bin/ghc-real) ===
+  PASS  T11827          (rc=0)  expected-broken: stdout non-empty but no expected.stdout
+  PASS  T16392          (rc=0)
+  FAIL  T16525a         (rc=139)  ghc rc=139 (lethal signal)
+  PASS  T16525b         (rc=0)
+  PASS  T16793          (rc=0)
+  PASS  T18060          (rc=0)
+  PASS  T18071          (rc=0)
+  PASS  T18262          (rc=0)
+
+=== Summary: 7 PASS / 1 FAIL out of 8 tests ===
+Failed: T16525a
+Diffs in /Users/cell/claude/ghc-darwin8-ppc/docs/sessions/2026-05-17-session-66-ghci-Tdir-runner/logs/ghci-Tdir/<dir>/{actual,<name>}.* 

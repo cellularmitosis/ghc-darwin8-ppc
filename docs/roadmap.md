@@ -323,6 +323,31 @@ is ghciNNN-shaped so out of scope).  Tarball at
 `_build/bindist/ghc-9.2.8-stage1-cross-to-ppc-darwin8.tar.xz`.
 See [session 64](sessions/2026-05-17-session-64-v0.15.0-ghc-pkg/).
 
+✅ **Session 66 (verification):** New runner for `tests/ghci/T<num>/`
+bug-numbered per-test subdirs — **7/8 PASS** across multiple
+consecutive runs.  Strict subset of session 65's runner: drops
+`shell.hs` staging, test-name/dir-name split, and remote `HC` /
+`HC_OPTS` / `ghciWayFlags` exports (none needed for this subset).
+Adds `expect_broken` pass/fail inversion (for T11827 — upstream
+marks it broken because `-v0` suppresses the test's intended error
+message) and SIGSEGV/SIGBUS detection.  Skipped 3 tests in 2 dirs
+as `makefile_test` shape (T13786, T16670_unboxed, T16670_th).
+**T16525a is a real PPC RTS-linker bug** — produces the correct
+expected output then SIGSEGVs during a post-unload `performGC`;
+bisected to a 3-condition / 5-line minimal trigger
+([`logs/T16525a-segv-bisect.md`](sessions/2026-05-17-session-66-ghci-Tdir-runner/logs/T16525a-segv-bisect.md))
+involving `:l []` object-code unload + a post-unload `forkIO`'d
+thread holding stale Cmm refs + a subsequent GC.  T16525b
+(structurally the same but the thread keeps re-entering unloaded
+code across multiple GCs) is paradoxically clean rc=0 — best guess
+is its closures stay TSO-stack-pinned.  Worth a future RTS-focused
+investigation.  Combined GHCi-script coverage at session 66 exit:
+**199/202** across three families (175/177 scripts/ + 17/17
+prog0NN + 7/8 T<num>/).  Reusable harness in
+[`docs/sessions/2026-05-17-session-66-ghci-Tdir-runner/scripts/`](sessions/2026-05-17-session-66-ghci-Tdir-runner/scripts/).
+Verification only; no GHC source changes, no patches, no release.
+See [session 66](sessions/2026-05-17-session-66-ghci-Tdir-runner/).
+
 ✅ **Session 65 (verification):** New runner for `tests/ghci/
 prog001..prog019` — **17/17 PASS** across two consecutive runs.
 Modelled on session 64's `run-ghci-tnum.sh` with three shape changes
