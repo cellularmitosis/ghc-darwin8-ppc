@@ -1,0 +1,6 @@
+:set prog ghcirun001
+:set args
+:! echo ===== program output begins here
+:! echo 1>&2 ===== program output begins here
+System.IO.hSetBuffering System.IO.stdout System.IO.LineBuffering
+GHC.TopHandler.runIOFastExit Main.main Prelude.>> Prelude.return ()

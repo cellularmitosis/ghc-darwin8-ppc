@@ -1,0 +1,21 @@
+
+<interactive>:1:1:
+    The type synonym ‘F1’ should have 1 argument, but has been given none
+
+<interactive>:1:4:
+     Expected kind ‘forall k. k’, but ‘F2’ has kind ‘k0’
+      Cannot instantiate unification variable ‘k0’
+      with a kind involving polytypes: forall k. k
+     In the first argument of ‘T2’, namely ‘F2’
+      In the type ‘T2 F2’
+
+<interactive>:1:1:
+    The type synonym ‘F1’ should have 1 argument, but has been given none
+
+<interactive>:1:11:
+     Expected kind ‘forall k. k’, but ‘F2’ has kind ‘k0’
+      Cannot instantiate unification variable ‘k0’
+      with a kind involving polytypes: forall k. k
+     In the first argument of ‘T2’, namely ‘F2’
+      In the first argument of ‘Maybe’, namely ‘(T2 F2)’
+      In the type ‘Maybe (T2 F2)’

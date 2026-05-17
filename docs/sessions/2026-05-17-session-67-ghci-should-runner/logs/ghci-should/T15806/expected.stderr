@@ -1,0 +1,4 @@
+
+<interactive>:1:1:
+    Illegal polymorphic type: forall a. a -> a
+    Perhaps you intended to use ImpredicativeTypes

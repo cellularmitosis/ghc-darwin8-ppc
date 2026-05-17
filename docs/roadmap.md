@@ -1,6 +1,6 @@
 # Roadmap — GHC 9.2.8 on PPC/Darwin 8
 
-Last reviewed: 2026-05-17 session 65.
+Last reviewed: 2026-05-17 session 67.
 
 ## What's done (baseline)
 
@@ -322,6 +322,31 @@ subset; all annotation flavours in this subset are now wired (ghci056
 is ghciNNN-shaped so out of scope).  Tarball at
 `_build/bindist/ghc-9.2.8-stage1-cross-to-ppc-darwin8.tar.xz`.
 See [session 64](sessions/2026-05-17-session-64-v0.15.0-ghc-pkg/).
+
+✅ **Session 67 (verification):** New runner for
+`tests/ghci/should_run/` + `tests/ghci/should_fail/` — **44/44 PASS**
+across two consecutive runs.  First runner to handle two upstream
+source dirs and two test kinds in one shape: `ghci_script` (7
+should_fail + 29 should_run) plus the new `compile_and_run` +
+`only_ways(['ghci'])` shape (8 should_run tests).  For
+`compile_and_run`, the runner generates a synthetic "genscript"
+mirroring upstream's `testsuite/driver/testlib.py::interpreter_run`
+— `:set prog X`, delimiter `:! echo`, `runIOFastExit Main.main` —
+then splits captured streams at the delimiter to extract program
+output for comparison.  Skipped 5 out-of-shape tests (BinaryArray
+`normal`-way only, T3171 `makefile_test`, T18064
+`leading_underscore()` skip on Mach-O, T15633a/b `pre_cmd $MAKE`-
+built typechecker plugin).  T15055 wired via `--version ghc` to
+canonicalise its hardcoded `'ghc-8.5'` reference; T18027's
+spaces-in-filename companion handled via a `:`-placeholder encoding
+in `extras_for()`.  Zero new PPC-port issues surfaced.  Combined
+GHCi-script testsuite coverage at session 67 exit: **243/246**
+across five families (175/177 scripts/ + 17/17 prog0NN + 7/8
+T<num>/ + 7/7 should_fail/ + 37/37 should_run/).  Reusable harness
+in
+[`docs/sessions/2026-05-17-session-67-ghci-should-runner/scripts/`](sessions/2026-05-17-session-67-ghci-should-runner/scripts/).
+Verification only; no GHC source changes, no patches, no release.
+See [session 67](sessions/2026-05-17-session-67-ghci-should-runner/).
 
 ✅ **Session 66 (verification):** New runner for `tests/ghci/T<num>/`
 bug-numbered per-test subdirs — **7/8 PASS** across multiple
