@@ -1343,3 +1343,232 @@ Input: {
 
 ---
 
+## 🤖 Claude
+
+
+🔧 Using tool: Edit
+Input: {
+  "replace_all": false,
+  "file_path": "/Users/cell/claude/ghc-darwin8-ppc/docs/state.md",
+  "old_string": "- 2026-05-12 session 27: stage2 GC bug investigation, round 9.",
+  "new_string": "- 2026-05-12 session 28: stage2 GC bug investigation, round 10.\n  Wrote **PROBE28** \u2014 a slim RTS-side per-GC printf in `rts/sm/GC.c`\n  (file-static counter + pre-GC mut_list snapshot via `countOccupied`\n  + post-GC summary line walking `gct->scavenged_static_objects`)\n  \u2014 to discriminate session 27's \"one bug, two victims\" vs \"two\n  bugs\" framings.  With the probe enabled, **Big2.hs `-A1m -G1`\n  flips from session 27's TC-time \"swap not in scope\" signature\n  (10/10) to the STG-time `refineFromInScope` signature 5/5** \u2014\n  the probe's tiny per-GC timing delay shifts which downstream\n  IntMap-backed VarEnv catches the corruption.  Strong evidence\n  for **one bug, two victim data structures**.  PROBE28 also rules\n  out (i) the mut_list / write-barrier audit (Big2 `-G1` fails 5/5\n  with zero mut_list activity \u2014 under `-G1` mut_lists are empty),\n  and (ii) the static_objects scavenge audit (under `-G1` every GC\n  walks the same ~175k-entry static chain in both M5 (PASS) and Big2\n  (FAIL)).  Remaining suspects: `rts/sm/Evac.c` (evacuate, copy_tag,\n  copy) and `rts/sm/Scav.c::scavenge_block` dispatch \u2014 these run on\n  every GC regardless of `-G` and would fire identically across\n  M5/Big2 except that Big2 has more closures of whatever type\n  triggers the bug.  v0.12.0 ships unchanged; probe applied for\n  measurement, then reverted; clean stage2 redeployed at session end.\n  Session\n  [`HANDOFF.md`](sessions/2026-05-12-session-28-rts-gc-discriminator-probe/HANDOFF.md)\n  scopes the closure-type histogram extension + Evac.c / Scav.c\n  audit.\n- 2026-05-12 session 27: stage2 GC bug investigation, round 9."
+}
+
+
+---
+
+## 🤖 Claude
+
+
+🔧 Using tool: Bash
+Input: {
+  "command": "grep -n 'stage2\\|session 2[78]\\|round 9' /Users/cell/claude/ghc-darwin8-ppc/docs/roadmap.md | head -15",
+  "description": "Check roadmap mentions"
+}
+
+
+---
+
+## 🤖 Claude
+
+
+🔧 Using tool: Bash
+Input: {
+  "command": "grep -n 'session 27\\|session 28\\|round 9\\|round 10' /Users/cell/claude/ghc-darwin8-ppc/docs/roadmap.md",
+  "description": "Check session 27 mention in roadmap"
+}
+
+
+---
+
+## 🤖 Claude
+
+
+🔧 Using tool: Read
+Input: {
+  "file_path": "/Users/cell/claude/ghc-darwin8-ppc/docs/roadmap.md",
+  "offset": 280,
+  "limit": 60
+}
+
+
+---
+
+## 🤖 Claude
+
+
+🔧 Using tool: Edit
+Input: {
+  "replace_all": false,
+  "file_path": "/Users/cell/claude/ghc-darwin8-ppc/docs/roadmap.md",
+  "old_string": "- [`docs/sessions/2026-05-12-session-27-non-perturbing-repro/`](sessions/2026-05-12-session-27-non-perturbing-repro/)\n  \u2014 round 9.  **Deterministic non-perturbing repro nailed.**\n  `M5.hs +RTS -A1m -RTS` on clean stage2 panics **10/10** with the\n  STG-time panic family (depSortStgBinds, refineFromInScope, \"variable\n  not found\").  **`+RTS -A1m -G1` (single-generation) fully\n  suppresses the M5.hs panic family** (10/10 OK), and likewise on\n  M5plus.hs (5/5 OK).  Goldilocks: `-A1G`, `-A4m`, and even `-A512k`\n  are too large/small to reproduce M5.hs's failure.  But on a\n  larger clean input \u2014 Big2.hs, ~30-LOC, uses Data.Map.Strict and\n  a `where`-bound local function \u2014 `-A1m -G1` fails 10/10 with a\n  **new, previously-undocumented signature**: `* GHC internal\n  error: 'swap' is not in scope during type checking, but it\n  passed the renamer`.  So the bug has at least two distinct\n  corruption modes: STG-time (suppressed by `-G1`) and typecheck-\n  time (not suppressed).  Either two separate bugs or one bug with\n  two victim data structures.  v0.12.0 ships unchanged; source\n  tree clean; no commits to external/ghc-modern this session.\n  Session-27\n  [`HANDOFF.md`](sessions/2026-05-12-session-27-non-perturbing-repro/HANDOFF.md)\n  scopes a slim RTS-side probe (per-GC mut_list / static-object\n  counter, no Haskell-side perturbation) to discriminate one-bug\n  vs two-bug.",
+  "new_string": "- [`docs/sessions/2026-05-12-session-27-non-perturbing-repro/`](sessions/2026-05-12-session-27-non-perturbing-repro/)\n  \u2014 round 9.  **Deterministic non-perturbing repro nailed.**\n  `M5.hs +RTS -A1m -RTS` on clean stage2 panics **10/10** with the\n  STG-time panic family (depSortStgBinds, refineFromInScope, \"variable\n  not found\").  **`+RTS -A1m -G1` (single-generation) fully\n  suppresses the M5.hs panic family** (10/10 OK), and likewise on\n  M5plus.hs (5/5 OK).  Goldilocks: `-A1G`, `-A4m`, and even `-A512k`\n  are too large/small to reproduce M5.hs's failure.  But on a\n  larger clean input \u2014 Big2.hs, ~30-LOC, uses Data.Map.Strict and\n  a `where`-bound local function \u2014 `-A1m -G1` fails 10/10 with a\n  **new, previously-undocumented signature**: `* GHC internal\n  error: 'swap' is not in scope during type checking, but it\n  passed the renamer`.  Session-27 framed this as \"the bug has at\n  least two distinct corruption modes\" \u2014 **downgraded by session\n  28 to one bug, two victim data structures** (see next entry).\n  v0.12.0 ships unchanged; source tree clean; no commits to\n  external/ghc-modern this session.\n- [`docs/sessions/2026-05-12-session-28-rts-gc-discriminator-probe/`](sessions/2026-05-12-session-28-rts-gc-discriminator-probe/)\n  \u2014 round 10.  Wrote **PROBE28** \u2014 a slim RTS-side per-GC printf in\n  `rts/sm/GC.c` (file-static counter + pre-GC mut_list snapshot via\n  `countOccupied` + post-GC summary line walking\n  `gct->scavenged_static_objects` via `STATIC_LINK`).  With the\n  probe enabled, **Big2.hs `-A1m -G1` flips from session 27's\n  TC-time \"swap not in scope\" signature (10/10) to the STG-time\n  `refineFromInScope` signature 5/5** \u2014 the probe's tiny per-GC\n  timing delay shifts which downstream IntMap-backed VarEnv catches\n  the corruption.  Strong evidence for **one bug, two victim data\n  structures**.  PROBE28 also rules out two of session 27's audit\n  targets: (i) `scavenge_capability_mut_lists` / mut_list write-\n  barrier path (Big2 `-G1` fails 5/5 with zero mut_list activity \u2014\n  under `-G1` mut_lists are empty); (ii) `scavenge_static` /\n  `scavenge_thunk_srt` / `scavenge_fun_srt` (under `-G1` every GC\n  walks the same ~175k-entry static_objects chain in both M5 (PASS)\n  and Big2 (FAIL)).  Remaining suspects: `rts/sm/Evac.c`\n  (`evacuate`, `copy_tag`, `copy`), `rts/sm/Scav.c::scavenge_block`\n  dispatch by closure type, forwarding-pointer / info-table\n  machinery on PPC32 (32-bit big-endian).  v0.12.0 ships unchanged;\n  probe applied for measurement and reverted at session end; stage2\n  on pmacg5 rebuilt+redeployed clean.  Session-28\n  [`HANDOFF.md`](sessions/2026-05-12-session-28-rts-gc-discriminator-probe/HANDOFF.md)\n  scopes a per-closure-type histogram extension to PROBE28, then a\n  PPC32-eyes audit of Evac.c / Scav.c."
+}
+
+
+---
+
+## 🤖 Claude
+
+
+🔧 Using tool: Bash
+Input: {
+  "command": "git status",
+  "description": "Check git status before commit"
+}
+
+
+---
+
+## 🤖 Claude
+
+
+🔧 Using tool: Bash
+Input: {
+  "command": "git add docs/sessions/2026-05-12-session-28-rts-gc-discriminator-probe docs/state.md docs/roadmap.md && git status",
+  "description": "Stage session 28 changes"
+}
+
+
+---
+
+## 🤖 Claude
+
+
+🔧 Using tool: Bash
+Input: {
+  "command": "git commit -m \"$(cat <<'EOF'\nSession 28: stage2 GC bug investigation, round 10 (PROBE28 RTS-side per-GC discriminator probe; session-27's \"two distinct corruption modes\" downgraded to \"one bug, two victim data structures\"; mut_list and static_objects scavenge paths ruled out).\n\nCo-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>\nEOF\n)\"",
+  "description": "Commit session 28 notes"
+}
+
+
+---
+
+## 🤖 Claude
+
+
+🔧 Using tool: Bash
+Input: {
+  "command": "git commit -F - <<'COMMIT_EOF'\nSession 28: stage2 GC bug investigation, round 10 (PROBE28 RTS-side per-GC discriminator probe; session-27's \"two distinct corruption modes\" downgraded to \"one bug, two victim data structures\"; mut_list and static_objects scavenge paths ruled out).\n\nCo-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>\nCOMMIT_EOF",
+  "description": "Commit session 28 via stdin"
+}
+
+
+---
+
+## 🤖 Claude
+
+
+🔧 Using tool: Bash
+Input: {
+  "command": "git log -1 --format='%H' | head -c 7",
+  "description": "Get commit SHA for backfill"
+}
+
+
+---
+
+## 🤖 Claude
+
+
+🔧 Using tool: Edit
+Input: {
+  "replace_all": false,
+  "file_path": "/Users/cell/claude/ghc-darwin8-ppc/docs/sessions/2026-05-12-session-28-rts-gc-discriminator-probe/commits.md",
+  "old_string": "- `XXXXXXX` Session 28: stage2 GC bug investigation, round 10",
+  "new_string": "- `4f1fcb6` Session 28: stage2 GC bug investigation, round 10"
+}
+
+
+---
+
+## 🤖 Claude
+
+
+🔧 Using tool: Bash
+Input: {
+  "command": "git add docs/sessions/2026-05-12-session-28-rts-gc-discriminator-probe/commits.md && git commit -F - <<'COMMIT_EOF'\nSession 28 commits.md: backfill the SHA.\n\nCo-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>\nCOMMIT_EOF",
+  "description": "Commit backfill of SHA"
+}
+
+
+---
+
+## 🤖 Claude
+
+
+🔧 Using tool: TodoWrite
+Input: {
+  "todos": [
+    {
+      "content": "Set up session 28 dir + run baseline test suite",
+      "activeForm": "Setting up session 28 dir + running baseline",
+      "status": "completed"
+    },
+    {
+      "content": "Verify session 27 numbers (quick sanity check)",
+      "activeForm": "Verifying session 27 numbers",
+      "status": "completed"
+    },
+    {
+      "content": "Design + implement RTS-side probe in rts/sm/GC.c",
+      "activeForm": "Implementing RTS-side probe",
+      "status": "completed"
+    },
+    {
+      "content": "Rebuild stage1 RTS lib + redeploy to pmacg5",
+      "activeForm": "Rebuilding stage1 RTS + redeploying",
+      "status": "completed"
+    },
+    {
+      "content": "Run probe matrix: M5.hs -A1m, M5.hs -A1m -G1, Big2.hs -A1m -G1, Big2.hs -A1G",
+      "activeForm": "Running probe matrix",
+      "status": "completed"
+    },
+    {
+      "content": "Analyze probe output: discriminate 'one bug, two victims' vs 'two bugs'",
+      "activeForm": "Analyzing probe output",
+      "status": "completed"
+    },
+    {
+      "content": "Revert probe + redeploy clean stage2",
+      "activeForm": "Reverting probe + redeploying clean stage2",
+      "status": "completed"
+    },
+    {
+      "content": "Write session 28 README + findings + commits.md + HANDOFF.md",
+      "activeForm": "Writing session 28 notes",
+      "status": "completed"
+    },
+    {
+      "content": "Update docs/state.md and docs/roadmap.md to reflect session 28 findings",
+      "activeForm": "Updating state + roadmap",
+      "status": "completed"
+    },
+    {
+      "content": "Commit session 28 notes",
+      "activeForm": "Committing session 28 notes",
+      "status": "completed"
+    }
+  ]
+}
+
+
+---
+
+## 🤖 Claude
+
+Session 28 complete and committed. Headline: **PROBE28 (slim RTS-side per-GC printf in `rts/sm/GC.c`) downgrades session 27's "two distinct corruption modes" framing to "one bug, two victim data structures".** With the probe enabled, Big2.hs `+RTS -A1m -G1` flipped from session 27's TC-time "swap not in scope" signature (10/10) to the STG-time `refineFromInScope` signature (5/5) — the probe's tiny per-GC timing delay shifts which downstream IntMap-backed VarEnv catches the corrupted closure. Same root corruption, different downstream victim.
+
+PROBE28 also ruled out two of session 27's queued audit targets:
+- **mut_list / write-barrier path** — under `-G1` mut_lists are empty, yet Big2 still panics 5/5.
+- **`scavenge_static` / `scavenge_thunk_srt` / `scavenge_fun_srt`** — under `-G1` every GC walks the same ~175k-entry static_objects chain in both M5 (PASS) and Big2 (FAIL).
+
+Remaining suspects: `rts/sm/Evac.c` (`evacuate` / `copy_tag` / `copy`), `rts/sm/Scav.c::scavenge_block` dispatch by closure type, forwarding-pointer / info-table machinery on PPC32 (32-bit big-endian).
+
+v0.12.0 ships unchanged; probe applied for measurement and reverted before session end; stage2 on pmacg5 rebuilt+redeployed clean.
+
+Next session's handoff: [docs/sessions/2026-05-12-session-28-rts-gc-discriminator-probe/HANDOFF.md](docs/sessions/2026-05-12-session-28-rts-gc-discriminator-probe/HANDOFF.md). Top priority is extending PROBE28 with a per-closure-type histogram in `scavenge_block`, then auditing Evac.c / Scav.c with PPC32 eyes.
+
+---
+
